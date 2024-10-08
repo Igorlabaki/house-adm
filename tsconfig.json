@@ -1,4 +1,13 @@
 {
-  "compilerOptions": {},
+  "compilerOptions": {
+    "baseUrl": "./src", // Define 'src' como o diretório base
+    "paths": {
+      "@components/*": ["components/*"],
+      "@store/*": ["store/*"],
+      "@styledComponents/*": ["styledComponents/*"],
+      "@schemas/*": ["zod/schemas/*"],
+      "@types/*": ["type/*"],
+    }
+  },
   "extends": "expo/tsconfig.base"
 }

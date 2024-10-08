@@ -58,7 +58,6 @@ const valueListSlice = createSlice({
       state.error = "";
     }),
       builder.addCase(createValueAsync.rejected, (state, action) => {
-        console.log(action.error.message)
         state.loading = false;
         state.values = state.values;
         state.error = "Oops! Something went wrong. Please try again later.";
@@ -80,7 +79,6 @@ const valueListSlice = createSlice({
       state.error = "";
     }),
       builder.addCase(updateValueByIdAsync.rejected, (state, action) => {
-        console.log(action);
         state.loading = false;
         state.values = state.values;
         state.error = "Oops! Something went wrong. Please try again later.";

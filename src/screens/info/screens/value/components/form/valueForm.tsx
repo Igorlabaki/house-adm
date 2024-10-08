@@ -1,16 +1,13 @@
 import { Formik } from "formik";
 import Toast from "react-native-simple-toast";
-import { TextType, ValueType } from "../../../../../../type";
 import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { Pressable, Text, TextInput, View } from "react-native";
-import { AppDispatch, RootState } from "../../../../../../store";
-import { createValueFormSchema } from "../../../../../../zod/schemas/createValueFormZodSchema";
-import {
-  createValueAsync,
-  updateValueByIdAsync,
-} from "../../../../../../store/value/valuesSlice";
 
+import { ValueType } from "type";
+import { AppDispatch, RootState } from "@store/index";
+import { createValueFormSchema } from "@schemas/createValueFormZodSchema";
+import { createValueAsync, updateValueByIdAsync } from "@store/value/valuesSlice";
+import { StyledPressable, StyledText, StyledTextInput, StyledView } from "styledComponents";
 interface ValueFormProps {
   value?: ValueType;
 }
@@ -92,14 +89,14 @@ export function ValueForm({ value }: ValueFormProps) {
       }}
     >
       {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-        <View className="w-[90%] mx-auto my-5 flex flex-col">
-          <View className="flex flex-col gap-y-3">
-            <View className="flex flex-col gap-y-1">
-              <View className="flex flex-col gap-y-1">
-                <Text className="text-custom-gray text-[14px] font-semibold">
+        <StyledView className="w-[90%] mx-auto my-5 flex flex-col">
+          <StyledView className="flex flex-col gap-y-3">
+            <StyledView className="flex flex-col gap-y-1">
+              <StyledView className="flex flex-col gap-y-1">
+                <StyledText className="text-custom-gray text-[14px] font-semibold">
                   Title
-                </Text>
-                <TextInput
+                </StyledText>
+                <StyledTextInput
                   onChangeText={handleChange("titulo")}
                   onBlur={handleBlur("titulo")}
                   value={values.titulo}
@@ -113,11 +110,11 @@ export function ValueForm({ value }: ValueFormProps) {
                       : "bg-gray-ligth"
                   }`}
                 />
-              </View>
-              <Text className="text-custom-gray text-[14px] font-semibold">
+              </StyledView>
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Valor
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 keyboardType="numeric"
                 onChangeText={handleChange("valor")}
                 onBlur={handleBlur("valor")}
@@ -134,17 +131,17 @@ export function ValueForm({ value }: ValueFormProps) {
                     : "bg-gray-ligth"
                 }`}
               />
-            </View>
-          </View>
-          <Pressable
+            </StyledView>
+          </StyledView>
+          <StyledPressable
             onPress={() => handleSubmit()}
             className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
           >
-            <Text className="font-bold text-custom-white">
+            <StyledText className="font-bold text-custom-white">
               {value ? "UPDATE" : "CREATE"}
-            </Text>
-          </Pressable>
-        </View>
+            </StyledText>
+          </StyledPressable>
+        </StyledView>
       )}
     </Formik>
   );

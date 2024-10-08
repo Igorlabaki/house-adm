@@ -1,13 +1,12 @@
-import { Text, View } from 'react-native'
-
+import { StyledText, StyledView } from 'styledComponents';
 interface ListEmptyProps{
-    dataType: string;
+  dataType: string;
 }
 
 export  function ListEmpty({dataType}:ListEmptyProps) {
   return (
-    <View className='py-3 px-3 flex justify-center items-center flex-1 text-center h-full w-full mt-10'>
-        <Text className='text-custom-gray'>No {dataType} register yet</Text>
-    </View>
+    <StyledView className='py-3 px-3 flex justify-center items-center flex-1 text-center h-full w-full mt-10'>
+        <StyledText className='text-custom-gray'>No {dataType} register yet</StyledText>
+    </StyledView>
   )
 }

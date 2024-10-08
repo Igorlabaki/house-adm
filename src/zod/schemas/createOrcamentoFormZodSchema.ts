@@ -51,6 +51,7 @@ export const createOrcamentoFormSchema = z.object({
     .string()
     .nonempty('Este campo e obrigatorio!')
     .min(10, 'A descricao do evento deve conter pelo menos 10 caracteres.'),
+  total: z.string().optional(),
   convidados: z
     .string()
     .nonempty('Este campo e obrigatorio!')

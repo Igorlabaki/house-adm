@@ -8,14 +8,15 @@ const initialState = {
   error: "",
 };
 
-export const fecthOrcamentos: any = createAsyncThunk(
+export const fecthOrcamentos: any  = createAsyncThunk(
   "orcamento/fetchOrcamentos",
-  async (query: string | undefined) => {
-    return api
-      .get(
-        `https://art56-server-v2.vercel.app/orcamento/list/${query ? query : ""}`
-      )
-      .then((response) => response.data.map((value: BugdetType) => value));
+  async ({ url }: { url: string | undefined }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`https://art56-server-v2.vercel.app/orcamento/list?${url}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Erro ao carregar orçamentos");
+    }
   }
 );
 
@@ -32,7 +33,7 @@ const orcamentoListSlice = createSlice({
     builder.addCase(fecthOrcamentos.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(fecthOrcamentos.fulfilled, (state, action) => {
+    builder.addCase(fecthOrcamentos.fulfilled, (state, action: PayloadAction<BugdetType[]>) => {
       state.loading = false;
       state.orcamentos = action.payload;
       state.error = "";
@@ -41,14 +42,14 @@ const orcamentoListSlice = createSlice({
         state.loading = false;
         state.orcamentos = [];
         state.error = action.error.message;
-      });
+    });
 
     // Create Orcamento Item
 
     builder.addCase(createOrcamentoValueAsync.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(createOrcamentoValueAsync.fulfilled, (state, action: any) => {
+    builder.addCase(createOrcamentoValueAsync.fulfilled, (state, action: PayloadAction<BugdetType[]>) => {
       state.loading = false;
       state.orcamentos = [...state.orcamentos, action.payload];
       state.error = "";
@@ -63,7 +64,7 @@ const orcamentoListSlice = createSlice({
     builder.addCase(updateOrcamentoByIdAsync.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(updateOrcamentoByIdAsync.fulfilled, (state, action: any) => {
+    builder.addCase(updateOrcamentoByIdAsync.fulfilled, (state, action: PayloadAction<BugdetType>) => {
       state.loading = false;
       state.orcamentos = state.orcamentos.map((item: BugdetType) => {
         if (item.id === action.payload.id) {
@@ -74,8 +75,7 @@ const orcamentoListSlice = createSlice({
       });
       state.error = "";
     }),
-      builder.addCase(updateOrcamentoByIdAsync.rejected, (state, action) => {
-        console.log(action);
+      builder.addCase(updateOrcamentoByIdAsync.rejected, (state) => {
         state.loading = false;
         state.orcamentos = state.orcamentos;
         state.error = "Oops! Something went wrong. Please try again later.";
@@ -85,7 +85,7 @@ const orcamentoListSlice = createSlice({
     builder.addCase(deleteOrcamentoByIdAsync.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(deleteOrcamentoByIdAsync.fulfilled, (state, action: any) => {
+    builder.addCase(deleteOrcamentoByIdAsync.fulfilled, (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.orcamentos = state.orcamentos.filter(
         (item: BugdetType) => item.id != action.payload
@@ -93,7 +93,6 @@ const orcamentoListSlice = createSlice({
       state.error = "";
     }),
       builder.addCase(deleteOrcamentoByIdAsync.rejected, (state, action) => {
-        console.log(action.payload);
         state.loading = false;
         state.orcamentos = state.orcamentos;
         state.error = "Oops! Something went wrong. Please try again later.";
@@ -103,13 +102,12 @@ const orcamentoListSlice = createSlice({
 
 export const createOrcamentoValueAsync = createAsyncThunk(
   "orcamento/createOrcamento",
-  async (createValueParams: BugdetType) => {
+  async (createValueParams: any) => {
     const newValue = await api
       .post(`https://art56-server-v2.vercel.app/orcamento/create`, createValueParams)
       .then((resp) => {
         return resp.data;
       });
-
     return newValue;
   }
 );

@@ -41,6 +41,7 @@ export interface DateEventType {
 export interface BugdetType {
   id?: string;
   nome: string;
+  tipo: string;
   email: string;
   dataFim: Date;
   texto: string;

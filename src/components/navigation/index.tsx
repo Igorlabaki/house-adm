@@ -13,6 +13,7 @@ import {
   AntDesign,
   Ionicons,
 } from "@expo/vector-icons";
+import { StyledImage, StyledText, StyledView } from "styledComponents";
 
 const Tab = createBottomTabNavigator();
 
@@ -33,7 +34,7 @@ export default function NavigationComponent() {
         headerTitle: "",
         headerTitleAlign: "center",
         headerLeft: () => (
-          <Image
+          <StyledImage
             source={{
               uri: "https://res.cloudinary.com/dcjkvwbvh/image/upload/v1699297655/vpyhnm1o0zsfsj8httyz.png",
             }}
@@ -42,9 +43,9 @@ export default function NavigationComponent() {
           />
         ),
         headerRight: () => (
-          <View className="mr-2">
-            <Text className="text-white text-[11px]">Sair</Text>
-          </View>
+          <StyledView className="mr-2">
+            <StyledText className="text-white text-[11px]">Sair</StyledText>
+          </StyledView>
         ),
         tabBarStyle: {
           backgroundColor: "#1E1F22",

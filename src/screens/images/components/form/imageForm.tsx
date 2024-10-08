@@ -1,18 +1,13 @@
 import { Formik } from "formik";
-import { useState } from "react";
 import Toast from "react-native-simple-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { toFormikValidationSchema } from "zod-formik-adapter";
-import { Pressable, Text, TextInput, View } from "react-native";
-import { ImageType } from "../../../../type";
-import { AppDispatch, RootState } from "../../../../store";
-import { createImageFormSchema } from "../../../../zod/schemas/createImageFormZodSchema";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker"
-import {
-  createImageAsync,
-  updateImageByIdAsync,
-} from "../../../../store/image/imagesSlice";
 
+import { ImageType } from "type";
+import { AppDispatch, RootState } from "@store/index";
+import { toFormikValidationSchema } from "zod-formik-adapter";
+import { createImageFormSchema } from "@schemas/createImageFormZodSchema";
+import { createImageAsync, updateImageByIdAsync } from "@store/image/imagesSlice";
+import { StyledPressable, StyledText, StyledTextInput, StyledView } from "styledComponents";
 interface ImageFormProps {
   image?: ImageType;
 }
@@ -23,7 +18,7 @@ export function ImageForm({ image }: ImageFormProps) {
     (state: RootState) => state.imageList.error
   );
 
-  const [urlImage, setUrlImage] = useState();
+  /* const [urlImage, setUrlImage] = useState(); */
 
   async function handleFile() {
 
@@ -121,31 +116,31 @@ export function ImageForm({ image }: ImageFormProps) {
       }}
     >
       {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-        <View className="w-[90%] mx-auto my-5 flex flex-col">
-          <View className="flex flex-col gap-y-3">
-            <View className="relative h-[10rem] w-full flex flex-col gap-y-2">
-              <Pressable
+        <StyledView className="w-[90%] mx-auto my-5 flex flex-col">
+          <StyledView className="flex flex-col gap-y-3">
+            <StyledView className="relative h-[10rem] w-full flex flex-col gap-y-2">
+              <StyledPressable
                 onPress={() => handleFile}
                 id="rgPhotos"
                 className="absolute w-full opacity-0 cursor-pointer top-4"
               />
-              <View className="h-16 w-full border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] flex justify-start items-center px-5 gap-x-5 cursor-pointer hover:bg-gray-100 transition duration-300">
-                <Text className="text-sm">Clique aqui para adicinar foto. </Text>
-              </View>
+              <StyledView className="h-16 w-full border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] flex justify-start items-center px-5 gap-x-5 cursor-pointer hover:bg-gray-100 transition duration-300">
+                <StyledText className="text-sm">Clique aqui para adicinar foto. </StyledText>
+              </StyledView>
              
-              <Text className="text-red-700 text-[15px] w-full">
+              <StyledText className="text-red-700 text-[15px] w-full">
                 {errors.imageUrl && errors.imageUrl}
-              </Text>
-            </View>
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+              </StyledText>
+            </StyledView>
+            <StyledView className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Position
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 keyboardType="numeric"
                 onChangeText={handleChange("position")}
                 onBlur={handleBlur("position")}
-                value={values.position}
+                value={values.position.toString()}
                 placeholder={
                   errors.position ? errors.position : "Type the position"
                 }
@@ -158,12 +153,12 @@ export function ImageForm({ image }: ImageFormProps) {
                     : "bg-gray-ligth"
                 }`}
               />
-            </View>
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+            </StyledView>
+            <StyledView className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Area
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 onChangeText={handleChange("area")}
                 onBlur={handleBlur("area")}
                 value={values.area}
@@ -177,12 +172,12 @@ export function ImageForm({ image }: ImageFormProps) {
                     : "bg-gray-ligth"
                 }`}
               />
-            </View>
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+            </StyledView>
+            <StyledView className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Tag
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 onChangeText={handleChange("tag")}
                 onBlur={handleBlur("tag")}
                 value={values.tag}
@@ -196,12 +191,12 @@ export function ImageForm({ image }: ImageFormProps) {
                     : "bg-gray-ligth"
                 }`}
               />
-            </View>
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+            </StyledView>
+            <StyledView className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Responsive mode
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 value={values.responsiveMode}
                 onChangeText={handleChange("responsiveMode")}
                 placeholder={
@@ -219,17 +214,17 @@ export function ImageForm({ image }: ImageFormProps) {
                     : "bg-gray-ligth"
                 }`}
               />
-            </View>
-          </View>
-          <Pressable
+            </StyledView>
+          </StyledView>
+          <StyledPressable
             onPress={() => handleSubmit()}
             className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
           >
-            <Text className="font-bold text-custom-white">
+            <StyledText className="font-bold text-custom-white">
               {image ? "UPDATE" : "CREATE"}
-            </Text>
-          </Pressable>
-        </View>
+            </StyledText>
+          </StyledPressable>
+        </StyledView>
       )}
     </Formik>
   );

@@ -5,16 +5,24 @@ import { valueListReducer } from "./value/valuesSlice";
 import { imageListReducer } from "./image/imagesSlice";
 import { orcamentoListReducer } from "./budget/bugetSlice";
 import { dateEventReducer } from "./dateEvent/dateEventSlice";
+import { orcamentoAprovadoListReducer } from "./budgetAprovado/bugetAprovadoSlice";
+import { despesaListReducer } from "./despesa/despesaSlice";
 
 export const store = configureStore({
   reducer: {
     textList: textListReducer,
+    despesaList: despesaListReducer,
     valueList: valueListReducer,
     imageList: imageListReducer,
     daveEventList: dateEventReducer,
     questionList: questionListReducer,
     orcamentosList: orcamentoListReducer,
+    orcamentosAprovadoList: orcamentoAprovadoListReducer,
   },
+  middleware: (getDefaultMiddleware) => 
+    getDefaultMiddleware({
+      serializableCheck: false,
+  }),
 });
 
 export type AppDispatch = typeof store.dispatch;

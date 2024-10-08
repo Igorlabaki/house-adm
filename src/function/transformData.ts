@@ -9,28 +9,27 @@ interface TransformDateParams {
 }
 
 export function transformDate({
+  separador,
   dataInicio,
   horarioFim,
   horarioInicio,
-  separador,
 }: TransformDateParams) {
-  const [yearInicio, monthInicio, dayInicio] = dataInicio.split(separador || '-');
+  const [ dayInicio, monthInicio,yearInicio] = dataInicio.split(separador || '/');
   const [hourInicio, minutesInicio] = horarioInicio.split(':');
   const [hourFim, minutesFim] = horarioFim.split(':');
-
+ 
   const dataInicial = moment.utc(
     `${yearInicio}-${monthInicio}-${dayInicio} ${hourInicio}:${minutesInicio}`,
     'YYYY-MM-DD HH:mm',
   );
 
-  console.log(dataInicial)
   const dataFim = moment.utc(
     `${yearInicio}-${monthInicio}-${dayInicio} ${hourFim}:${minutesFim}`,
     'YYYY-MM-DD HH:mm',
   );
 
   return {
-    dataInicial: dataInicial.toISOString(),
-    dataFim: dataFim.toISOString(),
+    dataFim: dataFim,
+    dataInicial: dataInicial,
   };
 }

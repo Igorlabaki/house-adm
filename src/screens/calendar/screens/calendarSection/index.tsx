@@ -1,18 +1,19 @@
-import { useState, useEffect } from "react";
-import { Text, View, Pressable, ScrollView } from "react-native";
-import { Calendar } from "react-native-calendars";
-import { DateEventModalComponent } from "./components/modal";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../store";
-import { fecthDateEvents } from "../../../../store/dateEvent/dateEventSlice";
+import moment from "moment";
 import { format } from "date-fns";
-import { DateEventType } from "../../../../type";
+import { useEffect, useState } from "react";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { Calendar as Calendario } from "react-native-calendars";
 
-export function CalendarSectionScreen() {
+import { DateEventType } from "type";
+import { AppDispatch, RootState } from "@store/index";
+import { DateEventModalComponent } from "./components/modal";
+import { fecthDateEvents } from "@store/dateEvent/dateEventSlice";
+import { StyledPressable, StyledScrollView, StyledText, StyledView } from "styledComponents";
+
+export function SectionScreen() {
+  
   const today = new Date();
-  const [selected, setSelected] = useState<any>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvents, setSelectedEvents] = useState(null);
   const dispatch = useDispatch<AppDispatch>();
@@ -23,14 +24,16 @@ export function CalendarSectionScreen() {
   }, []);
 
   const dates = dataEventList.dateEvents.map((item: DateEventType) => {
+
     const evento = item?.tipo === "Evento";
     const visita = item?.tipo === "Visita";
     const outro = item?.tipo === "Outro";
+
     return {
       [item?.dataInicio.toString().split("T")[0]]: {
         selected: true,
         marked: true, // Adiciona o manipulador de eventos para a data
-        selectedColor: evento ? "blue" : "#A9A9A9",
+        selectedColor: evento ? "blue" : visita ? "#5dd55d" : "#A9A9A9",
         dotColor: visita ? "#5dd55d" : outro ? "red" : null,
         dataEventId: [item?.id],
       },
@@ -50,89 +53,89 @@ export function CalendarSectionScreen() {
   };
 
   return (
-    <ScrollView className="bg-gray-dark flex-1 flex flex-col h-full w-full">
-      <View className="bg-gray-dark flex-1 p-5 flex flex-col h-full w-full">
-        <Pressable
+    <StyledScrollView className="bg-gray-dark flex-1 flex flex-col h-full w-full">
+      <StyledView className="bg-gray-dark flex-1 p-5 flex flex-col h-full w-full">
+        <StyledPressable
           className="bg-gray-dark"
           onPress={() => setIsModalOpen(true)}
         >
-          <Text className="text-custom-white font-semibold">Nova Data</Text>
-        </Pressable>
-        <View className="rounded-md overflow-hidden flex justify-start min-w-[95%] mx-auto h-full   z-40 mt-5">
-          <Calendar
+          <StyledText className="text-custom-white font-semibold">Criar Data</StyledText>
+        </StyledPressable>
+        <StyledView className="rounded-md overflow-hidden flex justify-start min-w-[95%] mx-auto h-full   z-40 mt-5">
+          <Calendario
             onDayPress={handleDatePress}
             markedDates={{
               ...markedDates,
             }}
             minDate={today.toDateString()}
           />
-          <View className="mt-3 flex-col">
-            <View className="flex-row">
-              <View className="flex flex-row gap-x-2 mt-1 justify-center items-center">
-                <View className="h-2 w-2 bg-blue-700 rounded-full " />
-                <Text className="text-[12px] text-white">Evento</Text>
-              </View>
-              <View className="flex-row gap-x-2 mt-1 ml-2  justify-center items-center">
-                <View className="h-2 w-2 bg-[#5dd55d] rounded-full" />
-                <Text className="text-[12px] text-white">Visita</Text>
-              </View>
-              <View className="flex-row gap-x-2 mt-1  ml-2  justify-center items-center">
-                <View className="h-2 w-2 bg-red-700 rounded-full " />
-                <Text className="text-[12px] text-white">Outro</Text>
-              </View>
-            </View>
-          </View>
+          <StyledView className="mt-3 flex-col">
+            <StyledView className="flex-row">
+              <StyledView className="flex flex-row gap-x-2 mt-1 justify-center items-center">
+                <StyledView className="h-2 w-2 bg-blue-700 rounded-full " />
+                <StyledText className="text-[12px] text-white">Evento</StyledText>
+              </StyledView>
+              <StyledView className="flex-row gap-x-2 mt-1 ml-2  justify-center items-center">
+                <StyledView className="h-2 w-2 bg-[#5dd55d] rounded-full" />
+                <StyledText className="text-[12px] text-white">Visita</StyledText>
+              </StyledView>
+              <StyledView className="flex-row gap-x-2 mt-1  ml-2  justify-center items-center">
+                <StyledView className="h-2 w-2 bg-red-700 rounded-full " />
+                <StyledText className="text-[12px] text-white">Outro</StyledText>
+              </StyledView>
+            </StyledView>
+          </StyledView>
           {selectedEvents && (
-            <View className="mt-5">
+            <StyledView className="mt-5">
               {selectedEvents.map((item: DateEventType) => {
                 return (
-                  <View
+                  <StyledView
                     key={item.id}
                     className="bg-white mt-3 flex justify-center items-center py-3 rounded-md"
                   >
-                    <Text>{item.titulo}</Text>
-                    <View className="flex flex-row justify-between items-center w-[80%] mx-auto mt-5">
-                      <View className="flex flex-col justify-center items-center gap-y-1">
+                    <StyledText>{item.titulo}</StyledText>
+                    <StyledView className="flex flex-row justify-between items-center w-[80%] mx-auto mt-5">
+                      <StyledView className="flex flex-col justify-center items-center gap-y-1">
                         <Ionicons name="people" size={20} color="black" />
-                        <Text className=" text-[11px]">
+                        <StyledText className=" text-[11px]">
                           {item?.orcamento?.convidados || 0}
-                        </Text>
-                      </View>
-                      <View className="flex flex-col justify-center items-center gap-y-1">
+                        </StyledText>
+                      </StyledView>
+                      <StyledView className="flex flex-col justify-center items-center gap-y-1">
                         <Ionicons
                           name="calendar-outline"
                           size={20}
                           color="black"
                         />
-                        <Text className=" text-[11px]">
+                        <StyledText className=" text-[11px]">
                           {format(item?.dataInicio, "dd/MM/yyyy")}
-                        </Text>
-                      </View>
-                      <View className="flex flex-col justify-center items-center gap-y-1">
+                        </StyledText>
+                      </StyledView>
+                      <StyledView className="flex flex-col justify-center items-center gap-y-1">
                         <Feather name="clock" size={20} color="black" />
-                        <View className="flex-row">
-                          <Text className=" text-[11px]">
-                            {format(item?.dataInicio, "HH:mm")}
-                          </Text>
-                          <Text className=" text-[11px]">/</Text>
-                          <Text className=" text-[11px]">
-                            {format(item?.dataFim, "HH:mm")}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
+                        <StyledView className="flex-row">
+                          <StyledText className=" text-[11px]">
+                            {moment.utc(item?.dataInicio).format("HH:mm")}
+                          </StyledText>
+                          <StyledText className=" text-[11px]">/</StyledText>
+                          <StyledText className=" text-[11px]">
+                            {moment.utc(item?.dataFim).format("HH:mm")}
+                          </StyledText>
+                        </StyledView>
+                      </StyledView>
+                    </StyledView>
+                  </StyledView>
                 );
               })}
-            </View>
+            </StyledView>
           )}
-        </View>
-        <DateEventModalComponent
+        </StyledView>
+      </StyledView>
+      <DateEventModalComponent
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           type="CREATE"
-        />
-      </View>
-    </ScrollView>
+      />
+    </StyledScrollView>
   );
 }

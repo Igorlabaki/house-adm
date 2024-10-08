@@ -1,16 +1,13 @@
 import { Formik } from "formik";
 import Toast from "react-native-simple-toast";
-import { QuestionType } from "../../../../../../type";
 import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { Pressable, Text, TextInput, View } from "react-native";
-import { AppDispatch, RootState } from "../../../../../../store";
-import { createQuestionFormSchema } from "../../../../../../zod/schemas/createQuestionFormZodSchema";
-import {
-  createQuestionAsync,
-  updateQuestionByIdAsync,
-} from "../../../../../../store/question/questionSlice";
-import { createDateEvent, createDateEventAsync } from "../../../../../../store/dateEvent/dateEventSlice";
+
+import { QuestionType } from "type";
+import { AppDispatch, RootState } from "@store/index";
+import { createQuestionFormSchema } from "@schemas/createQuestionFormZodSchema";
+import { StyledPressable, StyledText, StyledTextInput, StyledView } from "styledComponents";
+import { createQuestionAsync, updateQuestionByIdAsync } from "@store/question/questionSlice";
 
 interface TextFormProps {
   question?: QuestionType;
@@ -94,13 +91,13 @@ export function QuestionFormComponent({ question }: TextFormProps) {
       }}
     >
       {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-        <View className="w-[90%] mx-auto my-5 flex flex-col">
-          <View className="flex flex-col gap-y-3">
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+        <StyledView  className="w-[90%] mx-auto my-5 flex flex-col">
+          <StyledView  className="flex flex-col gap-y-3">
+            <StyledView  className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Question
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 onChangeText={handleChange("question")}
                 onBlur={handleBlur("question")}
                 value={values.question}
@@ -116,12 +113,12 @@ export function QuestionFormComponent({ question }: TextFormProps) {
                     : "bg-gray-ligth"
                 }`}
               />
-            </View>
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+            </StyledView>
+            <StyledView  className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Answer
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 onChangeText={handleChange("response")}
                 onBlur={handleBlur("response")}
                 value={values.response}
@@ -137,17 +134,17 @@ export function QuestionFormComponent({ question }: TextFormProps) {
                     : "bg-gray-ligth"
                 }`}
               />
-            </View>
-          </View>
-          <Pressable
+            </StyledView>
+          </StyledView>
+          <StyledPressable
             onPress={() => handleSubmit()}
             className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
           >
-            <Text className="font-bold text-custom-white">
+            <StyledText className="font-bold text-custom-white">
               {question ? "UPDATE" : "CREATE"}
-            </Text>
-          </Pressable>
-        </View>
+            </StyledText>
+          </StyledPressable>
+        </StyledView>
       )}
     </Formik>
   );

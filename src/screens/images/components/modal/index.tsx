@@ -1,12 +1,13 @@
-import { ImageForm } from "../form/imageForm";
 import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Modal, Pressable, Text, View } from "react-native";
-import { ImageType } from "../../../../type";
-import { AppDispatch, RootState } from "../../../../store";
-import { deleteImageByIdAsync } from "../../../../store/image/imagesSlice";
+
+import { ImageType } from "type";
+import { ImageForm } from "../form/imageForm";
+import { AppDispatch, RootState } from "@store/index";
+import { deleteImageByIdAsync } from "@store/image/imagesSlice";
+import { StyledModal, StyledPressable, StyledView } from "styledComponents";
 
 interface TextModalProps {
   image?: ImageType;
@@ -17,22 +18,23 @@ interface TextModalProps {
 
 export function ImageModal({
   isModalOpen,
-  setIsModalOpen,
-  type,
   image,
+  setIsModalOpen,
 }: TextModalProps) {
+
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector<RootState>(
     (state: RootState) => state.imageList.error
   );
+  
   return (
-    <Modal
+    <StyledModal
       visible={isModalOpen}
       onRequestClose={() => setIsModalOpen(false)}
       animationType="fade"
     >
-      <View className="flex-1 bg-gray-dark pt-10 relative">
-        <Pressable
+      <StyledView className="flex-1 bg-gray-dark pt-10 relative">
+        <StyledPressable
           className="absolute top-4 left-5"
           onPress={() => setIsModalOpen(false)}
         >
@@ -41,9 +43,9 @@ export function ImageModal({
             size={24}
             color="white"
           />
-        </Pressable>
+        </StyledPressable>
         {image && (
-          <Pressable
+          <StyledPressable
             onPress={async () => {
               const deleteItem = await dispatch(deleteImageByIdAsync(image.id));
 
@@ -64,10 +66,10 @@ export function ImageModal({
             className="absolute top-5 right-5"
           >
             <Feather name="trash" size={16} color="white" />
-          </Pressable>
+          </StyledPressable>
         )}
         {image ? <ImageForm image={image} /> : <ImageForm />}
-      </View>
-    </Modal>
+      </StyledView>
+    </StyledModal>
   );
 }

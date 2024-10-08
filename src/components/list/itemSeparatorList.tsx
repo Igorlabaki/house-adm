@@ -1,7 +1,7 @@
-import { View } from "react-native";
+import { StyledView } from "styledComponents";
 
 export  function ItemSeparatorList() {
   return (
-    <View className='h-[20px]'/>
+    <StyledView className='h-[20px]'/>
   )
 }

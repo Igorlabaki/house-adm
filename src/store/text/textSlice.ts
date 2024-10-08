@@ -77,7 +77,7 @@ const textListSlice = createSlice({
       state.error = "";
     }),
     builder.addCase(updateTextByIdAsync.rejected, (state, action) => { 
-      console.log(action)
+ 
       state.loading = false;
       state.texts = state.texts;
       state.error = "Oops! Something went wrong. Please try again later.";
@@ -94,7 +94,7 @@ const textListSlice = createSlice({
       state.error = "";
     }),
     builder.addCase(deleteTextByIdAsync.rejected, (state, action) => {
-      console.log(action.payload)
+
       state.loading = false;
       state.texts = state.texts;
       state.error = "Oops! Something went wrong. Please try again later.";

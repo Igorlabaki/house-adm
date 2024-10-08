@@ -1,39 +1,38 @@
-import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
-import { DateEventType, QuestionType, TextType } from "../../../../../../type";
 import { useDispatch, useSelector } from "react-redux";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Modal, Pressable, Text, View } from "react-native";
-import { AppDispatch, RootState } from "../../../../../../store";
-import { deleteQuestionByIdAsync } from "../../../../../../store/question/questionSlice";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+
+import { DateEventType } from "type";
+import { AppDispatch, RootState } from "@store/index";
 import { DateEventFormComponent } from "../form/dateEventForm";
-
-
+import { StyledModal, StyledPressable, StyledView } from "styledComponents";
+import { deleteDateEventByIdAsync } from "@store/dateEvent/dateEventSlice";
 interface DateEventModalProps {
-  dateEvent?: DateEventType;
   isModalOpen: boolean;
   type: "CREATE" | "UPDATE";
+  dateEvent?: DateEventType;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function DateEventModalComponent({
+  dateEvent,
   isModalOpen,
   setIsModalOpen,
-  type,
-  dateEvent,
 }: DateEventModalProps) {
+
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector<RootState>(
     (state: RootState) => state.daveEventList.error
   );
+  
   return (
-    <Modal
+    <StyledModal
       visible={isModalOpen}
       onRequestClose={() => setIsModalOpen(false)}
       animationType="fade"
     >
-      <View className="flex-1 bg-gray-dark pt-10 relative">
-        <Pressable
+      <StyledView className="flex-1 bg-gray-dark pt-10 relative">
+        <StyledPressable
           className="absolute top-4 left-5"
           onPress={() => setIsModalOpen(false)}
         >
@@ -42,16 +41,16 @@ export function DateEventModalComponent({
             size={24}
             color="white"
           />
-        </Pressable>
+        </StyledPressable>
         {dateEvent && (
-          <Pressable
+          <StyledPressable
             onPress={async () => {
               const deleteItem = await dispatch(
-                deleteQuestionByIdAsync(dateEvent.id)
+                deleteDateEventByIdAsync(dateEvent.id)
               );
 
               if (deleteItem.meta.requestStatus === "fulfilled") {
-                Toast.show("Text deleted successfully." as string, 3000, {
+                Toast.show("Data deleteda com sucesso." as string, 3000, {
                   backgroundColor: "rgb(75,181,67)",
                   textColor: "white",
                 });
@@ -67,14 +66,14 @@ export function DateEventModalComponent({
             className="absolute top-5 right-5"
           >
             <Feather name="trash" size={16} color="white" />
-          </Pressable>
+          </StyledPressable>
         )}
         {dateEvent ? (
           <DateEventFormComponent dateEvent={dateEvent} />
         ) : (
           <DateEventFormComponent />
         )}
-      </View>
-    </Modal>
+      </StyledView>
+    </StyledModal>
   );
 }

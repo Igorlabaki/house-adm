@@ -1,9 +1,7 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { TextScreen } from '../screens/text';
-import { QuestionScreen } from '../screens/question';
 import { ValueScreen } from '../screens/value';
-
-
+import { QuestionScreen } from '../screens/question';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 const InfoTabNavigator = createMaterialTopTabNavigator();
 

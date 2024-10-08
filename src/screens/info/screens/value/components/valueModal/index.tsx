@@ -1,14 +1,13 @@
-import { ValueForm } from "../form/valueForm";
 import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
-import { TextType, ValueType } from "../../../../../../type";
 import { useDispatch, useSelector } from "react-redux";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Modal, Pressable, Text, View } from "react-native";
-import { AppDispatch, RootState } from "../../../../../../store";
-import { deleteTextByIdAsync } from "../../../../../../store/text/textSlice";
-import { deleteValueByIdAsync } from "../../../../../../store/value/valuesSlice";
 
+import { ValueType } from "type";
+import { ValueForm } from "../form/valueForm";
+import { AppDispatch, RootState } from "@store/index";
+import { deleteValueByIdAsync } from "@store/value/valuesSlice";
+import { StyledModal, StyledPressable, StyledView } from "styledComponents";
 interface ValueModalProps {
   value?: ValueType;
   isModalOpen: boolean;
@@ -17,23 +16,25 @@ interface ValueModalProps {
 }
 
 export function ValueModal({
+  value,
   isModalOpen,
   setIsModalOpen,
-  type,
-  value,
 }: ValueModalProps) {
+
   const dispatch = useDispatch<AppDispatch>();
+
   const error = useSelector<RootState>(
     (state: RootState) => state.textList.error
   );
+
   return (
-    <Modal
+    <StyledModal
       visible={isModalOpen}
       onRequestClose={() => setIsModalOpen(false)}
       animationType="fade"
     >
-      <View className="flex-1 bg-gray-dark pt-10 relative">
-        <Pressable
+      <StyledView className="flex-1 bg-gray-dark pt-10 relative">
+        <StyledPressable
           className="absolute top-4 left-5"
           onPress={() => setIsModalOpen(false)}
         >
@@ -42,9 +43,9 @@ export function ValueModal({
             size={24}
             color="white"
           />
-        </Pressable>
+        </StyledPressable>
         {value && (
-          <Pressable
+          <StyledPressable
             onPress={async () => {
               const deleteItem = await dispatch(deleteValueByIdAsync(value.id));
 
@@ -65,10 +66,10 @@ export function ValueModal({
             className="absolute top-5 right-5"
           >
             <Feather name="trash" size={16} color="white" />
-          </Pressable>
+          </StyledPressable>
         )}
         {value ? <ValueForm value={value} /> : <ValueForm />}
-      </View>
-    </Modal>
+      </StyledView>
+    </StyledModal>
   );
 }

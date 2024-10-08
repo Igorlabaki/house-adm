@@ -1,12 +1,17 @@
 import { useEffect } from "react";
-import { FlatList, View, ActivityIndicator, Text } from "react-native";
-import { TextType } from "../../../../../../type";
-import { RootState } from "../../../../../../store";
+import { styled } from "nativewind";
+import { ActivityIndicator, FlatList } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { fecthTexts } from "../../../../../../store/text/textSlice";
-import { ListEmpty } from "../../../../../../components/list/ListEmpty";
-import { ItemSeparatorList } from "../../../../../../components/list/itemSeparatorList";
-import TextItemFlatList from "./teXtitemFlatList";
+
+import { TextType } from "type";
+import { RootState } from "@store/index";
+import { fecthTexts } from "@store/text/textSlice";
+import { TextItemFlatList } from "./teXtitemFlatList";
+import { ListEmpty } from "@components/list/ListEmpty";
+import { StyledText, StyledView } from "styledComponents";
+import { ItemSeparatorList } from "@components/list/itemSeparatorList";
+
+export const StyledFlatList = styled(FlatList<TextType>);
 
 export function TextFlatList() {
   const dispatch = useDispatch();
@@ -18,16 +23,16 @@ export function TextFlatList() {
 
   if (textList.loading) {
     return (
-      <View className="h-full w-full flex justify-center items-center">
+      <StyledView className="h-full w-full flex justify-center items-center">
         <ActivityIndicator size="large" color="white" />
-        <Text className="text-white">Loading</Text>
-      </View>
+        <StyledText className="text-white">Loading</StyledText>
+      </StyledView>
     );
   }
 
   return (
     <>
-      <FlatList
+      <StyledFlatList
         keyExtractor={(item: TextType) => item.id}
         data={textList?.texts}
         renderItem={({ item }: { item: TextType }) => {

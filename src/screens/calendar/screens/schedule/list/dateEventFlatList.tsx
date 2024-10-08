@@ -1,14 +1,20 @@
 import { useEffect } from "react";
+import { styled } from "nativewind";
 import { RootState } from "../../../../../store";
-import { DateEventType } from "../../../../../type";
 import { useDispatch, useSelector } from "react-redux";
-import DateEventItemFlatList from "./dateEventItemFlatList";
-import { ListEmpty } from "../../../../../components/list/ListEmpty";
-import { View, ActivityIndicator, Text, FlatList, } from "react-native"
-import { fecthDateEvents } from "../../../../../store/dateEvent/dateEventSlice";
-import { ItemSeparatorList } from "../../../../../components/list/itemSeparatorList";
+import { ActivityIndicator, FlatList } from "react-native"
+
+import { DateEventType } from "type";
+import { ListEmpty } from "@components/list/ListEmpty";
+import { StyledText, StyledView } from "styledComponents";
+import { DateEventItemFlatList } from "./dateEventItemFlatList";
+import { fecthDateEvents } from "@store/dateEvent/dateEventSlice";
+import { ItemSeparatorList } from "@components/list/itemSeparatorList";
+
+export const StyledFlatList = styled(FlatList<DateEventType>);
 
 export function EventDateFlatList() {
+
   const dispatch = useDispatch();
   const dateEventList = useSelector((state: RootState) => state.daveEventList);
 
@@ -18,16 +24,19 @@ export function EventDateFlatList() {
 
   if (dateEventList.loading) {
     return (
-      <View className="h-full w-full flex justify-center items-center">
+      <StyledView className="h-full w-full flex justify-center items-center">
         <ActivityIndicator size="large" color="white" />
-        <Text className="text-white">Loading</Text>
-      </View>
+        <StyledText className="text-white">Loading</StyledText>
+      </StyledView>
     );
   }
 
   return (
     <>
-      <FlatList
+      <StyledText className="text-custom-white font-semibold">
+        Proximas Datas :
+      </StyledText>
+      <StyledFlatList
         keyExtractor={(item: DateEventType) => item.id}
         data={dateEventList?.dateEvents}
         renderItem={({ item }: { item: DateEventType }) => {

@@ -74,7 +74,6 @@ const imageListSlice = createSlice({
       state.error = "";
     }),
       builder.addCase(updateImageByIdAsync.rejected, (state, action) => {
-        console.log(action);
         state.loading = false;
         state.images = state.images;
         state.error = "Oops! Something went wrong. Please try again later.";
@@ -92,7 +91,6 @@ const imageListSlice = createSlice({
       state.error = "";
     }),
       builder.addCase(deleteImageByIdAsync.rejected, (state, action) => {
-        console.log(action.payload);
         state.loading = false;
         state.images = state.images;
         state.error = "Oops! Something went wrong. Please try again later.";

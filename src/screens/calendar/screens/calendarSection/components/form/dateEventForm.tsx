@@ -1,70 +1,112 @@
-import { useState, useEffect } from "react";
-import Toast from "react-native-simple-toast";
-import { Entypo } from "@expo/vector-icons";
+import moment from "moment";
 import { Formik } from "formik";
-import { BugdetType, DateEventType } from "../../../../../../type";
+import { format } from "date-fns";
+import { useDebounce } from "use-debounce";
+import { useState, useEffect } from "react";
+import { Entypo } from "@expo/vector-icons";
+import Toast from "react-native-simple-toast";
+import { EvilIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { Calendar } from "react-native-calendars";
 import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { FontAwesome } from "@expo/vector-icons";
-import {
-  Pressable,
-  Text,
-  TextInput,
-  View,
-  Modal,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
-import { AppDispatch, RootState } from "../../../../../../store";
-import { createDateEventFormSchema } from "../../../../../../zod/schemas/createDateFormZodSchema";
-import { Calendar } from "react-native-calendars";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { createDateEventAsync } from "../../../../../../store/dateEvent/dateEventSlice";
-import { transformDate } from "../../../../../../function/transformData";
-import { fecthOrcamentos } from "../../../../../../store/budget/bugetSlice";
-import SearchFilterListComponent from "../../../../../../components/list/searchFilterList";
-import { format } from "date-fns";
-import moment from "moment";
 
+import { BugdetType, DateEventType } from "type";
+import { AppDispatch, RootState } from "@store/index";
+import { ListEmpty } from "@components/list/ListEmpty";
+import {
+  createDateEventAsync,
+  updateDateEventByIdAsync,
+} from "@store/dateEvent/dateEventSlice";
+import { ItemSeparatorList } from "@components/list/itemSeparatorList";
+import { createDateEventFormSchema } from "@schemas/createDateFormZodSchema";
+import {
+  StyledModal,
+  StyledPressable,
+  StyledScrollView,
+  StyledText,
+  StyledTextInput,
+  StyledTouchableOpacity,
+  StyledView,
+} from "styledComponents";
+import { styled } from "nativewind";
+import { FlatList } from "react-native";
+import { transformDate } from "function/transformData";
 interface DateEventFormProps {
   dateEvent?: DateEventType;
 }
 
+export const StyledFlatList = styled(FlatList<BugdetType>);
+
 export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
+  const today = new Date();
+
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<any>();
+  const [inicioDate, setInicioDate] = useState(new Date());
+  const [orcamento, setOrcamento] = useState<BugdetType>();
+  const [orcamentos, setOrcamentos] = useState<BugdetType[]>();
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+  const [isHorarioFimModalOpen, setIsHorarioFimModalOpen] = useState(false);
+  const [isHorarioInicioModalOpen, setIsHorarioInicioModalOpen] =
+    useState(false);
+
+  const [debouncedQuery] = useDebounce(query, 500);
+
   const dispatch = useDispatch<AppDispatch>();
+
   const error = useSelector<RootState>(
     (state: RootState) => state.questionList.error
   );
 
-  const orcamentosList = useSelector(
-    (state: RootState) => state.orcamentosList
-  );
+  useEffect(() => {
+    const fetchOrcamentos = async () => {
+      try {
+        const queryParams = new URLSearchParams();
+        if (debouncedQuery) {
+          queryParams.append("query", debouncedQuery);
+        }
+        queryParams.append("take", "3");
+
+        const response = await fetch(
+          `https://art56-server-v2.vercel.app/orcamento/list?${queryParams.toString()}`
+        ).then((data) => data.json());
+        setOrcamentos(response);
+      } catch (error) {
+        console.error("Erro ao buscar orçamentos:", error);
+      }
+    };
+
+    fetchOrcamentos();
+  }, [debouncedQuery]);
 
   useEffect(() => {
-    dispatch(fecthOrcamentos());
+    if (dateEvent) {
+      setQuery(dateEvent?.orcamento?.nome);
+    }
   }, []);
 
-  const [selected, setSelected] = useState<any>();
-  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
-  const [isHorarioInicioModalOpen, setIsHorarioInicioModalOpen] =
-    useState(false);
-  const [isHorarioFimModalOpen, setIsHorarioFimModalOpen] = useState(false);
-  const today = new Date();
-
-  const [inicioDate, setInicioDate] = useState(new Date());
-  const [fimDate, setFimDate] = useState(new Date());
-
   return (
-    <ScrollView>
+    <StyledScrollView>
       <Formik
         validationSchema={toFormikValidationSchema(createDateEventFormSchema)}
         initialValues={{
+          orcamentoCheck: dateEvent && true,
           id: dateEvent?.id && dateEvent.id,
           tipo: dateEvent?.tipo && dateEvent?.tipo,
-          titulo: dateEvent?.titulo ? dateEvent?.titulo : "",
           dataFim: dateEvent?.dataFim && dateEvent?.dataFim,
+          titulo: dateEvent?.titulo ? dateEvent?.titulo : "",
           orcamentoId: dateEvent?.orcamentoId && dateEvent?.orcamentoId,
-          dataInicio: dateEvent?.dataInicio && dateEvent?.dataInicio,
+          horarioFim:
+            dateEvent?.dataInicio &&
+            moment.utc(dateEvent?.dataFim).format("HH:mm"),
+          dataInicio:
+            dateEvent?.dataInicio &&
+            format(dateEvent?.dataInicio, "yyyy/mm/dd"),
+          horarioInicio:
+            dateEvent?.dataInicio &&
+            moment.utc(dateEvent?.dataInicio).format("HH:mm"),
         }}
         validate={(values) => {
           try {
@@ -81,50 +123,66 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
           }
         }}
         onSubmit={async (values: any) => {
-          const [dayInicio, monthInicio, yearInicio] =
-            values.dataInicio.split("/");
-          const [hourInicio, minutesInicio] = values.horarioInicio.split(":");
-          const [hourFim, minutesFim] = values.horarioFim.split(":");
+          
+          const { dataFim, dataInicial } = transformDate({
+            dataInicio: values?.dataInicio,
+            horarioFim: values?.horarioFim,
+            horarioInicio: values?.horarioInicio,
+            separador: dateEvent ? "/" : undefined,
+          });
 
-          const dataInicial = moment
-            .utc(
-              `${yearInicio}-${monthInicio}-${dayInicio} ${hourInicio}:${minutesInicio}`,
-              "YYYY-MM-DD HH:mm"
-            )
-            .toISOString();
+          const final = new Date(dataFim.toDate());
+          const inicial = new Date(dataInicial.toDate());
 
-          const dataFim = moment
-            .utc(
-              `${yearInicio}-${monthInicio}-${dayInicio} ${hourFim}:${minutesFim}`,
-              "YYYY-MM-DD HH:mm"
-            )
-            .toISOString();
+          if (dateEvent) {
+            const newDateEvent = await dispatch(
+              updateDateEventByIdAsync({
+                data:{
+                  dataFim: final,
+                  tipo: values?.tipo,
+                  dataInicio: inicial,
+                  titulo: values?.titulo,
+                  orcamentoId: values?.orcamentoId,
+                },
+                dateEventId: dateEvent?.id
+              })
+            );
+            if (newDateEvent.meta.requestStatus == "fulfilled") {
+              Toast.show("Data atualizada com sucess." as string, 3000, {
+                backgroundColor: "rgb(75,181,67)",
+                textColor: "white",
+              });
+            }
 
-          const final = new Date(dataFim);
-          const inicial = new Date(dataInicial);
+            if (newDateEvent.meta.requestStatus == "rejected") {
+              Toast.show(error as string, 3000, {
+                backgroundColor: "#FF9494",
+                textColor: "white",
+              });
+            }
+          } else {
+            const newDateEvent = await dispatch(
+              createDateEventAsync({
+                dataFim: final,
+                tipo: values?.tipo,
+                dataInicio: inicial,
+                titulo: values?.titulo,
+                orcamentoId: values?.orcamentoId,
+              })
+            );
+            if (newDateEvent.meta.requestStatus == "fulfilled") {
+              Toast.show("Data criada com sucess." as string, 3000, {
+                backgroundColor: "rgb(75,181,67)",
+                textColor: "white",
+              });
+            }
 
-          const newDateEvent = await dispatch(
-            createDateEventAsync({
-              dataFim: final,
-              tipo: values?.tipo,
-              dataInicio: inicial,
-              titulo: values?.titulo,
-              orcamentoId: values?.orcamentoId,
-            })
-          );
-
-          if (newDateEvent.meta.requestStatus == "fulfilled") {
-            Toast.show("Data criada com sucess." as string, 3000, {
-              backgroundColor: "rgb(75,181,67)",
-              textColor: "white",
-            });
-          }
-
-          if (newDateEvent.meta.requestStatus == "rejected") {
-            Toast.show(error as string, 3000, {
-              backgroundColor: "#FF9494",
-              textColor: "white",
-            });
+            if (newDateEvent.meta.requestStatus == "rejected") {
+              Toast.show(error as string, 3000, {
+                backgroundColor: "#FF9494",
+                textColor: "white",
+              });
+            }
           }
         }}
       >
@@ -137,65 +195,74 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
           getFieldMeta,
           setFieldValue,
         }) => (
-          <View className="w-[90%] mx-auto my-5 flex flex-col">
-            <View className="flex flex-col gap-y-3">
-              <View
+          <StyledView className="w-[90%] mx-auto my-5 flex flex-col">
+            <StyledView className="flex flex-col gap-y-3">
+              <StyledView
                 className={`w-full flex flex-col gap-y-1 mt-3  text-[12px] md:text-[15px] animate-openOpacity justify-center items-start  flex-wrap"`}
               >
-                <Text className="font-semibold text-custom-gray text-[14px]">
+                <StyledText className="font-semibold text-custom-gray text-[14px]">
                   Ja existe um orcamento?
-                </Text>
-                <View className="flex flex-row pt-3 gap-x-1">
-                  <View className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
-                    <Pressable
+                </StyledText>
+                <StyledView className="flex flex-row pt-3 gap-x-1">
+                  <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                    <StyledPressable
                       className="flex flex-row items-center justify-center gap-x-1 cursor-pointer "
                       onPress={() => {
                         setFieldValue("orcamentoCheck", true);
                       }}
                     >
-                      <View className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
                         {getFieldMeta("orcamentoCheck").value === true && (
                           <Entypo name="check" size={12} color="white" />
                         )}
-                      </View>
-                      <Text className="text-custom-gray text-[14px] font-semibold">
+                      </StyledView>
+                      <StyledText className="text-custom-gray text-[14px] font-semibold">
                         Sim
-                      </Text>
-                    </Pressable>
-                  </View>
-                  <View className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
-                    <Pressable
+                      </StyledText>
+                    </StyledPressable>
+                  </StyledView>
+                  <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                    <StyledPressable
                       className="flex flex-row items-center justify-center gap-x-1 cursor-pointer "
                       onPress={() => {
                         setFieldValue("orcamentoCheck", false);
                       }}
                     >
-                      <View className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
                         {getFieldMeta("orcamentoCheck").value === false && (
                           <Entypo name="check" size={12} color="white" />
                         )}
-                      </View>
-                      <Text className="text-custom-gray text-[14px] font-semibold">
+                      </StyledView>
+                      <StyledText className="text-custom-gray text-[14px] font-semibold">
                         Nao
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
-              </View>
+                      </StyledText>
+                    </StyledPressable>
+                  </StyledView>
+                </StyledView>
+              </StyledView>
               {getFieldMeta("orcamentoCheck").value === true && (
-                <ScrollView>
-                  <View className="bg-gray-ligth  rounded-md px-3 py-1 max-h-[210px] overflow-hidden">
-                    <SearchFilterListComponent fectData={fecthOrcamentos} />
-                    {orcamentosList.orcamentos.map((item: BugdetType) => {
+                <StyledView>
+                  <StyledView className="bg-gray-ligth  rounded-md px-3 py-1 max-h-[210px] overflow-hidden">
+                    <StyledView className="w-full py-3 px-2 flex justify-start items-center  rounded-md bg-white flex-row my-3">
+                      <EvilIcons name="search" size={24} color="black" />
+                      <StyledTextInput
+                        onChangeText={(value) => setQuery(value)}
+                        value={query}
+                        placeholder={"Search"}
+                        className="text-sm text-gray  outline-none  flex-1 flex justify-center items-center"
+                      />
+                    </StyledView>
+                    {orcamentos?.map((item: BugdetType) => {
                       return (
-                        <Pressable
+                        <StyledPressable
                           key={item.id}
                           className="flex-row justify-between items-center h-8"
                           onPress={() => {
+                            setOrcamento(item);
                             setFieldValue("orcamentoId", item.id);
                             setFieldValue(
                               "horarioInicio",
-                              format(item?.dataInicio, "HH:mm")
+                              moment.utc(dateEvent?.dataInicio).format("HH:mm")
                             );
                             setFieldValue(
                               "dataInicio",
@@ -203,14 +270,16 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                             );
                             setFieldValue(
                               "horarioFim",
-                              format(item?.dataFim, "HH:mm")
+                              moment.utc(dateEvent?.dataFim).format("HH:mm")
                             );
                             setFieldValue("tipo", "Evento");
                             setFieldValue("titulo", `Evento - ${item?.nome}`);
                           }}
                         >
-                          <Text className="text-white">{item.nome}</Text>
-                          <View className="bg-white flex justify-center items-center   h-5 w-5">
+                          <StyledText className="text-white">
+                            {item.nome}
+                          </StyledText>
+                          <StyledView className="bg-white flex justify-center items-center   h-5 w-5">
                             {getFieldMeta("orcamentoId").value === item.id && (
                               <FontAwesome
                                 name="check"
@@ -218,78 +287,81 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                                 color="black"
                               />
                             )}
-                          </View>
-                        </Pressable>
+                          </StyledView>
+                        </StyledPressable>
                       );
                     })}
-                  </View>
-                </ScrollView>
+                  </StyledView>
+                </StyledView>
               )}
-              <View
+              <StyledView
                 className={`w-full flex flex-col gap-y-1 mt-3  text-[12px] md:text-[15px] animate-openOpacity justify-center items-start  flex-wrap"`}
               >
-                <Text className="font-semibold text-custom-gray text-[14px]">
+                <StyledText className="font-semibold text-custom-gray text-[14px]">
                   Tipo do Evento?
-                </Text>
-                <View className="flex flex-row pt-3 ">
-                  <View className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
-                    <Pressable
+                </StyledText>
+                <StyledView className="flex flex-row pt-3 ">
+                  <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                    <StyledPressable
                       className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                       onPress={() => {
                         setFieldValue("tipo", "Evento");
+                        setFieldValue("titulo", `Evento - ${orcamento?.nome}`);
                       }}
                     >
-                      <View className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
                         {getFieldMeta("tipo").value === "Evento" && (
                           <Entypo name="check" size={12} color="white" />
                         )}
-                      </View>
-                      <Text className="text-custom-gray text-[14px] font-semibold">
+                      </StyledView>
+                      <StyledText className="text-custom-gray text-[14px] font-semibold">
                         Evento
-                      </Text>
-                    </Pressable>
-                  </View>
-                  <View className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
-                    <Pressable
+                      </StyledText>
+                    </StyledPressable>
+                  </StyledView>
+                  <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                    <StyledPressable
                       className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                       onPress={() => {
                         setFieldValue("tipo", "Visita");
+                        setFieldValue("titulo", `Visita - ${orcamento?.nome}`);
                       }}
                     >
-                      <View className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
                         {getFieldMeta("tipo").value === "Visita" && (
                           <Entypo name="check" size={12} color="white" />
                         )}
-                      </View>
-                      <Text className="text-custom-gray text-[14px] font-semibold">
+                      </StyledView>
+                      <StyledText className="text-custom-gray text-[14px] font-semibold">
                         Visita
-                      </Text>
-                    </Pressable>
-                  </View>
-                  <View className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
-                    <Pressable
+                      </StyledText>
+                    </StyledPressable>
+                  </StyledView>
+                  <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                    <StyledPressable
                       className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                       onPress={() => {
                         setFieldValue("tipo", "Outro");
+                        setFieldValue("titulo", `Outro - ${orcamento?.nome}`);
                       }}
                     >
-                      <View className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
                         {getFieldMeta("tipo").value === "Outro" && (
                           <Entypo name="check" size={12} color="white" />
                         )}
-                      </View>
-                      <Text className="text-custom-gray text-[14px] font-semibold">
+                      </StyledView>
+                      <StyledText className="text-custom-gray text-[14px] font-semibold">
                         Outro
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
-              </View>
-              <View className="flex flex-col gap-2">
-                <Text className="font-semibold text-custom-gray text-[14px]">
+                      </StyledText>
+                    </StyledPressable>
+                  </StyledView>
+                </StyledView>
+              </StyledView>
+              <StyledView className="flex flex-col gap-2">
+                <StyledText className="font-semibold text-custom-gray text-[14px]">
                   Data do evento :
-                </Text>
-                <Pressable
+                </StyledText>
+                <StyledPressable
                   onPress={() => setIsCalendarModalOpen(true)}
                   className={`rounded-md px-3 py-1 text-white ${
                     errors.dataInicio
@@ -297,7 +369,7 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                       : "bg-gray-ligth"
                   }`}
                 >
-                  <Text
+                  <StyledText
                     className={`
                     ${
                       (getFieldMeta("dataInicio")?.value as string)
@@ -313,22 +385,22 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                     {(getFieldMeta("dataInicio")?.value as string)
                       ? getFieldMeta("dataInicio")?.value.toString()
                       : "Choose date"}
-                  </Text>
-                </Pressable>
-                <Modal
+                  </StyledText>
+                </StyledPressable>
+                <StyledModal
                   visible={isCalendarModalOpen}
                   onRequestClose={() => setIsCalendarModalOpen(false)}
                   animationType="fade"
                   transparent={true}
                   className="bg-black"
                 >
-                  <TouchableOpacity
+                  <StyledTouchableOpacity
                     style={{ flex: 1 }}
                     onPress={() => {
                       setIsCalendarModalOpen(false);
                     }}
                   >
-                    <View className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
+                    <StyledView className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
                       <Calendar
                         onDayPress={(day) => {
                           setFieldValue("dataInicio", day.dateString);
@@ -346,15 +418,15 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                         }}
                         minDate={today.toDateString()}
                       />
-                    </View>
-                  </TouchableOpacity>
-                </Modal>
-              </View>
-              <View className="flex flex-col gap-2 text-black">
-                <Text className="font-semibold text-custom-gray text-[14px]">
+                    </StyledView>
+                  </StyledTouchableOpacity>
+                </StyledModal>
+              </StyledView>
+              <StyledView className="flex flex-col gap-2 text-black">
+                <StyledText className="font-semibold text-custom-gray text-[14px]">
                   Horario Inicio :
-                </Text>
-                <Pressable
+                </StyledText>
+                <StyledPressable
                   onPress={() => setIsHorarioInicioModalOpen(true)}
                   className={`rounded-md px-3 py-1 text-white ${
                     errors.horarioInicio
@@ -362,7 +434,7 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                       : "bg-gray-ligth"
                   }`}
                 >
-                  <Text
+                  <StyledText
                     className={`text-white  py-1 ${
                       errors.horarioInicio
                         ? " text-red-800 font-normal"
@@ -372,22 +444,22 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                     {(getFieldMeta("horarioInicio")?.value as string)
                       ? getFieldMeta("horarioInicio")?.value.toString()
                       : "Choose Hour"}
-                  </Text>
-                </Pressable>
-                <Modal
+                  </StyledText>
+                </StyledPressable>
+                <StyledModal
                   visible={isHorarioInicioModalOpen}
                   onRequestClose={() => setIsHorarioInicioModalOpen(false)}
                   animationType="fade"
                   transparent={true}
                   className="bg-black"
                 >
-                  <TouchableOpacity
+                  <StyledTouchableOpacity
                     style={{ flex: 1 }}
                     onPress={() => {
                       setIsHorarioInicioModalOpen(false);
                     }}
                   >
-                    <View className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
+                    <StyledView className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
                       <DateTimePicker
                         value={inicioDate}
                         mode="time"
@@ -401,21 +473,21 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                         }}
                         is24Hour={true}
                       />
-                    </View>
-                  </TouchableOpacity>
-                </Modal>
+                    </StyledView>
+                  </StyledTouchableOpacity>
+                </StyledModal>
                 {errors?.horarioInicio &&
                   errors?.horarioInicio.toString() != "Required" && (
-                    <Text className="text-red-700 font-semibold">
+                    <StyledText className="text-red-700 font-semibold">
                       {errors.horarioInicio.toString()}
-                    </Text>
+                    </StyledText>
                   )}
-              </View>
-              <View className="flex flex-col gap-2 text-black">
-                <Text className="font-semibold text-custom-gray text-[14px]">
+              </StyledView>
+              <StyledView className="flex flex-col gap-2 text-black">
+                <StyledText className="font-semibold text-custom-gray text-[14px]">
                   Horario Fim :
-                </Text>
-                <Pressable
+                </StyledText>
+                <StyledPressable
                   onPress={() => setIsHorarioFimModalOpen(true)}
                   className={`rounded-md px-3 py-1 text-white ${
                     errors.horarioFim
@@ -423,7 +495,7 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                       : "bg-gray-ligth"
                   }`}
                 >
-                  <Text
+                  <StyledText
                     className={`text-white  py-1 ${
                       errors.horarioFim
                         ? " text-red-800 font-normal"
@@ -433,22 +505,22 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                     {(getFieldMeta("horarioFim")?.value as string)
                       ? getFieldMeta("horarioFim")?.value.toString()
                       : "Choose Hour"}
-                  </Text>
-                </Pressable>
-                <Modal
+                  </StyledText>
+                </StyledPressable>
+                <StyledModal
                   visible={isHorarioFimModalOpen}
                   onRequestClose={() => setIsHorarioFimModalOpen(false)}
                   animationType="fade"
                   transparent={true}
                   className="bg-black"
                 >
-                  <TouchableOpacity
+                  <StyledTouchableOpacity
                     style={{ flex: 1 }}
                     onPress={() => {
                       setIsHorarioFimModalOpen(false);
                     }}
                   >
-                    <View className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
+                    <StyledView className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
                       <DateTimePicker
                         value={inicioDate}
                         mode="time"
@@ -462,21 +534,21 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                         }}
                         is24Hour={true}
                       />
-                    </View>
-                  </TouchableOpacity>
-                </Modal>
+                    </StyledView>
+                  </StyledTouchableOpacity>
+                </StyledModal>
                 {errors?.horarioFim &&
                   errors?.horarioFim.toString() != "Required" && (
-                    <Text className="text-red-700 font-semibold">
+                    <StyledText className="text-red-700 font-semibold">
                       {errors.horarioFim.toString()}
-                    </Text>
+                    </StyledText>
                   )}
-              </View>
-              <View className="flex flex-col gap-y-1">
-                <Text className="text-custom-gray text-[14px] font-semibold">
+              </StyledView>
+              <StyledView className="flex flex-col gap-y-1">
+                <StyledText className="text-custom-gray text-[14px] font-semibold">
                   Titulo
-                </Text>
-                <TextInput
+                </StyledText>
+                <StyledTextInput
                   onChangeText={handleChange("titulo")}
                   onBlur={handleBlur("titulo")}
                   value={String(values?.titulo)}
@@ -492,25 +564,25 @@ export function DateEventFormComponent({ dateEvent }: DateEventFormProps) {
                       : "bg-gray-ligth"
                   }`}
                 />
-              </View>
-              {/*  <Text>{String(errors.titulo)}</Text>
-              <Text>{String(errors.horarioFim)}</Text>
-              <Text>{String(errors.horarioInicio)}</Text>
-              <Text>{String(errors.tipo)}</Text>
-              <Text>{String(errors.dataInicio)}</Text>
-              <Text>{String(errors.orcamento)}</Text> */}
-            </View>
-            <Pressable
+              </StyledView>
+              {/*  <StyledText>{String(errors.titulo)}</StyledText>
+              <StyledText>{String(errors.horarioFim)}</StyledText>
+              <StyledText>{String(errors.horarioInicio)}</StyledText>
+              <StyledText>{String(errors.tipo)}</StyledText>
+              <StyledText>{String(errors.dataInicio)}</StyledText>
+              <StyledText>{String(errors.orcamento)}</StyledText> */}
+            </StyledView>
+            <StyledPressable
               onPress={() => handleSubmit()}
               className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
             >
-              <Text className="font-bold text-custom-white">
+              <StyledText className="font-bold text-custom-white">
                 {dateEvent ? "UPDATE" : "CREATE"}
-              </Text>
-            </Pressable>
-          </View>
+              </StyledText>
+            </StyledPressable>
+          </StyledView>
         )}
       </Formik>
-    </ScrollView>
+    </StyledScrollView>
   );
 }

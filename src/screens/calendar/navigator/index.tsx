@@ -1,7 +1,7 @@
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ScheduleScreen } from '../screens/schedule';
-import { CalendarSectionScreen } from '../screens/calendarSection';
+import { SectionScreen } from '../screens/calendarSection';
 
 const CalendarTabNavigator = createMaterialTopTabNavigator();
 
@@ -28,8 +28,8 @@ export  function CalendarNavigator() {
         component={ScheduleScreen}
       />
       <CalendarTabNavigator.Screen
-        name="Calendar"
-        component={CalendarSectionScreen}
+        name="Calendario"
+        component={SectionScreen}
       />
     </CalendarTabNavigator.Navigator>
   )

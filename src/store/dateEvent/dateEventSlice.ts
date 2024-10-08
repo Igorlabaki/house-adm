@@ -11,7 +11,7 @@ const initialState = {
 export const fecthDateEvents : any = createAsyncThunk("question/fetchDateEvents", async (query: string | undefined) => {
   return api
     .get(`https://art56-server-v2.vercel.app/dateEvent/list/${query ? query : "" }`)
-    .then((response) => response.data.map((text: DateEventType) => text));
+    .then((response) => response.data.map((dateEvent: DateEventType) => dateEvent));
 });
 
 const dateEventListSlice = createSlice({
@@ -44,7 +44,7 @@ const dateEventListSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(createDateEventAsync.fulfilled, (state,action: any) => {
-      console.log(action)
+
       state.loading = false;
       state.dateEvents = [...state.dateEvents, action.payload ];
       state.error = "";
@@ -87,7 +87,6 @@ const dateEventListSlice = createSlice({
       state.error = "";
     }),
     builder.addCase(deleteDateEventByIdAsync.rejected, (state, action) => {
-      console.log(action.payload)
       state.loading = false;
       state.dateEvents = state.dateEvents;
       state.error = "Oops! Something went wrong. Please try again later.";
@@ -122,7 +121,7 @@ export const deleteDateEventByIdAsync = createAsyncThunk(
   "dateEvent/deleteDateEventById",
   async (dateEventId: string) => {
     const deletedDateEvent = await api.delete(
-      `https://art56-server-v2.vercel.app/dateEvent/delete?dataEventId=${dateEventId}`
+      `https://art56-server-v2.vercel.app/dateEvent/delete/${dateEventId}`
     ).then((resp : {data: DateEventType}) => resp.data)
     return deletedDateEvent.id;
   }

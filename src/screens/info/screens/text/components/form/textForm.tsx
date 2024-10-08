@@ -1,13 +1,13 @@
 import { Formik } from "formik";
 import Toast from "react-native-simple-toast";
-import { TextType } from "../../../../../../type";
 import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { Pressable, Text, TextInput, View } from "react-native";
-import { AppDispatch, RootState } from "../../../../../../store";
-import { createTextAsync, updateTextByIdAsync } from "../../../../../../store/text/textSlice";
-import { createTextFormSchema } from "../../../../../../zod/schemas/createTextFormZodSchema";
 
+import { TextType } from "type";
+import { AppDispatch, RootState } from "@store/index";
+import { createTextFormSchema } from "@schemas/createTextFormZodSchema";
+import { createTextAsync, updateTextByIdAsync } from "@store/text/textSlice";
+import { StyledPressable, StyledText, StyledTextInput, StyledView } from "styledComponents";
 interface TextFormProps {
   text?: TextType;
 }
@@ -96,13 +96,13 @@ export function TextForm({ text }: TextFormProps) {
       }}
     >
       {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-        <View className="w-[90%] mx-auto my-5 flex flex-col">
-          <View className="flex flex-col gap-y-3">
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+        <StyledView className="w-[90%] mx-auto my-5 flex flex-col">
+          <StyledView className="flex flex-col gap-y-3">
+            <StyledView className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Position
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 keyboardType="numeric"
                 onChangeText={handleChange("position")}
                 onBlur={handleBlur("position")}
@@ -111,12 +111,12 @@ export function TextForm({ text }: TextFormProps) {
                 placeholderTextColor={errors.position ? "rgb(127 29 29)" : "rgb(156 163 175)"}
                 className={`rounded-md px-3 py-1 text-white ${errors.position ? "bg-red-50  border-[2px] border-red-900" : "bg-gray-ligth"}`}
               />
-            </View>
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+            </StyledView>
+            <StyledView className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Area
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 onChangeText={handleChange("area")}
                 onBlur={handleBlur("area")}
                 value={values.area}
@@ -124,12 +124,12 @@ export function TextForm({ text }: TextFormProps) {
                 placeholderTextColor={errors.area ? "rgb(127 29 29)" : "rgb(156 163 175)"}
                 className={`rounded-md px-3 py-1 text-white ${errors.area ? "bg-red-50 border-[2px] border-red-900 " : "bg-gray-ligth"}`}
               />
-            </View>
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+            </StyledView>
+            <StyledView className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Title
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 onChangeText={handleChange("titulo")}
                 onBlur={handleBlur("titulo")}
                 value={values.titulo}
@@ -137,12 +137,12 @@ export function TextForm({ text }: TextFormProps) {
                 placeholderTextColor={errors.titulo ? "rgb(127 29 29)" : "rgb(156 163 175)"}
                 className={`bg-gray-ligth rounded-md px-3 py-1 text-white ${errors.titulo ? "bg-red-50  border-[2px] border-red-900" : "bg-gray-ligth"}`}
               />
-            </View>
-            <View className="flex flex-col gap-y-1">
-              <Text className="text-custom-gray text-[14px] font-semibold">
+            </StyledView>
+            <StyledView className="flex flex-col gap-y-1">
+              <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Text
-              </Text>
-              <TextInput
+              </StyledText>
+              <StyledTextInput
                 multiline={true}
                 numberOfLines={15}
                 value={values.text}
@@ -152,17 +152,17 @@ export function TextForm({ text }: TextFormProps) {
                 placeholderTextColor={errors.text ? "rgb(127 29 29)" : "rgb(156 163 175)"}
                 className={`bg-gray-ligth rounded-md p-3 text-white ${errors.text ? "bg-red-50  border-[2px] border-red-900" : "bg-gray-ligth"}`}
               />
-            </View>
-          </View>
-          <Pressable
+            </StyledView>
+          </StyledView>
+          <StyledPressable
             onPress={() => handleSubmit()}
             className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
           >
-            <Text className="font-bold text-custom-white">
+            <StyledText className="font-bold text-custom-white">
               {text ? "UPDATE" : "CREATE"}
-            </Text>
-          </Pressable>
-        </View>
+            </StyledText>
+          </StyledPressable>
+        </StyledView>
       )}
     </Formik>
   );

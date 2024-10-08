@@ -86,7 +86,6 @@ const questionListSlice = createSlice({
       state.error = "";
     }),
     builder.addCase(deleteQuestionByIdAsync.rejected, (state, action) => {
-      console.log(action.payload)
       state.loading = false;
       state.questions = state.questions;
       state.error = "Oops! Something went wrong. Please try again later.";
@@ -102,7 +101,6 @@ export const createQuestionAsync = createAsyncThunk(
     ).then((resp) => {
       return resp.data
     })
-    console.log(newText)
     return newText;
   }        
 );

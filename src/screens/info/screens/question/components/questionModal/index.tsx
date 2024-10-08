@@ -1,14 +1,13 @@
-import { QuestionFormComponent } from "../form/questionForm";
 import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
-import { QuestionType, TextType } from "../../../../../../type";
 import { useDispatch, useSelector } from "react-redux";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Modal, Pressable, Text, View } from "react-native";
-import { AppDispatch, RootState } from "../../../../../../store";
-import { deleteTextByIdAsync } from "../../../../../../store/text/textSlice";
-import { deleteQuestionByIdAsync } from "../../../../../../store/question/questionSlice";
 
+import { QuestionType } from "type";
+import { AppDispatch, RootState } from "@store/index";
+import { QuestionFormComponent } from "../form/questionForm";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { deleteQuestionByIdAsync } from "@store/question/questionSlice";
+import { StyledModal, StyledPressable, StyledView } from "styledComponents";
 interface QuestionModalProps {
   question?: QuestionType;
   isModalOpen: boolean;
@@ -17,23 +16,23 @@ interface QuestionModalProps {
 }
 
 export function QuenstionModalComponent({
+  question,
   isModalOpen,
   setIsModalOpen,
-  type,
-  question,
 }: QuestionModalProps) {
+
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector<RootState>(
     (state: RootState) => state.questionList.error
   );
   return (
-    <Modal
+    <StyledModal
       visible={isModalOpen}
       onRequestClose={() => setIsModalOpen(false)}
       animationType="fade"
     >
-      <View className="flex-1 bg-gray-dark pt-10 relative">
-        <Pressable
+      <StyledView className="flex-1 bg-gray-dark pt-10 relative">
+        <StyledPressable
           className="absolute top-4 left-5"
           onPress={() => setIsModalOpen(false)}
         >
@@ -42,9 +41,9 @@ export function QuenstionModalComponent({
             size={24}
             color="white"
           />
-        </Pressable>
+        </StyledPressable>
         {question && (
-          <Pressable
+          <StyledPressable
             onPress={async () => {
               const deleteItem = await dispatch(
                 deleteQuestionByIdAsync(question.id)
@@ -67,14 +66,14 @@ export function QuenstionModalComponent({
             className="absolute top-5 right-5"
           >
             <Feather name="trash" size={16} color="white" />
-          </Pressable>
+          </StyledPressable>
         )}
         {question ? (
           <QuestionFormComponent question={question} />
         ) : (
           <QuestionFormComponent />
         )}
-      </View>
-    </Modal>
+      </StyledView>
+    </StyledModal>
   );
 }

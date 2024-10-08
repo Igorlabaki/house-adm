@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
-import { FlatList, View, ActivityIndicator, Text } from "react-native";
-import { QuestionType } from "../../../../../../type";
-import { RootState } from "../../../../../../store";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fecthTexts } from "../../../../../../store/text/textSlice";
-import { ListEmpty } from "../../../../../../components/list/ListEmpty";
-import { ItemSeparatorList } from "../../../../../../components/list/itemSeparatorList";
+
+import { RootState } from "@store/index";
+import { fecthQuestions } from "@store/question/questionSlice";
+import { StyledText, StyledView } from "styledComponents";
+import { ActivityIndicator, FlatList } from "react-native";
+import { QuestionType } from "type";
 import QuestionItemFlatList from "./questionItemFlatList";
-import { fecthQuestions } from "../../../../../../store/question/questionSlice";
+import { ItemSeparatorList } from "@components/list/itemSeparatorList";
+import { ListEmpty } from "@components/list/ListEmpty";
+import { styled } from "nativewind";
+
+export const StyledFlatList = styled(FlatList<QuestionType>);
 
 export function QuestionFlatList() {
   const dispatch = useDispatch();
@@ -19,16 +23,16 @@ export function QuestionFlatList() {
 
   if (questionList.loading) {
     return (
-      <View className="h-full w-full flex justify-center items-center">
+      <StyledView className="h-full w-full flex justify-center items-center">
         <ActivityIndicator size="large" color="white" />
-        <Text className="text-white">Loading</Text>
-      </View>
+        <StyledText className="text-white">Loading</StyledText>
+      </StyledView>
     );
   }
 
   return (
     <>
-      <FlatList
+      <StyledFlatList
         keyExtractor={(item: QuestionType) => item.id}
         data={questionList?.questions}
         renderItem={({ item, index }: { item: QuestionType, index: number }) => {
