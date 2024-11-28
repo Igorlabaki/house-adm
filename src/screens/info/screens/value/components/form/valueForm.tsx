@@ -10,9 +10,10 @@ import { createValueAsync, updateValueByIdAsync } from "@store/value/valuesSlice
 import { StyledPressable, StyledText, StyledTextInput, StyledView } from "styledComponents";
 interface ValueFormProps {
   value?: ValueType;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function ValueForm({ value }: ValueFormProps) {
+export function ValueForm({ value,setIsModalOpen }: ValueFormProps) {
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector<RootState>(
     (state: RootState) => state.valueList.error
@@ -49,7 +50,7 @@ export function ValueForm({ value }: ValueFormProps) {
           );
 
           if (newText.meta.requestStatus == "fulfilled") {
-            Toast.show("Text created successfully." as string, 3000, {
+            Toast.show("Valor criado com sucesso." as string, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
@@ -73,7 +74,7 @@ export function ValueForm({ value }: ValueFormProps) {
           );
 
           if (updatedText.meta.requestStatus == "fulfilled") {
-            Toast.show("Text updated successfully." as string, 3000, {
+            Toast.show("Valor atualizado com sucesso." as string, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
@@ -134,11 +135,14 @@ export function ValueForm({ value }: ValueFormProps) {
             </StyledView>
           </StyledView>
           <StyledPressable
-            onPress={() => handleSubmit()}
+            onPress={() => {
+              handleSubmit()
+              setIsModalOpen(false)
+            }}
             className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
           >
             <StyledText className="font-bold text-custom-white">
-              {value ? "UPDATE" : "CREATE"}
+              {value ? "Atualizar" : "Criar"}
             </StyledText>
           </StyledPressable>
         </StyledView>

@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "house-adm",
-    "slug": "house-adm",
-    "version": "1.0.0",
+    "name": "ar756-dashboard",
+    "slug": "ar756-dashboard",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.igorlabakig.ar756dashboard"
     },
     "web": {
       "favicon": "./assets/favicon.png"

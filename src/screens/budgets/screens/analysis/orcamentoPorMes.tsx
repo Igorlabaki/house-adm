@@ -25,7 +25,6 @@ export interface MonthCount {
 }
 
 export function OrcamentoPorMesList({list,receitaTotal}:OrcamentoPorMesProps) {
-
   return (
     <>
       {list &&
@@ -52,6 +51,7 @@ export function OrcamentoPorMesList({list,receitaTotal}:OrcamentoPorMesProps) {
                     backgroundColor: "#6b7280",
                     borderRadius: 40,
                     overflow: "hidden",
+                    gap: 10
                   }}
                 >
                  {/*@ts-ignore */}
@@ -68,7 +68,6 @@ export function OrcamentoPorMesList({list,receitaTotal}:OrcamentoPorMesProps) {
                       backgroundColor:"#54a0ff"
                     }}
                   >
-          
                   </View>
                 </View>
               </StyledView>

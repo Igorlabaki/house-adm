@@ -8,6 +8,8 @@ import { QuestionFormComponent } from "../form/questionForm";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { deleteQuestionByIdAsync } from "@store/question/questionSlice";
 import { StyledModal, StyledPressable, StyledView } from "styledComponents";
+import { useState } from "react";
+import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 interface QuestionModalProps {
   question?: QuestionType;
   isModalOpen: boolean;
@@ -25,6 +27,37 @@ export function QuenstionModalComponent({
   const error = useSelector<RootState>(
     (state: RootState) => state.questionList.error
   );
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleDelete = () => {
+    setModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    const deleteItem = await dispatch(
+      deleteQuestionByIdAsync(question.id)
+    );
+
+    if (deleteItem.meta.requestStatus === "fulfilled") {
+      Toast.show("Pergunta deletada com sucesso." as string, 3000, {
+        backgroundColor: "rgb(75,181,67)",
+        textColor: "white",
+      });
+    }
+
+    if (deleteItem.meta.requestStatus == "rejected") {
+      Toast.show(error as string, 3000, {
+        backgroundColor: "#FF9494",
+        textColor: "white",
+      });
+    }
+  };
+
+  const cancelDelete = () => {
+    setModalVisible(false);
+  };
+
   return (
     <StyledModal
       visible={isModalOpen}
@@ -44,36 +77,24 @@ export function QuenstionModalComponent({
         </StyledPressable>
         {question && (
           <StyledPressable
-            onPress={async () => {
-              const deleteItem = await dispatch(
-                deleteQuestionByIdAsync(question.id)
-              );
-
-              if (deleteItem.meta.requestStatus === "fulfilled") {
-                Toast.show("Text deleted successfully." as string, 3000, {
-                  backgroundColor: "rgb(75,181,67)",
-                  textColor: "white",
-                });
-              }
-
-              if (deleteItem.meta.requestStatus == "rejected") {
-                Toast.show(error as string, 3000, {
-                  backgroundColor: "#FF9494",
-                  textColor: "white",
-                });
-              }
-            }}
+            onPress={async () => handleDelete()}
             className="absolute top-5 right-5"
           >
             <Feather name="trash" size={16} color="white" />
           </StyledPressable>
         )}
         {question ? (
-          <QuestionFormComponent question={question} />
+          <QuestionFormComponent question={question} setIsModalOpen={setIsModalOpen}/>
         ) : (
-          <QuestionFormComponent />
+          <QuestionFormComponent setIsModalOpen={setIsModalOpen}/>
         )}
       </StyledView>
+      <DeleteConfirmationModal
+        entity="pergunta"
+        visible={modalVisible}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </StyledModal>
   );
 }

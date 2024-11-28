@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { styled } from "nativewind";
 import { RootState } from "@store/index";
 import { useSelector, useDispatch } from "react-redux";
-import { ActivityIndicator, FlatList} from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 
 import { ValueType } from "type";
 import { fecthValues } from "@store/value/valuesSlice";
@@ -33,6 +33,7 @@ export function ValueFlatList() {
   return (
     <>
       <StyledFlatList
+        removeClippedSubviews={false}
         keyExtractor={(item: ValueType) => item.id}
         data={valueList?.values}
         renderItem={({ item }: { item: ValueType }) => {

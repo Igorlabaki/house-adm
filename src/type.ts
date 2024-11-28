@@ -37,20 +37,61 @@ export interface DateEventType {
   orcamentoId?: string;
   orcamento?: BugdetType
 }
+export interface DespesaType {
+  id?: string;
+  tipo: string;
+  valor: number;
+  descricao: string;
+  categoria: string;
+  dataPagamento: string;
+  recorrente: boolean;
+  orcamentoId?: string | null;
+}
 
+export interface NotificationType {
+  id: string;
+  orcamentoId: string;
+  content: string;
+  type: string;
+  createdAt: Date;
+  isRead: boolean;
+  orcamento: BugdetType
+}
+
+export interface DespesaListState {
+  recorrentes: {
+    totalMensal: number;
+    totalAnual: number;
+    list: DespesaType[];
+  };
+  naoRecorrentes: {
+    total: number;
+    list: DespesaType[];
+  };
+}
+
+export interface Pagamento{
+  id?: string;
+  value: string;
+  dataPagamento: string;
+}
 export interface BugdetType {
   id?: string;
+  pagamentos: Pagamento[];
+  Data: DateEventType[];
   nome: string;
   tipo: string;
   email: string;
   dataFim: Date;
   texto: string;
   total: number;
+  pago: boolean;
   telefone: string;
   feedback: string;
   dataInicio: Date;
   limpeza: boolean;
   contato: boolean;
+  valorPago: number;
   valorBase: number;
   convidados: number;
   seguranca: boolean;

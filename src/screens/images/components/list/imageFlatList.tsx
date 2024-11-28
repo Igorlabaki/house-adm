@@ -15,13 +15,13 @@ export const StyledFlatList = styled(FlatList<ImageType>);
 
 export function ImageFlatList() {
   const dispatch = useDispatch<AppDispatch>();
-  const textList = useSelector((state: RootState) => state.textList);
+  const imageList = useSelector((state: RootState) => state.imageList);
 
   useEffect(() => {
     dispatch(fecthImages());
   }, []);
 
-  if (textList.loading) {
+  if (imageList.loading) {
     return (
       <StyledView className="h-full w-full flex justify-center items-center">
         <ActivityIndicator size="large" color="white" />
@@ -29,12 +29,12 @@ export function ImageFlatList() {
       </StyledView>
     );
   }
-
+  
   return (
     <>
       <StyledFlatList
         keyExtractor={(item: ImageType) => item.id}
-        data={textList?.texts}
+        data={imageList?.images}
         renderItem={({ item }: { item: ImageType }) => {
           return <ImageItemFlatList image={item} key={item.id} />;
         }}

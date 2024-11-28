@@ -33,6 +33,7 @@ export function TextFlatList() {
   return (
     <>
       <StyledFlatList
+        removeClippedSubviews={false}
         keyExtractor={(item: TextType) => item.id}
         data={textList?.texts}
         renderItem={({ item }: { item: TextType }) => {

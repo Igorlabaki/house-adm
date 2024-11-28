@@ -68,19 +68,31 @@ export function SectionScreen() {
               ...markedDates,
             }}
             minDate={today.toDateString()}
+            theme={{
+              backgroundColor: '#313338',  // Cor do fundo geral do calendário
+              calendarBackground: '#313338',  // Cor do fundo do calendário
+              textSectionTitleColor: '#ffffff',  // Cor do texto dos títulos de dias da semana (Dom, Seg, etc.)
+              dayTextColor: '#ffffff',  // Cor do texto dos dias do mês
+              todayTextColor: '#ffffff',  // Cor do texto do dia atual
+              selectedDayTextColor: '#ffffff',  // Cor do texto do dia selecionado
+              monthTextColor: '#ffffff',  // Cor do texto do mês
+              arrowColor: '#ffffff',  // Cor das setas de navegação
+              selectedDayBackgroundColor: 'blue',  // Cor do fundo do dia selecionado
+              dotColor: '#ffffff',  // Cor dos marcadores de eventos
+            }}
           />
           <StyledView className="mt-3 flex-col">
             <StyledView className="flex-row">
               <StyledView className="flex flex-row gap-x-2 mt-1 justify-center items-center">
-                <StyledView className="h-2 w-2 bg-blue-700 rounded-full " />
+                <StyledView className="h-3 w-3 bg-blue-700 rounded-full " />
                 <StyledText className="text-[12px] text-white">Evento</StyledText>
               </StyledView>
               <StyledView className="flex-row gap-x-2 mt-1 ml-2  justify-center items-center">
-                <StyledView className="h-2 w-2 bg-[#5dd55d] rounded-full" />
+                <StyledView className="h-3 w-3 bg-[#5dd55d] rounded-full" />
                 <StyledText className="text-[12px] text-white">Visita</StyledText>
               </StyledView>
               <StyledView className="flex-row gap-x-2 mt-1  ml-2  justify-center items-center">
-                <StyledView className="h-2 w-2 bg-red-700 rounded-full " />
+                <StyledView className="h-3 w-3 bg-red-700 rounded-full " />
                 <StyledText className="text-[12px] text-white">Outro</StyledText>
               </StyledView>
             </StyledView>
@@ -91,34 +103,34 @@ export function SectionScreen() {
                 return (
                   <StyledView
                     key={item.id}
-                    className="bg-white mt-3 flex justify-center items-center py-3 rounded-md"
+                    className="flex flex-col items-start justify-start px-5 py-5 bg-[#313338] w-full rounded-md overflow-hidden shadow-lg relative"
                   >
-                    <StyledText>{item.titulo}</StyledText>
-                    <StyledView className="flex flex-row justify-between items-center w-[80%] mx-auto mt-5">
-                      <StyledView className="flex flex-col justify-center items-center gap-y-1">
-                        <Ionicons name="people" size={20} color="black" />
-                        <StyledText className=" text-[11px]">
+                    <StyledText className='text-[14px] text-white font-semibold text-center w-full'>{item.titulo}</StyledText>
+                    <StyledView className="flex flex-row items-center w-[100%] mx-auto mt-7">
+                      <StyledView className="flex flex-col justify-center items-center gap-y-1 w-[33%]">
+                        <Ionicons name="people" size={20} color="white" />
+                        <StyledText className=" text-[13px] text-white font-semibold">
                           {item?.orcamento?.convidados || 0}
                         </StyledText>
                       </StyledView>
-                      <StyledView className="flex flex-col justify-center items-center gap-y-1">
+                      <StyledView className="flex flex-col justify-center items-center gap-y-1 w-[33%]">
                         <Ionicons
                           name="calendar-outline"
                           size={20}
-                          color="black"
+                          color="white"
                         />
-                        <StyledText className=" text-[11px]">
+                        <StyledText className=" text-[13px] text-white font-semibold">
                           {format(item?.dataInicio, "dd/MM/yyyy")}
                         </StyledText>
                       </StyledView>
-                      <StyledView className="flex flex-col justify-center items-center gap-y-1">
-                        <Feather name="clock" size={20} color="black" />
+                      <StyledView className="flex flex-col justify-center items-center gap-y-1 w-[33%]">
+                        <Feather name="clock" size={20} color="white" />
                         <StyledView className="flex-row">
-                          <StyledText className=" text-[11px]">
+                          <StyledText className=" text-[13px] text-white font-semibold">
                             {moment.utc(item?.dataInicio).format("HH:mm")}
                           </StyledText>
-                          <StyledText className=" text-[11px]">/</StyledText>
-                          <StyledText className=" text-[11px]">
+                          <StyledText className=" text-[13px] text-white font-semibold">/</StyledText>
+                          <StyledText className=" text-[13px] text-white font-semibold">
                             {moment.utc(item?.dataFim).format("HH:mm")}
                           </StyledText>
                         </StyledView>

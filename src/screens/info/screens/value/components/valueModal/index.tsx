@@ -8,6 +8,8 @@ import { ValueForm } from "../form/valueForm";
 import { AppDispatch, RootState } from "@store/index";
 import { deleteValueByIdAsync } from "@store/value/valuesSlice";
 import { StyledModal, StyledPressable, StyledView } from "styledComponents";
+import { useState } from "react";
+import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 interface ValueModalProps {
   value?: ValueType;
   isModalOpen: boolean;
@@ -20,12 +22,39 @@ export function ValueModal({
   isModalOpen,
   setIsModalOpen,
 }: ValueModalProps) {
-
   const dispatch = useDispatch<AppDispatch>();
 
   const error = useSelector<RootState>(
     (state: RootState) => state.textList.error
   );
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleDelete = () => {
+    setModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    const deleteItem = await dispatch(deleteValueByIdAsync(value.id));
+
+    if (deleteItem.meta.requestStatus === "fulfilled") {
+      Toast.show("Valor deletedo com sucesso." as string, 3000, {
+        backgroundColor: "rgb(75,181,67)",
+        textColor: "white",
+      });
+    }
+
+    if (deleteItem.meta.requestStatus == "rejected") {
+      Toast.show(error as string, 3000, {
+        backgroundColor: "#FF9494",
+        textColor: "white",
+      });
+    }
+  };
+
+  const cancelDelete = () => {
+    setModalVisible(false);
+  };
 
   return (
     <StyledModal
@@ -46,30 +75,24 @@ export function ValueModal({
         </StyledPressable>
         {value && (
           <StyledPressable
-            onPress={async () => {
-              const deleteItem = await dispatch(deleteValueByIdAsync(value.id));
-
-              if (deleteItem.meta.requestStatus === "fulfilled") {
-                Toast.show("Value deleted successfully." as string, 3000, {
-                  backgroundColor: "rgb(75,181,67)",
-                  textColor: "white",
-                });
-              }
-
-              if (deleteItem.meta.requestStatus == "rejected") {
-                Toast.show(error as string, 3000, {
-                  backgroundColor: "#FF9494",
-                  textColor: "white",
-                });
-              }
-            }}
+            onPress={async () => handleDelete()}
             className="absolute top-5 right-5"
           >
             <Feather name="trash" size={16} color="white" />
           </StyledPressable>
         )}
-        {value ? <ValueForm value={value} /> : <ValueForm />}
+        {value ? (
+          <ValueForm value={value} setIsModalOpen={setIsModalOpen} />
+        ) : (
+          <ValueForm setIsModalOpen={setIsModalOpen} />
+        )}
       </StyledView>
+      <DeleteConfirmationModal
+        entity="valor"
+        visible={modalVisible}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </StyledModal>
   );
 }

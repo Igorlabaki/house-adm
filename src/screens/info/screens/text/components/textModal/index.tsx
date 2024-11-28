@@ -8,6 +8,8 @@ import { TextType } from "type";
 import { AppDispatch, RootState } from "@store/index";
 import { deleteTextByIdAsync } from "@store/text/textSlice";
 import { StyledModal, StyledPressable, StyledView } from "styledComponents";
+import { useState } from "react";
+import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 interface TextModalProps {
   text?: TextType;
   isModalOpen: boolean;
@@ -25,6 +27,34 @@ export function TextModal({
   const error = useSelector<RootState>(
     (state: RootState) => state.textList.error
   );
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleDelete = () => {
+    setModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    const deleteItem = await dispatch(deleteTextByIdAsync(text.id));
+
+    if (deleteItem.meta.requestStatus === "fulfilled") {
+      Toast.show("Texto deletedo com sucesso." as string, 3000, {
+        backgroundColor: "rgb(75,181,67)",
+        textColor: "white",
+      });
+    }
+
+    if (deleteItem.meta.requestStatus == "rejected") {
+      Toast.show(error as string, 3000, {
+        backgroundColor: "#FF9494",
+        textColor: "white",
+      });
+    }
+  };
+
+  const cancelDelete = () => {
+    setModalVisible(false);
+  };
+
   return (
     <StyledModal
       visible={isModalOpen}
@@ -44,30 +74,20 @@ export function TextModal({
         </StyledPressable>
         {text && (
           <StyledPressable
-            onPress={async () => {
-              const deleteItem = await dispatch(deleteTextByIdAsync(text.id));
-
-              if (deleteItem.meta.requestStatus === "fulfilled") {
-                Toast.show("Text deleted successfully." as string, 3000, {
-                  backgroundColor: "rgb(75,181,67)",
-                  textColor: "white",
-                });
-              }
-
-              if (deleteItem.meta.requestStatus == "rejected") {
-                Toast.show(error as string, 3000, {
-                  backgroundColor: "#FF9494",
-                  textColor: "white",
-                });
-              }
-            }}
+            onPress={async () => handleDelete()}
             className="absolute top-5 right-5"
           >
             <Feather name="trash" size={16} color="white" />
           </StyledPressable>
         )}
-        {text ? <TextForm text={text} /> : <TextForm />}
+        {text ? <TextForm text={text} setIsModalOpen={setIsModalOpen} /> : <TextForm setIsModalOpen={setIsModalOpen} />}
       </StyledView>
+      <DeleteConfirmationModal
+        entity="texto"
+        visible={modalVisible}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </StyledModal>
   );
 }

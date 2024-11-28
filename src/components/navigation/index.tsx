@@ -62,7 +62,7 @@ export default function NavigationComponent() {
       }}
     >
       <Tab.Screen
-        name="Home"
+        name="Inicio"
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -75,7 +75,7 @@ export default function NavigationComponent() {
         }}
       />
       <Tab.Screen
-        name="Image"
+        name="Imagens"
         component={ImageScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -93,7 +93,7 @@ export default function NavigationComponent() {
         }}
       />
       <Tab.Screen
-        name="Budget"
+        name="Orcam."
         component={BudgetScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -102,7 +102,7 @@ export default function NavigationComponent() {
         }}
       />
       <Tab.Screen
-        name="Calendar"
+        name="Agenda"
         component={CalendarioMainScreen}
         options={{
           tabBarIcon: ({ color }) => (

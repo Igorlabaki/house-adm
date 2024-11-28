@@ -2,22 +2,14 @@ import moment from "moment";
 import { Formik } from "formik";
 import { format } from "date-fns";
 import { Entypo } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Toast from "react-native-simple-toast";
 import { Calendar } from "react-native-calendars";
 import { useDispatch, useSelector } from "react-redux";
-import DateTimePicker from "@react-native-community/datetimepicker";
-
 import { BugdetType } from "type";
-import { calcTotal } from "function/calcTotal";
 import { AppDispatch, RootState } from "@store/index";
-import { fecthValues } from "@store/value/valuesSlice";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { createOrcamentoFormSchema } from "@schemas/createOrcamentoFormZodSchema";
-import {
-  createOrcamentoValueAsync,
-  updateOrcamentoByIdAsync,
-} from "@store/budget/bugetSlice";
 import {
   StyledModal,
   StyledPressable,
@@ -28,61 +20,61 @@ import {
   StyledTouchableOpacity,
   StyledView,
 } from "styledComponents";
-import { formatCurrency } from "react-native-format-currency";
-import { transformDate } from "function/transformData";
-import { calcNovoTotal } from "function/calcNovoTotal";
-import { Pressable, Text } from "react-native";
+import { CreateOrcamentoFormData } from "zod/types/createOrcamentoFormZodType";
+import { fetchNotificacoes } from "function/fetchNotifications";
+import { createOrcamentoValueAsync, updateOrcamentoByIdAsync } from "@store/budget/bugetSlice";
+import { fetchOrcamentoById } from "@store/orcamento/orcamentoSlice";
+import { fetchNotificationsList } from "@store/notifications/notificationsSlice";
 
 interface BugdetFormProps {
-  budget?: BugdetType;
+  orcamento?: BugdetType;
+  setIsEditModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function BudgetForm({ budget }: BugdetFormProps) {
+export function BudgetForm({ setIsEditModalOpen,orcamento }: BugdetFormProps) {
+
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector<RootState>(
-    (state: RootState) => state.orcamentosList.error
+    (state: RootState) => state.orcamentosList
   );
-
-  const valueList = useSelector((state: RootState) => state.valueList);
-
-  useEffect(() => {
-    dispatch(fecthValues());
-  }, []);
-
   const today = new Date();
-
   const [selected, setSelected] = useState<any>();
-  const [inicioDate, setInicioDate] = useState(new Date());
+  const [isLoading, setIsLoding] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
-  const [isHorarioFimModalOpen, setIsHorarioFimModalOpen] = useState(false);
-  const [isHorarioInicioModalOpen, setIsHorarioInicioModalOpen] =
-    useState(false);
 
   return (
-    <StyledScrollView>
+    <StyledView className="bg-gray-dark">
       <Formik
         validationSchema={toFormikValidationSchema<any>(
           createOrcamentoFormSchema
         )}
+        validateOnChange={false}
+        validateOnBlur={false}
         initialValues={{
-          nome: budget?.nome && budget?.nome,
-          email: budget?.email && budget?.email,
-          texto: budget?.texto && budget?.texto,
-          limpeza: budget?.limpeza && budget?.limpeza,
-          telefone: budget?.telefone && budget?.telefone,
-          seguranca: budget?.seguranca && budget?.seguranca,
-          total: budget?.total && String(budget?.total.toFixed(0)),
-          trafegoCanal: budget?.trafegoCanal && budget?.trafegoCanal,
-          recepcionista: budget?.recepcionista && budget?.recepcionista,
-          conheceEspaco: budget?.conheceEspaco && budget?.conheceEspaco,
-          convidados: budget?.convidados && budget?.convidados?.toString(),
-          dataInicio:
-            budget?.dataInicio && format(budget?.dataInicio, "dd/MM/yyyy"),
+          nome: orcamento?.nome && orcamento?.nome,
+          email: orcamento?.email && orcamento?.email,
+          texto: orcamento?.texto && orcamento?.texto,
+          tipo: orcamento?.tipo && orcamento?.tipo,
+          telefone: orcamento?.telefone && orcamento?.telefone,
+          valorPago: orcamento?.valorPago?.toFixed(2).toString()
+            ? orcamento?.valorPago.toFixed(2).toString()
+            : "0",
+          limpeza: orcamento?.limpeza ? orcamento?.limpeza : false,
+          total: orcamento?.total ? orcamento?.total?.toFixed(2).toString() : "0",
+          seguranca: orcamento?.seguranca ? orcamento?.seguranca : false,
+          trafegoCanal: orcamento?.trafegoCanal && orcamento?.trafegoCanal,
+          conheceEspaco: orcamento?.conheceEspaco && orcamento?.conheceEspaco,
+          recepcionista: orcamento?.recepcionista ? orcamento?.recepcionista : false,
+          convidados:
+            orcamento?.convidados !== undefined
+              ? orcamento.convidados.toString()
+              : "0",
+          data: orcamento?.dataInicio && format(orcamento?.dataInicio, "dd/MM/yyyy"),
           horarioFim:
-            budget?.dataFim && moment.utc(budget?.dataFim).format("HH:mm"),
+            orcamento?.dataFim && moment.utc(orcamento?.dataFim).format("HH:mm"),
           horarioInicio:
-            budget?.dataInicio &&
-            moment.utc(budget?.dataInicio).format("HH:mm"),
+            orcamento?.dataInicio &&
+            moment.utc(orcamento?.dataInicio).format("HH:mm"),
         }}
         validate={(values) => {
           try {
@@ -98,103 +90,28 @@ export function BudgetForm({ budget }: BugdetFormProps) {
             }, {});
           }
         }}
-        onSubmit={async (values: any) => {
-          if (budget) {
-            if (budget?.total?.toFixed(0) === values?.total) {
-              const { dataFim, dataInicial } = transformDate({
-                separador: "/",
-                dataInicio: values?.dataInicio,
-                horarioFim: values?.horarioFim,
-                horarioInicio: values?.horarioInicio,
-              });
-
-              const final = new Date(dataFim.toDate());
-              const inicial = new Date(dataInicial.toDate());
-
-              const updatedOrcamento = await dispatch(
-                updateOrcamentoByIdAsync({
-                  orcamentoId: budget.id,
-                  data: {
-                    nome: values?.nome,
-                    email: values?.email,
-                    texto: values?.texto,
-                    telefone: values?.telefone,
-                    dataFim: final?.toISOString(),
-                    limpeza: values?.limpeza || false,
-                    dataInicio: inicial?.toISOString(),
-                    trafegoCanal: values?.trafegoCanal,
-                    conheceEspaco: values?.conheceEspaco,
-                    seguranca: values?.seguranca || false,
-                    convidados: Number(values?.convidados),
-                    recepcionista: values?.recepcionista || false,
-                  },
-                })
-              );
-              if (updatedOrcamento.meta.requestStatus == "fulfilled") {
-                Toast.show(
-                  "Orcamento atualizado com sucesso." as string,
-                  3000,
-                  {
-                    backgroundColor: "rgb(75,181,67)",
-                    textColor: "white",
-                  }
-                );
-              }
-
-              if (updatedOrcamento.meta.requestStatus == "rejected") {
-                Toast.show(error as string, 3000, {
-                  backgroundColor: "#FF9494",
-                  textColor: "white",
-                });
-              }
-
-              return;
-            }
-
-            const {
-              final,
-              diaria,
-              inicial,
-              novoTotal,
-              qtdHorasExtras,
-              valorHoraExtra,
-            } = calcNovoTotal({
-              data: { valueList: valueList.values, ...values },
-              separador: "/",
-            });
-
+        onSubmit={async (values: CreateOrcamentoFormData) => {
+          setIsLoding(true)
+          if (orcamento) {
             const updatedOrcamento = await dispatch(
               updateOrcamentoByIdAsync({
-                orcamentoId: budget.id,
                 data: {
-                  feedback: "",
-                  tipo: "Festa",
-                  contato: false,
-                  total: novoTotal,
-                  valorBase: diaria,
-                  nome: values?.nome,
-                  email: values?.email,
-                  texto: values?.texto,
-                  telefone: values?.telefone,
-                  dataFim: final?.toISOString(),
-                  qtdHorasExtras: qtdHorasExtras,
-                  limpeza: values?.limpeza || false,
-                  dataInicio: inicial?.toISOString(),
-                  trafegoCanal: values?.trafegoCanal,
-                  aprovadoAr756: budget.aprovadoAr756,
-                  conheceEspaco: values?.conheceEspaco,
-                  seguranca: values?.seguranca || false,
-                  convidados: Number(values?.convidados),
-                  aprovadoCliente: budget.aprovadoCliente,
-                  recepcionista: values?.recepcionista || false,
-                  valorHoraExtra: values?.total
-                    ? Number(values?.total / 7)
-                    : valorHoraExtra,
+                  ...values,
+                  total: values?.total.includes("R$") ? values?.total
+                  .replace("R$", "")
+                  .replace(/\./g, "")
+                  .replace(",", ".") : values?.total,
+                valorPago: values?.valorPago.includes("R$") ?  values?.valorPago
+                  .replace("R$", "")
+                  .replace(/\./g, "")
+                  .replace(",", "."): values?.valorPago,
                 },
+                orcamentoId: orcamento.id,
               })
             );
 
             if (updatedOrcamento.meta.requestStatus == "fulfilled") {
+              dispatch(fetchOrcamentoById(orcamento?.id))
               Toast.show("Orcamento atualizado com sucesso." as string, 3000, {
                 backgroundColor: "rgb(75,181,67)",
                 textColor: "white",
@@ -207,111 +124,43 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                 textColor: "white",
               });
             }
-          } else {
-            if (values.total) {
-              const {
-                final,
-                diaria,
-                inicial,
-                novoTotal,
-                qtdHorasExtras,
-                valorHoraExtra,
-              } = calcNovoTotal({
-                data: { valueList: valueList.values, ...values },
-                separador: "/",
-              });
-
-              const newOrcamento = await dispatch(
-                createOrcamentoValueAsync({
-                  feedback: "",
-                  tipo: "Festa",
-                  contato: false,
-                  total: novoTotal,
-                  valorBase: diaria,
-                  nome: values?.nome,
-                  aprovadoAr756: false,
-                  email: values?.email,
-                  texto: values?.texto,
-                  aprovadoCliente: false,
-                  telefone: values?.telefone,
-                  dataFim: final?.toISOString(),
-                  qtdHorasExtras: qtdHorasExtras,
-                  valorHoraExtra: valorHoraExtra,
-                  limpeza: values?.limpeza || false,
-                  dataInicio: inicial?.toISOString(),
-                  trafegoCanal: values?.trafegoCanal,
-                  conheceEspaco: values?.conheceEspaco,
-                  seguranca: values?.seguranca || false,
-                  convidados: Number(values?.convidados),
-                  recepcionista: values?.recepcionista || false,
-                })
-              );
-
-              if (newOrcamento.meta.requestStatus == "fulfilled") {
-                Toast.show("Orcamento criado com sucesso." as string, 3000, {
-                  backgroundColor: "rgb(75,181,67)",
-                  textColor: "white",
-                });
-              }
-
-              if (newOrcamento.meta.requestStatus == "rejected") {
-                Toast.show(error as string, 3000, {
-                  backgroundColor: "#FF9494",
-                  textColor: "white",
-                });
-              }
-
-              return;
-            }
-
-            const {
-              final,
-              inicial,
-              qtdHorasExtras,
-              total,
-              valorHoraExtra,
-              diaria,
-            } = calcTotal({ data: { valueList: valueList.values, ...values } });
-
-            const newOrcamento = await dispatch(
-              createOrcamentoValueAsync({
-                feedback: "",
-                tipo: "Festa",
-                contato: false,
-                valorBase: diaria,
-                nome: values?.nome,
-                aprovadoAr756: false,
-                email: values?.email,
-                texto: values?.texto,
-                aprovadoCliente: false,
-                telefone: values?.telefone,
-                dataFim: final?.toISOString(),
-                qtdHorasExtras: qtdHorasExtras,
-                valorHoraExtra: valorHoraExtra,
-                limpeza: values?.limpeza || false,
-                dataInicio: inicial?.toISOString(),
-                trafegoCanal: values?.trafegoCanal,
-                conheceEspaco: values?.conheceEspaco,
-                total: Number(values?.total) || total,
-                seguranca: values?.seguranca || false,
-                convidados: Number(values?.convidados),
-                recepcionista: values?.recepcionista || false,
-              })
-            );
-            if (newOrcamento.meta.requestStatus == "fulfilled") {
-              Toast.show("Orcamento criado com sucesso." as string, 3000, {
-                backgroundColor: "rgb(75,181,67)",
-                textColor: "white",
-              });
-            }
-
-            if (newOrcamento.meta.requestStatus == "rejected") {
-              Toast.show(error as string, 3000, {
-                backgroundColor: "#FF9494",
-                textColor: "white",
-              });
-            }
+            setIsEditModalOpen(false);
+            setIsLoding(false);
+            return;
           }
+
+          const { valorPago, ...rest } = values;
+
+          const newOrcamento = await dispatch(
+            createOrcamentoValueAsync({
+              ...rest,
+              total: Number(
+                values?.total
+                  .replace("R$", "")
+                  .replace(/\./g, "")
+                  .replace(",", ".")
+              ),
+              convidados: Number(values.convidados),
+            })
+          );
+
+          if (newOrcamento.meta.requestStatus == "fulfilled") {
+            dispatch(fetchNotificationsList())
+            Toast.show("Orcamento criado com sucesso." as string, 3000, {
+              backgroundColor: "rgb(75,181,67)",
+              textColor: "white",
+            });
+          }
+
+          if (newOrcamento.meta.requestStatus == "rejected") {
+            Toast.show(error as string, 3000, {
+              backgroundColor: "#FF9494",
+              textColor: "white",
+            });
+          }
+          setIsEditModalOpen(false);
+          setIsLoding(false);
+          return;
         }}
       >
         {({
@@ -330,7 +179,8 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                   Nome
                 </StyledText>
                 <StyledTextInput
-                  className={`bg-gray-ligth rounded-md px-3 py-1 text-white ${
+                  onFocus={(e) => e.stopPropagation()}
+                  className={`bg-gray-ligth rounded-md px-3 py-1 text-white z-50 ${
                     errors.nome
                       ? "bg-red-50  border-[2px] border-red-900 text-red-800"
                       : "bg-gray-ligth"
@@ -350,6 +200,7 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                   Email
                 </StyledText>
                 <StyledTextInput
+                  onFocus={(e) => e.stopPropagation()}
                   className={`bg-gray-ligth rounded-md px-3 py-1 text-white ${
                     errors.email
                       ? "bg-red-50  border-[2px] border-red-900 text-red-800"
@@ -370,6 +221,7 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                   Telefone
                 </StyledText>
                 <StyledTextInputMask
+                  onFocus={(e) => e.stopPropagation()}
                   className={`bg-gray-ligth rounded-md px-3 py-1 text-white ${
                     errors.telefone
                       ? "bg-red-50  border-[2px] border-red-900 text-red-800"
@@ -399,7 +251,7 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                 <StyledPressable
                   onPress={() => setIsCalendarModalOpen(true)}
                   className={`rounded-md px-3 py-1 text-white ${
-                    errors.dataInicio
+                    errors.data
                       ? "bg-red-50 border-[2px] border-red-900 text-red-800 "
                       : "bg-gray-ligth"
                   }`}
@@ -407,18 +259,18 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                   <StyledText
                     className={`
                     ${
-                      (getFieldMeta("dataInicio")?.value as string)
+                      (getFieldMeta("data")?.value as string)
                         ? "text-white"
                         : "text-['rgb(156 163 175)']"
                     }
                     text-white  py-1 ${
-                      errors.dataInicio
+                      errors.data
                         ? " text-red-800 font-normal"
                         : "font-semibold"
                     }}`}
                   >
-                    {(getFieldMeta("dataInicio")?.value as string)
-                      ? getFieldMeta("dataInicio")?.value?.toString()
+                    {(getFieldMeta("data")?.value as string)
+                      ? getFieldMeta("data")?.value?.toString()
                       : "Choose date"}
                   </StyledText>
                 </StyledPressable>
@@ -439,8 +291,8 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                       <Calendar
                         onDayPress={(day) => {
                           setFieldValue(
-                            "dataInicio",
-                            format(day.dateString, "dd/MM/yyyy")
+                            "data",
+                            moment.utc(day.dateString).format("DD/MM/yyyy")
                           );
                           setSelected(day.dateString);
                           setIsCalendarModalOpen(false);
@@ -454,66 +306,41 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                           },
                           [selected]: { selected: true, selectedColor: "blue" },
                         }}
-                        minDate={today?.toDateString()}
                       />
                     </StyledView>
                   </StyledTouchableOpacity>
                 </StyledModal>
               </StyledView>
-              <StyledView className="flex flex-col gap-2 text-black">
-                <StyledText className="font-semibold text-custom-gray text-[14px]">
-                  Horario Inicio :
+
+              <StyledView className="flex flex-col gap-y-1">
+                <StyledText className="text-custom-gray text-[14px] font-semibold">
+                  Horario Inicio
                 </StyledText>
-                <StyledPressable
-                  onPress={() => setIsHorarioInicioModalOpen(true)}
+                <StyledTextInputMask
                   className={`rounded-md px-3 py-1 text-white ${
                     errors.horarioInicio
                       ? "bg-red-50 border-[2px] border-red-900 text-red-800 "
                       : "bg-gray-ligth"
                   }`}
-                >
-                  <StyledText
-                    className={`text-white  py-1 ${
-                      errors.horarioInicio
-                        ? " text-red-800 font-normal"
-                        : "text-white font-semibold"
-                    }}`}
-                  >
-                    {(getFieldMeta("horarioInicio")?.value as string)
-                      ? getFieldMeta("horarioInicio")?.value?.toString()
-                      : "Choose Hour"}
-                  </StyledText>
-                </StyledPressable>
-                <StyledModal
-                  visible={isHorarioInicioModalOpen}
-                  onRequestClose={() => setIsHorarioInicioModalOpen(false)}
-                  animationType="fade"
-                  transparent={true}
-                  className="bg-black"
-                >
-                  <StyledTouchableOpacity
-                    style={{ flex: 1 }}
-                    onPress={() => {
-                      setIsHorarioInicioModalOpen(false);
-                    }}
-                  >
-                    <StyledView className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
-                      <DateTimePicker
-                        value={inicioDate}
-                        mode="time"
-                        onChange={(date, r) => {
-                          setInicioDate(r);
-                          setFieldValue(
-                            "horarioInicio",
-                            r.toTimeString().split(" ")[0]
-                          );
-                          setIsHorarioInicioModalOpen(false);
-                        }}
-                        is24Hour={true}
-                      />
-                    </StyledView>
-                  </StyledTouchableOpacity>
-                </StyledModal>
+                  type={"custom"}
+                  options={{
+                    mask: "99:99", // Máscara para HH:MM
+                  }}
+                  onChangeText={(formatted, extracted) => {
+                    handleChange("horarioInicio")(formatted); // Usa o texto formatado no formato HH:MM
+                  }}
+                  onBlur={handleBlur("horarioInicio")}
+                  value={String(values?.horarioInicio)}
+                  placeholder={
+                    errors.horarioInicio
+                      ? String(errors.horarioInicio)
+                      : "Digite o horário de início"
+                  }
+                  placeholderTextColor={
+                    errors.horarioInicio ? "rgb(127 29 29)" : "rgb(156 163 175)"
+                  }
+                  keyboardType="numeric" // Define o teclado numéri
+                />
                 {errors?.horarioInicio &&
                   errors?.horarioInicio.toString() != "Required" && (
                     <StyledText className="text-red-700 font-semibold">
@@ -521,60 +348,35 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                     </StyledText>
                   )}
               </StyledView>
-              <StyledView className="flex flex-col gap-2 text-black">
-                <StyledText className="font-semibold text-custom-gray text-[14px]">
-                  Horario Fim :
+              <StyledView className="flex flex-col gap-y-1">
+                <StyledText className="text-custom-gray text-[14px] font-semibold">
+                  Horario Fim
                 </StyledText>
-                <StyledPressable
-                  onPress={() => setIsHorarioFimModalOpen(true)}
+                <StyledTextInputMask
                   className={`rounded-md px-3 py-1 text-white ${
                     errors.horarioFim
                       ? "bg-red-50 border-[2px] border-red-900 text-red-800 "
                       : "bg-gray-ligth"
                   }`}
-                >
-                  <StyledText
-                    className={`text-white  py-1 ${
-                      errors.horarioFim
-                        ? " text-red-800 font-normal"
-                        : "text-white font-semibold"
-                    }}`}
-                  >
-                    {(getFieldMeta("horarioFim")?.value as string)
-                      ? getFieldMeta("horarioFim")?.value?.toString()
-                      : "Choose Hour"}
-                  </StyledText>
-                </StyledPressable>
-                <StyledModal
-                  visible={isHorarioFimModalOpen}
-                  onRequestClose={() => setIsHorarioFimModalOpen(false)}
-                  animationType="fade"
-                  transparent={true}
-                  className="bg-black"
-                >
-                  <StyledTouchableOpacity
-                    style={{ flex: 1 }}
-                    onPress={() => {
-                      setIsHorarioFimModalOpen(false);
-                    }}
-                  >
-                    <StyledView className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
-                      <DateTimePicker
-                        value={inicioDate}
-                        mode="time"
-                        onChange={(date, r) => {
-                          setInicioDate(r);
-                          setFieldValue(
-                            "horarioFim",
-                            r.toTimeString()?.split(" ")[0]
-                          );
-                          setIsHorarioFimModalOpen(false);
-                        }}
-                        is24Hour={true}
-                      />
-                    </StyledView>
-                  </StyledTouchableOpacity>
-                </StyledModal>
+                  type={"custom"}
+                  options={{
+                    mask: "99:99", // Máscara para HH:MM
+                  }}
+                  onChangeText={(formatted, extracted) => {
+                    handleChange("horarioFim")(formatted); // Usa o texto formatado no formato HH:MM
+                  }}
+                  onBlur={handleBlur("horarioFim")}
+                  value={String(values?.horarioFim)}
+                  placeholder={
+                    errors.horarioFim
+                      ? String(errors.horarioFim)
+                      : "Digite o horário de início"
+                  }
+                  placeholderTextColor={
+                    errors.horarioFim ? "rgb(127 29 29)" : "rgb(156 163 175)"
+                  }
+                  keyboardType="numeric" // Define o teclado numéri
+                />
                 {errors?.horarioFim &&
                   errors?.horarioFim.toString() != "Required" && (
                     <StyledText className="text-red-700 font-semibold">
@@ -588,6 +390,7 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                 Convidados
               </StyledText>
               <StyledTextInput
+                onFocus={(e) => e.stopPropagation()}
                 onChangeText={handleChange("convidados")}
                 onChange={(event) => {
                   if (Number(event.nativeEvent.text) >= 30) {
@@ -599,10 +402,10 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                   }
                 }}
                 onBlur={handleBlur("convidados")}
-                value={values.convidados}
+                value={values?.convidados.toString()}
                 keyboardType="numeric"
                 placeholder={
-                  errors.convidados
+                  errors?.convidados
                     ? errors.convidados?.toString()
                     : "Type the convidados"
                 }
@@ -618,42 +421,69 @@ export function BudgetForm({ budget }: BugdetFormProps) {
               {errors?.convidados &&
                 errors?.convidados.toString() != "Required" && (
                   <StyledText className="text-red-700 font-semibold">
-                    {errors.convidados?.toString()}
+                    {errors?.convidados?.toString()}
                   </StyledText>
                 )}
-              <StyledView className="flex flex-col gap-y-2 mt-3">
+              <StyledView className="flex flex-col gap-y-2">
                 <StyledText className="text-custom-gray text-[14px] font-semibold">
-                  Valor
+                  Total
                 </StyledText>
-                <StyledTextInput
-                  onChangeText={handleChange("total")}
-                  onBlur={handleBlur("total")}
-                  value={values?.total?.toString()}
-                  keyboardType="numeric"
-                  placeholder={
-                    errors.total ? errors.total?.toString() : "Type the total"
-                  }
-                  placeholderTextColor={
-                    errors.total ? "rgb(127 29 29)" : "rgb(156 163 175)"
-                  }
-                  className={`rounded-md px-3 py-1 text-white ${
+                <StyledTextInputMask
+                  onFocus={(e) => e.stopPropagation()}
+                  className={`bg-gray-ligth rounded-md px-3 py-1 text-white ${
                     errors.total
                       ? "bg-red-50  border-[2px] border-red-900 text-red-800"
                       : "bg-gray-ligth"
                   }`}
+                  type="money"
+                  options={{
+                    maskType: "BRL",
+                  }}
+                  onChangeText={handleChange("total")}
+                  onBlur={handleBlur("total")}
+                  value={values.total}
                 />
-                {errors?.total && errors?.total?.toString() != "Required" && (
+                {errors?.total && errors?.total.toString() != "Required" && (
                   <StyledText className="text-red-700 font-semibold">
                     {errors.total?.toString()}
                   </StyledText>
                 )}
               </StyledView>
+{/*               {orcamento && (
+                <StyledView className="flex flex-col gap-y-2">
+                  <StyledText className="text-custom-gray text-[14px] font-semibold">
+                    Valor Pago
+                  </StyledText>
+                  <StyledTextInputMask
+                    onFocus={(e) => e.stopPropagation()}
+                    className={`bg-gray-ligth rounded-md px-3 py-1 text-white ${
+                      errors.valorPago
+                        ? "bg-red-50  border-[2px] border-red-900 text-red-800"
+                        : "bg-gray-ligth"
+                    }`}
+                    type="money"
+                    options={{
+                      maskType: "BRL",
+                    }}
+                    onChangeText={handleChange("valorPago")}
+                    onBlur={handleBlur("valorPago")}
+                    value={values.valorPago}
+                  />
+                  {errors?.valorPago &&
+                    errors?.valorPago.toString() != "Required" && (
+                      <StyledText className="text-red-700 font-semibold">
+                        {errors.valorPago?.toString()}
+                      </StyledText>
+                    )}
+                </StyledView>
+              )} */}
             </StyledView>
             <StyledView className="mt-4 space-y-2">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Descricao:
               </StyledText>
               <StyledTextInput
+                onFocus={(e) => e.stopPropagation()}
                 multiline
                 numberOfLines={4} // Defina o número desejado de linhas visíveis
                 onChangeText={handleChange("texto")}
@@ -679,6 +509,109 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                   {errors.texto?.toString()}
                 </StyledText>
               )}
+            </StyledView>
+            <StyledView
+              className={`w-full flex flex-col gap-y-1 mt-3  text-[12px] md:text-[15px] animate-openOpacity justify-center items-start  flex-wrap"`}
+            >
+              <StyledText className="font-semibold text-custom-gray text-[14px]">
+                Ja conhece o espaco?
+              </StyledText>
+              <StyledView className="flex flex-row pt-3 gap-x-1">
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-1 cursor-pointer "
+                    onPress={() => {
+                      setFieldValue("conheceEspaco", true);
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("conheceEspaco").value === true && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Sim
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-1 cursor-pointer "
+                    onPress={() => {
+                      setFieldValue("conheceEspaco", false);
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("conheceEspaco").value === false && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Nao
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
+              </StyledView>
+            </StyledView>
+            <StyledView
+              className={`w-full flex flex-col gap-y-1 mt-3  text-[12px] md:text-[15px] animate-openOpacity justify-center items-start  flex-wrap"`}
+            >
+              <StyledText className="font-semibold text-custom-gray text-[14px]">
+                Tipo do aluguel:
+              </StyledText>
+              <StyledView className="flex flex-row pt-3 ">
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
+                    onPress={() => {
+                      setFieldValue("tipo", "Filmagem");
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("tipo").value === "Filmagem" && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Filmagem
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
+                    onPress={() => {
+                      setFieldValue("tipo", "Festa");
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("tipo").value === "Festa" && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Festa
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
+                    onPress={() => {
+                      setFieldValue("tipo", "Outro");
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("tipo").value === "Outro" && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Outro
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
+              </StyledView>
             </StyledView>
             <StyledView className="mt-4 space-y-2">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
@@ -757,52 +690,9 @@ export function BudgetForm({ budget }: BugdetFormProps) {
               className={`w-full flex flex-col gap-y-1 mt-3  text-[12px] md:text-[15px] animate-openOpacity justify-center items-start  flex-wrap"`}
             >
               <StyledText className="font-semibold text-custom-gray text-[14px]">
-                Ja conhece o espaco?
-              </StyledText>
-              <StyledView className="flex flex-row pt-3 gap-x-1">
-                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
-                  <StyledPressable
-                    className="flex flex-row items-center justify-center gap-x-1 cursor-pointer "
-                    onPress={() => {
-                      setFieldValue("conheceEspaco", true);
-                    }}
-                  >
-                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
-                      {getFieldMeta("conheceEspaco").value === true && (
-                        <Entypo name="check" size={12} color="white" />
-                      )}
-                    </StyledView>
-                    <StyledText className="text-custom-gray text-[14px] font-semibold">
-                      Sim
-                    </StyledText>
-                  </StyledPressable>
-                </StyledView>
-                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
-                  <StyledPressable
-                    className="flex flex-row items-center justify-center gap-x-1 cursor-pointer "
-                    onPress={() => {
-                      setFieldValue("conheceEspaco", false);
-                    }}
-                  >
-                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
-                      {getFieldMeta("conheceEspaco").value === false && (
-                        <Entypo name="check" size={12} color="white" />
-                      )}
-                    </StyledView>
-                    <StyledText className="text-custom-gray text-[14px] font-semibold">
-                      Nao
-                    </StyledText>
-                  </StyledPressable>
-                </StyledView>
-              </StyledView>
-            </StyledView>
-            <StyledView
-              className={`w-full flex flex-col gap-y-1 mt-3  text-[12px] md:text-[15px] animate-openOpacity justify-center items-start  flex-wrap"`}
-            >
-              <StyledText className="font-semibold text-custom-gray text-[14px]">
                 Onde nos achou?
               </StyledText>
-              <StyledView className="flex flex-row pt-3 ">
+              <StyledView className="flex flex-row pt-3 flex-wrap gap-y-1">
                 <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
                   <StyledPressable
                     className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
@@ -858,6 +748,57 @@ export function BudgetForm({ budget }: BugdetFormProps) {
                   <StyledPressable
                     className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                     onPress={() => {
+                      setFieldValue("trafegoCanal", "Facebook");
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("trafegoCanal").value === "Facebook" && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Facebook
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
+                    onPress={() => {
+                      setFieldValue("trafegoCanal", "Airbnb");
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("trafegoCanal").value === "Airbnb" && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Airbnb
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
+                    onPress={() => {
+                      setFieldValue("trafegoCanal", "Google");
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("trafegoCanal").value === "Google" && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Google
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
+                    onPress={() => {
                       setFieldValue("trafegoCanal", "Outros");
                     }}
                   >
@@ -874,21 +815,24 @@ export function BudgetForm({ budget }: BugdetFormProps) {
               </StyledView>
             </StyledView>
             <StyledPressable
-              onPress={() => handleSubmit()}
-              className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+              disabled={isLoading ? true : false}
+              onPress={() => {
+                handleSubmit();
+              }}
+              className={`bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md`}
             >
               <StyledText className="font-bold text-custom-white">
-                {budget ? "UPDATE" : "CREATE"}
+                {isLoading ? "Enviando" : orcamento ? "Atualizar" : "Criar"}
               </StyledText>
             </StyledPressable>
           </StyledView>
         )}
       </Formik>
-    </StyledScrollView>
+    </StyledView>
   );
 }
 
-/* if (!budget) {
+/* if (!orcamento) {
   const newOrcamento = await dispatch(
     createOrcamentoValueAsync({
       aprovadoAr756: values?.aprovadoAr756,
@@ -897,7 +841,7 @@ export function BudgetForm({ budget }: BugdetFormProps) {
       contato: values?.contato,
       convidados: values?.convidados,
       dataFim: values?.dataFim,
-      dataInicio: values?.dataInicio,
+      data: values?.data,
       email: values?.email,
       feedback: values?.feedback,
       limpeza: values?.limpeza,
@@ -930,7 +874,7 @@ export function BudgetForm({ budget }: BugdetFormProps) {
 } else {
   const updatedText = await dispatch(
     updateOrcamentoByIdAsync({
-      orcamentoId: budget.id,
+      orcamentoId: orcamento.id,
       data: {
         aprovadoAr756: values?.aprovadoAr756,
         aprovadoCliente: values?.aprovadoCliente,
@@ -938,7 +882,7 @@ export function BudgetForm({ budget }: BugdetFormProps) {
         contato: values?.contato,
         convidados: values?.convidados,
         dataFim: values?.dataFim,
-        dataInicio: values?.dataInicio,
+        data: values?.data,
         email: values?.email,
         feedback: values?.feedback,
         limpeza: values?.limpeza,
@@ -970,3 +914,219 @@ export function BudgetForm({ budget }: BugdetFormProps) {
     });
   }
 } */
+
+/*   if (orcamento) {
+    if (orcamento?.total?.toFixed(0) === values?.total) {
+      const { dataFim, dataInicial } = transformDate({
+        separador: "/",
+        data: values?.data,
+        horarioFim: values?.horarioFim,
+        horarioInicio: values?.horarioInicio,
+      });
+
+      const final = new Date(dataFim.toDate());
+      const inicial = new Date(dataInicial.toDate());
+
+      const updatedOrcamento = await dispatch(
+        updateOrcamentoByIdAsync({
+          orcamentoId: orcamento.id,
+          data: {
+            nome: values?.nome,
+            email: values?.email,
+            texto: values?.texto,
+            telefone: values?.telefone,
+            dataFim: final?.toISOString(),
+            limpeza: values?.limpeza || false,
+            data: inicial?.toISOString(),
+            trafegoCanal: values?.trafegoCanal,
+            conheceEspaco: values?.conheceEspaco,
+            seguranca: values?.seguranca || false,
+            convidados: Number(values?.convidados),
+            recepcionista: values?.recepcionista || false,
+          },
+        })
+      );
+      if (updatedOrcamento.meta.requestStatus == "fulfilled") {
+        Toast.show(
+          "Orcamento atualizado com sucesso." as string,
+          3000,
+          {
+            backgroundColor: "rgb(75,181,67)",
+            textColor: "white",
+          }
+        );
+      }
+
+      if (updatedOrcamento.meta.requestStatus == "rejected") {
+        Toast.show(error as string, 3000, {
+          backgroundColor: "#FF9494",
+          textColor: "white",
+        });
+      }
+
+      return;
+    }
+
+    const {
+      final,
+      diaria,
+      inicial,
+      novoTotal,
+      qtdHorasExtras,
+      valorHoraExtra,
+    } = calcNovoTotal({
+      data: { valueList: valueList.values, ...values },
+      separador: "/",
+    });
+
+    const updatedOrcamento = await dispatch(
+      updateOrcamentoByIdAsync({
+        orcamentoId: orcamento.id,
+        data: {
+          feedback: "",
+          tipo: "Festa",
+          contato: false,
+          total: novoTotal,
+          valorBase: diaria,
+          nome: values?.nome,
+          email: values?.email,
+          texto: values?.texto,
+          telefone: values?.telefone,
+          dataFim: final?.toISOString(),
+          qtdHorasExtras: qtdHorasExtras,
+          limpeza: values?.limpeza || false,
+          data: inicial?.toISOString(),
+          trafegoCanal: values?.trafegoCanal,
+          aprovadoAr756: orcamento.aprovadoAr756,
+          conheceEspaco: values?.conheceEspaco,
+          seguranca: values?.seguranca || false,
+          convidados: Number(values?.convidados),
+          aprovadoCliente: orcamento.aprovadoCliente,
+          recepcionista: values?.recepcionista || false,
+          valorHoraExtra: values?.total
+            ? Number(values?.total / 7)
+            : valorHoraExtra,
+        },
+      })
+    );
+
+    if (updatedOrcamento.meta.requestStatus == "fulfilled") {
+      Toast.show("Orcamento atualizado com sucesso." as string, 3000, {
+        backgroundColor: "rgb(75,181,67)",
+        textColor: "white",
+      });
+    }
+
+    if (updatedOrcamento.meta.requestStatus == "rejected") {
+      Toast.show(error as string, 3000, {
+        backgroundColor: "#FF9494",
+        textColor: "white",
+      });
+    }
+  } else {
+    if (values.total) {
+      const {
+        final,
+        diaria,
+        inicial,
+        novoTotal,
+        qtdHorasExtras,
+        valorHoraExtra,
+      } = calcNovoTotal({
+        data: { valueList: valueList.values, ...values },
+        separador: "/",
+      });
+
+      const newOrcamento = await dispatch(
+        createOrcamentoValueAsync({
+          feedback: "",
+          tipo: "Festa",
+          contato: false,
+          total: novoTotal,
+          valorBase: diaria,
+          nome: values?.nome,
+          aprovadoAr756: false,
+          email: values?.email,
+          texto: values?.texto,
+          aprovadoCliente: false,
+          telefone: values?.telefone,
+          dataFim: final?.toISOString(),
+          qtdHorasExtras: qtdHorasExtras,
+          valorHoraExtra: valorHoraExtra,
+          limpeza: values?.limpeza || false,
+          data: inicial?.toISOString(),
+          trafegoCanal: values?.trafegoCanal,
+          conheceEspaco: values?.conheceEspaco,
+          seguranca: values?.seguranca || false,
+          convidados: Number(values?.convidados),
+          recepcionista: values?.recepcionista || false,
+        })
+      );
+
+      if (newOrcamento.meta.requestStatus == "fulfilled") {
+        Toast.show("Orcamento criado com sucesso." as string, 3000, {
+          backgroundColor: "rgb(75,181,67)",
+          textColor: "white",
+        });
+      }
+
+      if (newOrcamento.meta.requestStatus == "rejected") {
+        Toast.show(error as string, 3000, {
+          backgroundColor: "#FF9494",
+          textColor: "white",
+        });
+      }
+
+      return;
+    }
+
+    const {
+      final,
+      inicial,
+      qtdHorasExtras,
+      total,
+      valorHoraExtra,
+      diaria,
+    } = calcTotal({ data: { valueList: valueList.values, ...values } });
+
+    const newOrcamento = await dispatch(
+      createOrcamentoValueAsync({
+        feedback: "",
+        tipo: "Festa",
+        contato: false,
+        valorBase: diaria,
+        nome: values?.nome,
+        aprovadoAr756: false,
+        email: values?.email,
+        texto: values?.texto,
+        aprovadoCliente: false,
+        telefone: values?.telefone,
+        dataFim: final?.toISOString(),
+        qtdHorasExtras: qtdHorasExtras,
+        valorHoraExtra: valorHoraExtra,
+        limpeza: values?.limpeza || false,
+        data: inicial?.toISOString(),
+        trafegoCanal: values?.trafegoCanal,
+        conheceEspaco: values?.conheceEspaco,
+        total: Number(values?.total) || total,
+        seguranca: values?.seguranca || false,
+        convidados: Number(values?.convidados),
+        recepcionista: values?.recepcionista || false,
+      })
+    );
+    console.log(newOrcamento)
+
+    if (newOrcamento.meta.requestStatus == "fulfilled") {
+      Toast.show("Orcamento criado com sucesso." as string, 3000, {
+        backgroundColor: "rgb(75,181,67)",
+        textColor: "white",
+      });
+    }
+
+    if (newOrcamento.meta.requestStatus == "rejected") {
+      Toast.show(error as string, 3000, {
+        backgroundColor: "#FF9494",
+        textColor: "white",
+      });
+    }
+  } */

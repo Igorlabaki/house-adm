@@ -8,6 +8,8 @@ import { ImageForm } from "../form/imageForm";
 import { AppDispatch, RootState } from "@store/index";
 import { deleteImageByIdAsync } from "@store/image/imagesSlice";
 import { StyledModal, StyledPressable, StyledView } from "styledComponents";
+import { useState } from "react";
+import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 
 interface TextModalProps {
   image?: ImageType;
@@ -21,12 +23,39 @@ export function ImageModal({
   image,
   setIsModalOpen,
 }: TextModalProps) {
-
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector<RootState>(
     (state: RootState) => state.imageList.error
   );
-  
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleDelete = () => {
+    setModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    const deleteItem = await dispatch(deleteImageByIdAsync(image.id));
+
+    if (deleteItem.meta.requestStatus === "fulfilled") {
+      Toast.show("Image deleted successfully." as string, 3000, {
+        backgroundColor: "rgb(75,181,67)",
+        textColor: "white",
+      });
+    }
+
+    if (deleteItem.meta.requestStatus == "rejected") {
+      Toast.show(error as string, 3000, {
+        backgroundColor: "#FF9494",
+        textColor: "white",
+      });
+    }
+  };
+
+  const cancelDelete = () => {
+    setModalVisible(false);
+  };
+
   return (
     <StyledModal
       visible={isModalOpen}
@@ -46,30 +75,20 @@ export function ImageModal({
         </StyledPressable>
         {image && (
           <StyledPressable
-            onPress={async () => {
-              const deleteItem = await dispatch(deleteImageByIdAsync(image.id));
-
-              if (deleteItem.meta.requestStatus === "fulfilled") {
-                Toast.show("Image deleted successfully." as string, 3000, {
-                  backgroundColor: "rgb(75,181,67)",
-                  textColor: "white",
-                });
-              }
-
-              if (deleteItem.meta.requestStatus == "rejected") {
-                Toast.show(error as string, 3000, {
-                  backgroundColor: "#FF9494",
-                  textColor: "white",
-                });
-              }
-            }}
+            onPress={async () => handleDelete()}
             className="absolute top-5 right-5"
           >
             <Feather name="trash" size={16} color="white" />
           </StyledPressable>
         )}
-        {image ? <ImageForm image={image} /> : <ImageForm />}
+        {image ? <ImageForm imageItem={image} /> : <ImageForm />}
       </StyledView>
+      <DeleteConfirmationModal
+        entity="imagem"
+        visible={modalVisible}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </StyledModal>
   );
 }

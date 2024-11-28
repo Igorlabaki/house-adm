@@ -135,6 +135,16 @@ export const deleteOrcamentoByIdAsync = createAsyncThunk(
   }
 );
 
+export const getOrcamentoByIdAsync = createAsyncThunk(
+  "orcamento/getOrcamentoById",
+  async (orcamentoId: string) => {
+    const orcamentoValue = await api
+      .delete(`https://art56-server-v2.vercel.app/orcamento/geyById/${orcamentoId}`)
+      .then((resp: { data: BugdetType }) => resp.data);
+    return orcamentoValue.id;
+  }
+);
+
 export const { createOrcamento, deleteOrcamento, updateOrcamento } = orcamentoListSlice.actions;
 
 export const orcamentoListReducer = orcamentoListSlice.reducer;

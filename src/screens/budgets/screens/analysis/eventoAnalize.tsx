@@ -32,34 +32,36 @@ export function EventoAnalize({
           </StyledText>
           <StyledText className="text-custom-white font-semibold text-[12px] text-center ">
             p/ evento:{" "}
-            {
-              formatCurrency({
-                amount: Number(
-                  (
-                    Number(receitaTotal?.total.toFixed(2)) / receitaTotal?.count
-                  ).toFixed(2)
-                ),
-                code: "BRL",
-              })[0]
-            }
+            {Number(receitaTotal?.total.toFixed(2)) / receitaTotal?.count
+              ? formatCurrency({
+                  amount: Number(
+                    (
+                      Number(receitaTotal?.total.toFixed(2)) /
+                      receitaTotal?.count
+                    ).toFixed(2)
+                  ),
+                  code: "BRL",
+                })[0]
+              : 0}
           </StyledText>
         </StyledView>
         <StyledView className="flex w-full justify-between flex-row px-5">
           <StyledText className="text-custom-white font-semibold text-[12px] text-center ">
-            {(receitaTotal?.convidados / receitaTotal?.count).toFixed(0)}{" "}
+            {receitaTotal?.convidados / receitaTotal?.count ?
+            (receitaTotal?.convidados / receitaTotal?.count).toFixed(0) : 0}{" "}
             pessoas em media
           </StyledText>
 
           <StyledText className="text-custom-white font-semibold text-[12px] text-center ">
             p/ pessoa:{" "}
-            {
-              formatCurrency({
-                amount: Number(
-                  (receitaTotal?.total / receitaTotal?.convidados).toFixed(2)
-                ),
-                code: "BRL",
-              })[0]
-            }{" "}
+            {receitaTotal?.total / receitaTotal?.convidados
+              ? formatCurrency({
+                  amount: Number(
+                    (receitaTotal?.total / receitaTotal?.convidados).toFixed(2)
+                  ),
+                  code: "BRL",
+                })[0]
+              : 0}{" "}
           </StyledText>
         </StyledView>
         <StyledView className="flex w-full justify-between flex-row px-5">
@@ -81,13 +83,15 @@ export function EventoAnalize({
           </StyledText>
         </StyledView>
         <StyledText className="text-custom-white font-semibold text-[12px] text-center pt-3">
-            {`Receita liquida : ${
-              formatCurrency({
-                amount: Number((receitaTotal?.total - despesaAnalize?.total?.anual).toFixed(2)),
-                code: "BRL",
-              })[0]
-            }`}
-          </StyledText>
+          {`Receita liquida : ${
+            formatCurrency({
+              amount: Number(
+                (receitaTotal?.total - despesaAnalize?.total?.anual).toFixed(2)
+              ),
+              code: "BRL",
+            })[0]
+          }`}
+        </StyledText>
       </StyledView>
     </StyledView>
   );

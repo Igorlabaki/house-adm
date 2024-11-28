@@ -15,25 +15,23 @@ import { fecthOrcamentosAprovados } from "@store/budgetAprovado/bugetAprovadoSli
 export const StyledFlatList = styled(FlatList<BugdetType>);
 
 export const OrcamentoAprovadoFlatListt = React.memo(() => {
-  
   const dispatch: AppDispatch = useDispatch();
 
-  const month = new Date().getMonth() + 1
-  const queryParams = new URLSearchParams(); 
-  const orcamentosList = useSelector((state: RootState) => state.orcamentosAprovadoList);
+  const month = new Date().getMonth() + 1;
+  const queryParams = new URLSearchParams();
+  const orcamentosList = useSelector(
+    (state: RootState) => state.orcamentosAprovadoList
+  );
 
   useEffect(() => {
-    queryParams.append('year', new Date().getFullYear().toString());
-    queryParams.append('month', month.toString());
-    dispatch(fecthOrcamentosAprovados({url: `${queryParams.toString()}`}));
+    queryParams.append("year", new Date().getFullYear().toString());
+    queryParams.append("month", month.toString());
+    dispatch(fecthOrcamentosAprovados({ url: `${queryParams.toString()}` }));
   }, []);
 
-  const renderItem = useCallback(
-    ({ item }: { item: BugdetType }) => {
-      return <BudgetItemFlatList budget={item} />;
-    },
-    [] 
-  );
+  const renderItem = useCallback(({ item }: { item: BugdetType }) => {
+    return <BudgetItemFlatList budget={item} />;
+  }, []);
 
   if (orcamentosList.loading) {
     return (
@@ -49,14 +47,13 @@ export const OrcamentoAprovadoFlatListt = React.memo(() => {
       <StyledFlatList
         className="flex-1"
         renderItem={renderItem}
+        removeClippedSubviews={false}
         data={orcamentosList?.orcamentosAprovado}
         keyExtractor={(item: BugdetType) => item.id}
-
         ItemSeparatorComponent={() => <ItemSeparatorList />}
         ListEmptyComponent={() => <ListEmpty dataType="orcamento" />}
-
         windowSize={5}
-        initialNumToRender={4} 
+        initialNumToRender={4}
         maxToRenderPerBatch={10}
       />
     </>

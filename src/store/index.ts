@@ -7,6 +7,8 @@ import { orcamentoListReducer } from "./budget/bugetSlice";
 import { dateEventReducer } from "./dateEvent/dateEventSlice";
 import { orcamentoAprovadoListReducer } from "./budgetAprovado/bugetAprovadoSlice";
 import { despesaListReducer } from "./despesa/despesaSlice";
+import { orcamentoByIdReducer } from "./orcamento/orcamentoSlice";
+import { notificationListReducer } from "./notifications/notificationsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +19,8 @@ export const store = configureStore({
     daveEventList: dateEventReducer,
     questionList: questionListReducer,
     orcamentosList: orcamentoListReducer,
+    orcamentosById: orcamentoByIdReducer,
+    notificationList: notificationListReducer,
     orcamentosAprovadoList: orcamentoAprovadoListReducer,
   },
   middleware: (getDefaultMiddleware) => 

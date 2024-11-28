@@ -9,7 +9,7 @@ interface SearchFilterListProps{
 }
 
 export function SearchFilterListComponent({fectData}:SearchFilterListProps) {
-  const [query, setQuery] = useState(" ");
+  const [query, setQuery] = useState("");
   const dispatch = useDispatch();
 
   const [debouncedQuery] = useDebounce(query, 500);
@@ -25,7 +25,7 @@ export function SearchFilterListComponent({fectData}:SearchFilterListProps) {
         <StyledTextInput
           onChangeText={(value) => setQuery(value)}
           value={query}
-          placeholder={"Search"}
+          placeholder={"Procurar..."}
           className="text-sm text-text-gray  outline-none  flex-1"
         />
       </StyledView>

@@ -13,12 +13,12 @@ export default function QuestionItemFlatList({ question, index }: ItemFlatListPr
   return (
     <StyledPressable onPress={() => setIsModalOpen(true)} className="flex flex-col items-start  justify-center px-5 py-5 bg-[#313338] w-full rounded-md overflow-hidden shadow-lg relative">
       <StyledView className=" flex flex-col gap-y-2  items-start justify-between  overflow-hidden overflow-y-auto w-full">
-        <StyledView className="flex-row justify-start items-baseline  gap-x-1">
+        <StyledView className="flex-row justify-start items-start  gap-x-1">
           <StyledText className="text-[11px] text-white font-semibold">{index})</StyledText>
           <StyledText className="text-[12px] text-white font-semibold">{question?.question}?</StyledText>
         </StyledView>
         <StyledView className="flex-row justify-start items-start px-5">
-          <StyledText className="text-[12px] text-white font-semibold">{question?.response}</StyledText>
+          <StyledText className="text-[12px] text-white ">{question?.response.length > 100 ? `${question?.response.substring(0,100)}...` : question?.response}</StyledText>
         </StyledView>
       </StyledView>
       <QuenstionModalComponent

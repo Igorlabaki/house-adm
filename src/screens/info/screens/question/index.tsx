@@ -13,7 +13,7 @@ export  function QuestionScreen() {
   return (
     <StyledView className='bg-gray-dark flex-1 p-5 flex flex-col h-full w-full'>
         <StyledPressable className='bg-gray-dark' onPress={() => setIsModalOpen(true)}>
-          <StyledText className='text-custom-white font-semibold'>New Question</StyledText>
+          <StyledText className='text-custom-white font-semibold'>Nova Pergunta</StyledText>
         </StyledPressable>
         <QuenstionModalComponent isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} type='CREATE'/>
         <SearchFilterListComponent fectData={fecthQuestions}/>

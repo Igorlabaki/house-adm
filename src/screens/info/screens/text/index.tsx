@@ -13,7 +13,7 @@ export  function TextScreen() {
   return (
     <StyledView className='bg-gray-dark flex-1 p-5 flex flex-col h-full w-full'>
         <StyledPressable className='bg-gray-dark' onPress={() => setIsModalOpen(true)}>
-          <StyledText className='text-custom-white font-semibold'>New Text</StyledText>
+          <StyledText className='text-custom-white font-semibold'>Novo Texto</StyledText>
         </StyledPressable>
         <TextModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} type='CREATE'/>
         <SearchFilterListComponent fectData={fecthTexts}/>

@@ -1,5 +1,5 @@
 import { useDebounce } from "use-debounce";
-import { EvilIcons } from "@expo/vector-icons";
+import { AntDesign, EvilIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,7 +30,7 @@ export default function OrcamentoFilter() {
   const queryParams = new URLSearchParams();
 
   useEffect(() => {
-    if (debouncedQuery) queryParams.append("query", debouncedQuery);
+    if (debouncedQuery) queryParams.append("nome", debouncedQuery);
     queryParams.append("year", year || new Date().getFullYear());
     if (month) queryParams.append("month", month.toString());
 
@@ -59,10 +59,7 @@ export default function OrcamentoFilter() {
   return (
     <StyledView className="pb-4">
       <StyledView className="w-full flex-row justify-between items-center">
-        <StyledPressable
-          className="bg-gray-dark"
-          onPress={() => setIsModalOpen(true)}
-        >
+        <StyledPressable className="" onPress={() => setIsModalOpen(true)}>
           <StyledText className="text-custom-white font-semibold">
             Novo Orcamento
           </StyledText>
@@ -77,7 +74,12 @@ export default function OrcamentoFilter() {
         </StyledPressable>
       </StyledView>
       <StyledView className="w-full py-3 px-2 flex justify-start items-center  rounded-md bg-white flex-row my-3">
-        <EvilIcons name="search" size={24} color="black" />
+        <EvilIcons
+          name="search"
+          size={24}
+          color="black"
+          style={{ marginBottom: 5 }}
+        />
         <StyledTextInput
           onChangeText={(value) => setQuery(value)}
           value={query}
@@ -87,9 +89,7 @@ export default function OrcamentoFilter() {
       </StyledView>
       <StyledView className="py-2 flex flex-row justify-center items-center gap-x-4">
         <StyledPressable onPress={() => setYear((year) => year - 1)}>
-          <StyledText className="text-[30px] text-white  text-center">
-            -
-          </StyledText>
+          <AntDesign name="left" size={10} color="white" />
         </StyledPressable>
         <StyledText className="text-lg text-white  text-center">
           {year}
@@ -98,7 +98,7 @@ export default function OrcamentoFilter() {
           className="text-lg text-white  text-center"
           onPress={() => setYear((year) => year + 1)}
         >
-          <StyledText className="text-lg text-white  text-center">+</StyledText>
+          <AntDesign name="right" size={10} color="white" />
         </StyledPressable>
       </StyledView>
       <StyledView
@@ -147,7 +147,7 @@ export default function OrcamentoFilter() {
       </StyledView>
       <BudgetModal
         isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
+        setIsEditModalOpen={setIsModalOpen}
         type="CREATE"
       />
     </StyledView>

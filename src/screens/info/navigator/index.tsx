@@ -2,6 +2,7 @@ import { TextScreen } from '../screens/text';
 import { ValueScreen } from '../screens/value';
 import { QuestionScreen } from '../screens/question';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { DespesaScreen } from '../screens/despesa';
 
 const InfoTabNavigator = createMaterialTopTabNavigator();
 
@@ -24,16 +25,20 @@ export  function InfoNavigator() {
       }}
     >
       <InfoTabNavigator.Screen
-        name="Texts"
+        name="Textos"
         component={TextScreen}
       />
       <InfoTabNavigator.Screen
-        name="Questions"
+        name="Perguntas"
         component={QuestionScreen}
       />
       <InfoTabNavigator.Screen
-        name="Values"
+        name="Valores"
         component={ValueScreen}
+      />
+      <InfoTabNavigator.Screen
+        name="Despesas"
+        component={DespesaScreen}
       />
     </InfoTabNavigator.Navigator>
   )

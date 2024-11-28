@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "./src", // Define 'src' como o diretório base
+    "typeRoots": ["./node_modules/@types", "./@types"],
     "paths": {
       "@components/*": ["components/*"],
       "@store/*": ["store/*"],

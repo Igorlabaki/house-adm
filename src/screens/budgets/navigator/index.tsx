@@ -24,9 +24,9 @@ export function BudgetNavigator() {
         },
       }}
     >
-      <BudgetTabNavigator.Screen name="Pending" component={PendingScreen} />
-      <BudgetTabNavigator.Screen name="Analysis" component={AnalysiScreen} />
-      <BudgetTabNavigator.Screen name="Concluded" component={Concludedcreen} />
+      <BudgetTabNavigator.Screen name="Orcamentos" component={PendingScreen} />
+      <BudgetTabNavigator.Screen name="Analise" component={AnalysiScreen} />
+      <BudgetTabNavigator.Screen name="Eventos" component={Concludedcreen} />
     </BudgetTabNavigator.Navigator>
   );
 }

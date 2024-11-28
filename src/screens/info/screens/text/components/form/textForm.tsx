@@ -10,9 +10,10 @@ import { createTextAsync, updateTextByIdAsync } from "@store/text/textSlice";
 import { StyledPressable, StyledText, StyledTextInput, StyledView } from "styledComponents";
 interface TextFormProps {
   text?: TextType;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function TextForm({ text }: TextFormProps) {
+export function TextForm({ text,setIsModalOpen }: TextFormProps) {
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector<RootState>(
     (state: RootState) => state.textList.error
@@ -54,7 +55,7 @@ export function TextForm({ text }: TextFormProps) {
           );
 
           if (newText.meta.requestStatus == "fulfilled") {
-            Toast.show("Text created successfully." as string, 3000, {
+            Toast.show("Texto criado com sucesso." as string, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
@@ -80,7 +81,7 @@ export function TextForm({ text }: TextFormProps) {
           );
 
           if (updatedText.meta.requestStatus == "fulfilled") {
-            Toast.show("Text updated successfully." as string, 3000, {
+            Toast.show("Texto atualizado com sucesso." as string, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
@@ -155,11 +156,14 @@ export function TextForm({ text }: TextFormProps) {
             </StyledView>
           </StyledView>
           <StyledPressable
-            onPress={() => handleSubmit()}
+            onPress={() => {
+              handleSubmit()
+              setIsModalOpen(false)
+            }}
             className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
           >
             <StyledText className="font-bold text-custom-white">
-              {text ? "UPDATE" : "CREATE"}
+              {text ? "Atualizar" : "Criar"}
             </StyledText>
           </StyledPressable>
         </StyledView>

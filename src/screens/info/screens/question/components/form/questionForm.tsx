@@ -11,9 +11,10 @@ import { createQuestionAsync, updateQuestionByIdAsync } from "@store/question/qu
 
 interface TextFormProps {
   question?: QuestionType;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function QuestionFormComponent({ question }: TextFormProps) {
+export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps) {
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector<RootState>(
     (state: RootState) => state.questionList.error
@@ -51,7 +52,7 @@ export function QuestionFormComponent({ question }: TextFormProps) {
           );
 
           if (newQuestion.meta.requestStatus == "fulfilled") {
-            Toast.show("Question created successfully." as string, 3000, {
+            Toast.show("Pergunta criada com sucesso." as string, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
@@ -75,7 +76,7 @@ export function QuestionFormComponent({ question }: TextFormProps) {
           );
 
           if (updatedQuestion.meta.requestStatus == "fulfilled") {
-            Toast.show("Question updated successfully." as string, 3000, {
+            Toast.show("Pergunta atualizada com sucesso." as string, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
@@ -137,11 +138,14 @@ export function QuestionFormComponent({ question }: TextFormProps) {
             </StyledView>
           </StyledView>
           <StyledPressable
-            onPress={() => handleSubmit()}
+            onPress={() => {
+              handleSubmit()
+              setIsModalOpen(false)
+            }}
             className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
           >
             <StyledText className="font-bold text-custom-white">
-              {question ? "UPDATE" : "CREATE"}
+              {question ? "Atualizar" : "Criar"}
             </StyledText>
           </StyledPressable>
         </StyledView>

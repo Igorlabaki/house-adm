@@ -33,10 +33,23 @@ export function QuestionFlatList() {
   return (
     <>
       <StyledFlatList
+        removeClippedSubviews={false}
         keyExtractor={(item: QuestionType) => item.id}
         data={questionList?.questions}
-        renderItem={({ item, index }: { item: QuestionType, index: number }) => {
-          return <QuestionItemFlatList question={item} key={item.id} index={index + 1} />;
+        renderItem={({
+          item,
+          index,
+        }: {
+          item: QuestionType;
+          index: number;
+        }) => {
+          return (
+            <QuestionItemFlatList
+              question={item}
+              key={item.id}
+              index={index + 1}
+            />
+          );
         }}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
         ListEmptyComponent={() => <ListEmpty dataType="question" />}
