@@ -1,6 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { QuestionType } from "type";
 import { api } from "../../services/axios";
-import { QuestionType } from "../../type";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { CreateQuestionFormData } from "zod/zodTypes/createQuestionFormZodType";
+import { UpdateQuestionRequestParams } from "@schemas/question/update-question-params-schema";
 
 const initialState = {
   loading: false,
@@ -8,11 +10,20 @@ const initialState = {
   error: "",
 };
 
-export const fecthQuestions : any = createAsyncThunk("question/fetchQuestions", async (query: string | undefined) => {
-  return api
-    .get(`https://art56-server-v2.vercel.app/question/list/${query ? query : "" }`)
-    .then((response) => response.data.map((text: QuestionType) => text));
-});
+export const fecthQuestions: any = createAsyncThunk("question/fetchQuestions", 
+  async (query:string  ,  { rejectWithValue }) => {
+   try {
+     const response = await api
+     .get(
+       `/question/list?${query}`
+     )
+     .then((response) =>  response.data);
+     return response;
+   } catch (error: any) {
+     return rejectWithValue(error.data?.message || "Erro ao buscar lista de locacoes");
+   }
+ }    
+);
 
 const questionListSlice = createSlice({
   name: "question",
@@ -30,12 +41,12 @@ const questionListSlice = createSlice({
     });
     builder.addCase(fecthQuestions .fulfilled, (state, action) => {
       state.loading = false;
-      state.questions = action.payload;
+      state.questions = action.payload.data.questionList;
       state.error = "";
     }),
     builder.addCase(fecthQuestions .rejected, (state, action) => {
       state.loading = false;
-      state.questions = [];
+      state.questions = state.questions;
       state.error = action.error.message;
     });
 
@@ -45,7 +56,7 @@ const questionListSlice = createSlice({
     });
     builder.addCase(createQuestionAsync.fulfilled, (state,action: any) => {
       state.loading = false;
-      state.questions = [...state.questions, action.payload ];
+      state.questions = [...state.questions, action.payload.data ];
       state.error = "";
     }),
     builder.addCase(createQuestionAsync.rejected, (state, action) => { 
@@ -61,8 +72,8 @@ const questionListSlice = createSlice({
     builder.addCase(updateQuestionByIdAsync.fulfilled, (state,action: any) => {
       state.loading = false;
       state.questions = state.questions.map((item:QuestionType) => {
-        if(item.id === action.payload.id){
-          return item = {...action.payload}
+        if(item.id === action.payload.data.id){
+          return item = {...action.payload.data}
         }else{
           return item
         }
@@ -82,7 +93,7 @@ const questionListSlice = createSlice({
     });
     builder.addCase(deleteQuestionByIdAsync.fulfilled, (state,action: any) => {
       state.loading = false;
-      state.questions = state.questions.filter((item:QuestionType) => item.id != action.payload);
+      state.questions = state.questions.filter((item:QuestionType) => item.id != action.payload.data.id);
       state.error = "";
     }),
     builder.addCase(deleteQuestionByIdAsync.rejected, (state, action) => {
@@ -95,35 +106,50 @@ const questionListSlice = createSlice({
 
 export const createQuestionAsync = createAsyncThunk(
   "question/createQuestion",
-  async (createQuestionParams: QuestionType) => {     
-    const newText = await api.post(
-      `https://art56-server-v2.vercel.app/question/create`,createQuestionParams
-    ).then((resp) => {
-      return resp.data
-    })
-    return newText;
-  }        
+  async (params: CreateQuestionFormData, { rejectWithValue }) => {
+    try {
+      const response = await api
+      .post(`/question/create`, params)
+      .then((resp) => {
+        return resp.data;
+      })
+    return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }    
 );
 
 export const updateQuestionByIdAsync = createAsyncThunk(
   "question/updatedQuestionById",
-  async (updateQuestionParams: {questionId: string, data : QuestionType}) => {
-    const updatedQuestion = await api.put(
-      `https://art56-server-v2.vercel.app/question/update/${updateQuestionParams.questionId}`,
-      updateQuestionParams.data
-    ).then((resp : {data: QuestionType}) => resp.data)
-    return updatedQuestion;
-  }
+  async (params: UpdateQuestionRequestParams, { rejectWithValue }) => {
+    try {
+      const response = await api
+      .put(`/question/update`, params)
+      .then((resp) => {
+        return resp.data;
+      })
+    return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }   
 );
 
 export const deleteQuestionByIdAsync = createAsyncThunk(
   "question/deleteQuestionById",
-  async (questionId: string) => {
-    const deletedQuestion = await api.delete(
-      `https://art56-server-v2.vercel.app/question/delete/${questionId}`
-    ).then((resp : {data: QuestionType}) => resp.data)
-    return deletedQuestion.id;
-  }
+  async (questionId: string, { rejectWithValue }) => {
+    try {
+      const response = await api
+      .delete(`/question/delete/${questionId}`)
+      .then((resp) => {
+        return resp.data;
+      })
+    return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }   
 );
 
 export const { createQuestion, deleteQuestion, updateQuestion } = questionListSlice.actions;

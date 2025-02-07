@@ -1,27 +1,18 @@
-import { useEffect } from "react";
-import { styled } from "nativewind";
-import { ActivityIndicator, FlatList } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-
 import { TextType } from "type";
-import { RootState } from "@store/index";
-import { fecthTexts } from "@store/text/textSlice";
+import { styled } from "nativewind";
 import { TextItemFlatList } from "./teXtitemFlatList";
 import { ListEmpty } from "@components/list/ListEmpty";
 import { StyledText, StyledView } from "styledComponents";
+import { ActivityIndicator, FlatList } from "react-native";
 import { ItemSeparatorList } from "@components/list/itemSeparatorList";
+import { useSelector } from "react-redux";
+import { RootState } from "@store/index";
 
 export const StyledFlatList = styled(FlatList<TextType>);
 
 export function TextFlatList() {
-  const dispatch = useDispatch();
-  const textList = useSelector((state: RootState) => state.textList);
-
-  useEffect(() => {
-    dispatch(fecthTexts());
-  }, []);
-
-  if (textList.loading) {
+  const {loading,texts}  = useSelector((state: RootState) => state.textList);
+  if (loading) {
     return (
       <StyledView className="h-full w-full flex justify-center items-center">
         <ActivityIndicator size="large" color="white" />
@@ -29,18 +20,17 @@ export function TextFlatList() {
       </StyledView>
     );
   }
-
   return (
     <>
       <StyledFlatList
         removeClippedSubviews={false}
         keyExtractor={(item: TextType) => item.id}
-        data={textList?.texts}
+        data={texts}
         renderItem={({ item }: { item: TextType }) => {
           return <TextItemFlatList text={item} key={item.id} />;
         }}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
-        ListEmptyComponent={() => <ListEmpty dataType="text" />}
+        ListEmptyComponent={() => <ListEmpty dataType="texto" />}
         className="flex-1"
       />
     </>

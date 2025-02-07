@@ -1,23 +1,40 @@
+import { Person } from "@store/person/person-slice";
+import { Schedule } from "@store/schedule/schedule-slice";
+import { Venue } from "@store/venue/venueSlice";
 export interface TextType {
   id?: string;
   area: string;
   text: string;
   updatedAt?: Date;
   created_at?: Date;
-  position: string;
-  titulo: string | null;
+  position: number;
+  title: string | null;
+}
+
+export interface OwnerType {
+  id?: string;
+  cep: string;
+  cpf: string;
+  pix: string;
+  city: string;
+  state: string;
+  street: string;
+  bankName: string;
+  bankAgency: string;
+  rg: string | null;
+  streetNumber: string;
+  neighborhood: string;
+  completeName: string;
+  organizationId: string;
+  bankAccountNumber: string;
+  complement: string | null;
 }
 
 export interface QuestionType {
   id?: string;
   question: string;
   response: string;
-}
-
-export interface ValueType {
-  id?: string;
-  titulo: string;
-  valor: number;
+  venueId: string;
 }
 
 export interface ImageType {
@@ -29,15 +46,20 @@ export interface ImageType {
   responsiveMode: string;
 }
 export interface DateEventType {
-  id?: string;
-  tipo: string;
-  titulo: string;
-  dataInicio: Date;
-  dataFim: Date;
-  orcamentoId?: string;
-  orcamento?: BugdetType
+  id: string;
+  type: string;
+  venue: Venue;
+  title: string;
+  endDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  venueId: string;
+  startDate: Date;
+  proposalId: string;
+  proposal: ProposalType;
+  notifications: Notification[]
 }
-export interface DespesaType {
+export interface EspenseType {
   id?: string;
   tipo: string;
   valor: number;
@@ -50,56 +72,79 @@ export interface DespesaType {
 
 export interface NotificationType {
   id: string;
-  orcamentoId: string;
   content: string;
-  type: string;
   createdAt: Date;
   isRead: boolean;
-  orcamento: BugdetType
+  proposalId: string;
+  dateEventId: string;
+  proposal: ProposalType
+  dateEvent: DateEventType;
+  type: "VISIT" | "EVENT" | "ALERT" | "PROPOSAL";
 }
 
-export interface DespesaListState {
-  recorrentes: {
-    totalMensal: number;
-    totalAnual: number;
-    list: DespesaType[];
-  };
-  naoRecorrentes: {
-    total: number;
-    list: DespesaType[];
-  };
+export interface GuestType {
+  id: string;
+  name: string;
+  rg: string | null;
+  proposalId: string;
+  email: string | null;
 }
 
-export interface Pagamento{
+export interface PaymentType {
   id?: string;
-  value: string;
-  dataPagamento: string;
+  amount: number;
+  venueId: string; 
+  proposalId: string; 
+  paymentDate: string;
 }
-export interface BugdetType {
+
+export interface ProposalService {
   id?: string;
-  pagamentos: Pagamento[];
-  Data: DateEventType[];
-  nome: string;
-  tipo: string;
+  serviceId: string;
+  proposalId: string;
+  service: ServiceType;
+  proposal: ProposalType;
+}
+
+export interface ServiceType {
+  id?: string;
+  name: string;
+  venue: Venue;
+  price: number;
+  venueId: string;
+  proposalServices: ProposalService[];
+}
+
+export interface History { action: string, username?: string, createdAt: Date, id: string }
+export interface ProposalType {
+  id?: string;
+  name: string;
+  venue: Venue;
+  endDate: Date;
   email: string;
-  dataFim: Date;
-  texto: string;
-  total: number;
-  pago: boolean;
-  telefone: string;
-  feedback: string;
-  dataInicio: Date;
-  limpeza: boolean;
-  contato: boolean;
-  valorPago: number;
-  valorBase: number;
-  convidados: number;
-  seguranca: boolean;
-  trafegoCanal: string;
-  conheceEspaco: boolean;
-  recepcionista: boolean;
-  qtdHorasExtras: number;
-  valorHoraExtra: number;
-  aprovadoAr756: boolean;
-  aprovadoCliente: boolean;
+  paid: boolean;
+  startDate: Date;
+  venueId: string;
+  updatedAt: Date;
+  createdAt: Date;
+  whatsapp: string;
+  contact: boolean;
+  approved: Boolean;
+  basePrice: number;
+  amountPaid: number;
+  description: string;
+  totalAmount: number;
+  knowsVenue: boolean;
+  guestNumber: number;
+  extraHoursQty: number;
+  extraHourPrice: number;
+  termsAccepted: boolean;
+  personList: Person[]
+  histories: History[];
+  payments: PaymentType[]
+  scheduleList: Schedule[]
+  dateEvents: DateEventType[]
+  proposalServices: ProposalService[]
+  type: "EVENT" | "OTHER" | "BARTER" | "PRODUCTION"
+  trafficSource: "AIRBNB" | "GOOGLE" | "INSTAGRAM" | "TIKTOK" | "OTHER" | "FRIEND" | "FACEBOOK"
 }

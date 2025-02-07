@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "@store/index";
 import { createQuestionFormSchema } from "@schemas/createQuestionFormZodSchema";
 import { StyledPressable, StyledText, StyledTextInput, StyledView } from "styledComponents";
 import { createQuestionAsync, updateQuestionByIdAsync } from "@store/question/questionSlice";
+import { Venue } from "@store/venue/venueSlice";
 
 interface TextFormProps {
   question?: QuestionType;
@@ -20,10 +21,15 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
     (state: RootState) => state.questionList.error
   );
 
+  const venue : Venue = useSelector<RootState>(
+    (state: RootState) => state.venueList.venue
+  );
+
   return (
     <Formik
       validationSchema={toFormikValidationSchema(createQuestionFormSchema)}
       initialValues={{
+        venueId: venue.id,
         id: question?.id && question.id,
         question: question?.question && question.question,
         response: question?.response && question.response,
@@ -44,28 +50,26 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
       }}
       onSubmit={async (values: QuestionType) => {
         if (!question) {
-          const newQuestion = await dispatch(
-            createQuestionAsync({
-              question: values.question,
-              response: values?.response,
-            })
+          const response = await dispatch(
+            createQuestionAsync(values)
           );
 
-          if (newQuestion.meta.requestStatus == "fulfilled") {
+          if (response.meta.requestStatus == "fulfilled") {
             Toast.show("Pergunta criada com sucesso." as string, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
+            setIsModalOpen(false)
           }
 
-          if (newQuestion.meta.requestStatus == "rejected") {
-            Toast.show(error as string, 3000, {
+          if (response.meta.requestStatus == "rejected") {
+            Toast.show(response.payload as string, 3000, {
               backgroundColor: "#FF9494",
               textColor: "white",
             });
           }
         } else {
-          const updatedQuestion = await dispatch(
+          const response = await dispatch(
             updateQuestionByIdAsync({
               questionId: question.id,
               data: {
@@ -75,15 +79,16 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
             })
           );
 
-          if (updatedQuestion.meta.requestStatus == "fulfilled") {
+          if (response.meta.requestStatus == "fulfilled") {
             Toast.show("Pergunta atualizada com sucesso." as string, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
+            setIsModalOpen(false)
           }
 
-          if (updatedQuestion.meta.requestStatus == "rejected") {
-            Toast.show(error as string, 3000, {
+          if (response.meta.requestStatus == "rejected") {
+            Toast.show(response.payload  as string, 3000, {
               backgroundColor: "#FF9494",
               textColor: "white",
             });
@@ -96,14 +101,14 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
           <StyledView  className="flex flex-col gap-y-3">
             <StyledView  className="flex flex-col gap-y-1">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
-                Question
+                Pergunta
               </StyledText>
               <StyledTextInput
                 onChangeText={handleChange("question")}
                 onBlur={handleBlur("question")}
                 value={values.question}
                 placeholder={
-                  errors.question ? errors.question : "Type the question"
+                  errors.question ? errors.question : "Digite pergunta"
                 }
                 placeholderTextColor={
                   errors.question ? "rgb(127 29 29)" : "rgb(156 163 175)"
@@ -117,14 +122,14 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
             </StyledView>
             <StyledView  className="flex flex-col gap-y-1">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
-                Answer
+                Resposta
               </StyledText>
               <StyledTextInput
                 onChangeText={handleChange("response")}
                 onBlur={handleBlur("response")}
                 value={values.response}
                 placeholder={
-                  errors.response ? errors.response : "Type the answer"
+                  errors.response ? errors.response : "Digite a resposta"
                 }
                 placeholderTextColor={
                   errors.response ? "rgb(127 29 29)" : "rgb(156 163 175)"
@@ -140,7 +145,6 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
           <StyledPressable
             onPress={() => {
               handleSubmit()
-              setIsModalOpen(false)
             }}
             className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
           >

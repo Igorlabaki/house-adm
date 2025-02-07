@@ -36,10 +36,10 @@ export default function ListNotifications() {
   const [notificationsLoading, setNotificationsLoading] =
     useState<boolean>(false);
 
-  const { notifications } = useSelector(
-    (state: RootState) => state.notificationList
+  const notifications  = useSelector(
+    (state: RootState) => state.notificationList.notifications
   );
-
+  
   useEffect(() => {
     setNotificationsLoading(true);
     fetchNotificacoes({
@@ -65,7 +65,6 @@ export default function ListNotifications() {
 
     return notificationsLists.todos;
   }
-  console.log(notifications.length)
 
   useEffect(() => {
     renderList(listType);
@@ -171,7 +170,7 @@ export default function ListNotifications() {
           return <NotificationItemFlatList notification={item} key={item.id} />;
         }}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
-        ListEmptyComponent={() => <ListEmpty dataType="notification" />}
+        ListEmptyComponent={() => <ListEmpty dataType="notificacao" />}
         className="flex-1"
         refreshControl={
           <RefreshControl

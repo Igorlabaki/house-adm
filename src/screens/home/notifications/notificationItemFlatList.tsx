@@ -1,24 +1,25 @@
-import { useEffect, useState } from "react";
-
 import { NotificationType } from "type";
-
-import { StyledPressable, StyledText, StyledView } from "styledComponents";
-import { BudgetInfoModal } from "screens/budgets/screens/pending/components/modal/info";
-import { DateEventFormComponent } from "screens/calendar/screens/calendarSection/components/form/dateEventForm";
-import { useDispatch, useSelector } from "react-redux";
-import { fecthValues } from "@store/value/valuesSlice";
 import { AppDispatch, RootState } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import { StyledPressable, StyledText, StyledView } from "styledComponents";
+import { fetchProposalByIdAsync, openModal } from "@store/proposal/proposal-slice";
+
 interface ItemFlatListProps {
   notification: NotificationType;
 }
 
 export function NotificationItemFlatList({ notification }: ItemFlatListProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const isModalOpen = useSelector((state: RootState) => state.proposalList.isModalOpen);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigation = useNavigation();
   return (
     <StyledPressable
       onPress={() => {
-        setIsModalOpen(true);
+        if(notification.proposalId){
+          dispatch(fetchProposalByIdAsync(notification.proposalId));  
+          navigation.navigate("ProposaInfoScreen")
+        }
       }}
       className="flex flex-col items-start  justify-center px-5 py-5 bg-[#313338] w-full rounded-md overflow-hidden shadow-lg relative"
     >
@@ -27,27 +28,6 @@ export function NotificationItemFlatList({ notification }: ItemFlatListProps) {
           {notification?.content}
         </StyledText>
       </StyledView>
-      {isModalOpen && notification.type === "ORCAMENTO" && (
-        <BudgetInfoModal
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-          budget={notification?.orcamento}
-        />
-      )}
-      {isModalOpen && notification.type === "EVENTO" && (
-        <BudgetInfoModal
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-          budget={notification?.orcamento}
-        />
-      )}
-      {isModalOpen && notification.type === "VISITA" && (
-        <BudgetInfoModal
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-          budget={notification?.orcamento}
-        />
-      )}
     </StyledPressable>
   );
 }

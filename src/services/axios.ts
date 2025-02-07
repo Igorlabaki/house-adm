@@ -1,14 +1,15 @@
 import axios from 'axios';
-
+import { SERVER_URL } from '@env';
+import { getAccessTokenSave } from 'storage/storage-access-token';
 // Get browser
 export const api = getAPIClient();
 
 // Get SSR
 export function getAPIClient(ctx?: any) {
   const api = axios.create({
-    baseURL: process.env.AXIOS_BASE_URL,
+    baseURL: SERVER_URL
   });
-/* 
+
   api.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -23,7 +24,28 @@ export function getAPIClient(ctx?: any) {
         return Promise.reject(error);
       }
     }
-  ); */
+  );
 
+  const publicRoutes = [
+    'auth/',
+  ];
+
+  api.interceptors.request.use(
+    async (config) => {
+      // Verifica se a rota atual começa com algum dos prefixos públicos
+      const isPublicRoute = publicRoutes.some((route) => config.url?.startsWith(route));
+
+      if (!isPublicRoute) {
+        const token = await getAccessTokenSave();
+
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
+
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
   return api;
 }

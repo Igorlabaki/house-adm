@@ -1,26 +1,29 @@
+import { useState } from "react";
 import Toast from "react-native-simple-toast";
+import { Venue } from "@store/venue/venueSlice";
+import { ProposalType, DateEventType } from "type";
+import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-
-import { BugdetType, DateEventType } from "type";
-import { AppDispatch, RootState } from "@store/index";
-import { DateEventFormComponent } from "../form/dateEventForm";
-import { StyledModal, StyledPressable, StyledView } from "styledComponents";
+import { fetchOrcamentoById } from "@store/orcamento/orcamentoSlice";
+import { DateEventFormComponent } from "../form/form-same-day-date-event";
 import { deleteDateEventByIdAsync } from "@store/dateEvent/dateEventSlice";
+import { StyledModal, StyledPressable, StyledView } from "styledComponents";
+import { fetchNotificationsList } from "@store/notifications/notificationsSlice";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
-import { useState } from "react";
-import { fetchOrcamentoById, orcamentoByIdReducer } from "@store/orcamento/orcamentoSlice";
+import { OverNigthDateEventFormComponent } from "../form/form-overnigth-date-event";
+import { fecthApprovedProposals, fecthProposals, fetchProposalByIdAsync } from "@store/proposal/proposal-slice";
 interface DateEventModalProps {
   isModalOpen: boolean;
   type: "CREATE" | "UPDATE";
   dateEvent?: DateEventType;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  budget?: BugdetType;
+  proposal?: ProposalType;
 }
 
 export function DateEventModalComponent({
   dateEvent,
-  budget,
+  proposal,
   isModalOpen,
   setIsModalOpen,
 }: DateEventModalProps) {
@@ -30,26 +33,34 @@ export function DateEventModalComponent({
   );
 
   const [modalVisible, setModalVisible] = useState(false);
-
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
   const handleDelete = () => {
     setModalVisible(true);
   };
+  const queryProposalsParams = new URLSearchParams();
+  const queryApprovedParams = new URLSearchParams();
 
   const confirmDelete = async () => {
-    const deleteItem = await dispatch(deleteDateEventByIdAsync(dateEvent?.id));
+    const response = await dispatch(deleteDateEventByIdAsync(dateEvent?.id));
 
-    if (deleteItem.meta.requestStatus === "fulfilled") {
-
+    if (response.meta.requestStatus === "fulfilled") {
       Toast.show("Data deleteda com sucesso." as string, 3000, {
         backgroundColor: "rgb(75,181,67)",
         textColor: "white",
       });
-      dispatch(fetchOrcamentoById(budget?.id))
+      dispatch(fetchProposalByIdAsync(proposal?.id));
+      if (response.payload.data.type === "EVENT" || response.payload.data.type === "OVERNIGHT") {
+        queryProposalsParams.append("venueId", venue.id);
+        queryApprovedParams.append("venueId", venue.id);
+        queryApprovedParams.append("approved", "true");
+
+        await dispatch(fecthProposals(`${queryProposalsParams.toString()}`))
+        await dispatch(fecthApprovedProposals(`${queryApprovedParams.toString()}`))
+      }
     }
 
-    if (deleteItem.meta.requestStatus == "rejected") {
-      console.log("dhuihu")
-      Toast.show(error as string, 3000, {
+    if (response.meta.requestStatus == "rejected") {
+      Toast.show(response.payload as string, 3000, {
         backgroundColor: "#FF9494",
         textColor: "white",
       });
@@ -66,17 +77,7 @@ export function DateEventModalComponent({
       onRequestClose={() => setIsModalOpen(false)}
       animationType="fade"
     >
-      <StyledView className="flex-1 bg-gray-dark pt-10 relative">
-        <StyledPressable
-          className="absolute top-4 left-5"
-          onPress={() => setIsModalOpen(false)}
-        >
-          <MaterialCommunityIcons
-            name="arrow-left-thin"
-            size={24}
-            color="white"
-          />
-        </StyledPressable>
+      <StyledView className="flex-1 bg-gray-dark pt-10 px-3 relative">
         {dateEvent && (
           <StyledPressable
             onPress={() => handleDelete()}
@@ -86,17 +87,13 @@ export function DateEventModalComponent({
           </StyledPressable>
         )}
         {dateEvent ? (
-          <DateEventFormComponent
-            dateEvent={dateEvent}
-            setIsModalOpen={setIsModalOpen}
-          />
-        ) : budget ? (
-          <DateEventFormComponent
-            budget={budget}
-            setIsModalOpen={setIsModalOpen}
-          />
+          <DateEventFormComponent />
+        ) : proposal && venue.pricingModel === "PER_DAY" ? (
+          <OverNigthDateEventFormComponent />
+        ) : proposal && venue.pricingModel === "PER_PERSON" ? (
+          <DateEventFormComponent />
         ) : (
-          <DateEventFormComponent setIsModalOpen={setIsModalOpen} />
+          <DateEventFormComponent />
         )}
       </StyledView>
       <DeleteConfirmationModal

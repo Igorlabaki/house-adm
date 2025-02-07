@@ -1,14 +1,13 @@
+import { TextType } from "type";
+import { useState } from "react";
 import { TextForm } from "../form/textForm";
 import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
-import { useDispatch, useSelector } from "react-redux";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
-import { TextType } from "type";
 import { AppDispatch, RootState } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { showMessage } from "react-native-flash-message";
 import { deleteTextByIdAsync } from "@store/text/textSlice";
 import { StyledModal, StyledPressable, StyledView } from "styledComponents";
-import { useState } from "react";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 interface TextModalProps {
   text?: TextType;
@@ -37,9 +36,13 @@ export function TextModal({
     const deleteItem = await dispatch(deleteTextByIdAsync(text.id));
 
     if (deleteItem.meta.requestStatus === "fulfilled") {
-      Toast.show("Texto deletedo com sucesso." as string, 3000, {
-        backgroundColor: "rgb(75,181,67)",
-        textColor: "white",
+      showMessage({
+        duration: 3000,
+        floating: true,
+        type: "success",
+        position: "bottom",
+        message: "Sucesso",
+        description:`Texto foi deletado com sucesso!`,
       });
     }
 
@@ -61,17 +64,7 @@ export function TextModal({
       onRequestClose={() => setIsModalOpen(false)}
       animationType="fade"
     >
-      <StyledView className="flex-1 bg-gray-dark pt-10 relative">
-        <StyledPressable
-          className="absolute top-4 left-5"
-          onPress={() => setIsModalOpen(false)}
-        >
-          <MaterialCommunityIcons
-            name="arrow-left-thin"
-            size={24}
-            color="white"
-          />
-        </StyledPressable>
+      <StyledView className="flex-1 bg-gray-dark pt-5 relative">
         {text && (
           <StyledPressable
             onPress={async () => handleDelete()}
@@ -80,7 +73,11 @@ export function TextModal({
             <Feather name="trash" size={16} color="white" />
           </StyledPressable>
         )}
-        {text ? <TextForm text={text} setIsModalOpen={setIsModalOpen} /> : <TextForm setIsModalOpen={setIsModalOpen} />}
+        {text ? (
+          <TextForm  text={text} setIsModalOpen={setIsModalOpen} />
+        ) : (
+          <TextForm setIsModalOpen={setIsModalOpen} />
+        )}
       </StyledView>
       <DeleteConfirmationModal
         entity="texto"

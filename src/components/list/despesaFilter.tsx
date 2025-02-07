@@ -1,20 +1,17 @@
+import { RootState } from "@store/index";
 import { useDebounce } from "use-debounce";
-import { AntDesign, EvilIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
-import { RootState } from "@store/index";
-
-import { BudgetModal } from "screens/budgets/screens/pending/components/modal";
+import { AntDesign, EvilIcons } from "@expo/vector-icons";
+import { fetchDespesas } from "@store/despesa/despesaSlice";
+import { ExpenseModal } from "screens/info/screens/despesa/components/modal";
 import {
   StyledPressable,
   StyledText,
   StyledTextInput,
   StyledView,
 } from "styledComponents";
-import { fetchDespesas } from "@store/despesa/despesaSlice";
-import { DespesaModal } from "screens/info/screens/despesa/components/despesaModal";
 
 export default function DespesaFilter() {
   const [query, setQuery] = useState("");
@@ -119,7 +116,7 @@ export default function DespesaFilter() {
         </StyledPressable>
       </StyledView>
       {isModalOpen && (   
-        <DespesaModal
+        <ExpenseModal
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           type="CREATE"

@@ -1,12 +1,14 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "../../services/axios";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { CreateTextFormData } from "@schemas/text/create-text-params-schema";
+import { UpdateTextRequestParams } from "@schemas/text/update-text-params-schema";
 
 interface TextType {
   id?: string;
   area: string;
   text: string;
   position: number;
-  titulo: string | null;
+  title: string | null;
 }
 
 const initialState = {
@@ -15,11 +17,21 @@ const initialState = {
   error: "",
 };
 
-export const fecthTexts: any = createAsyncThunk("text/fetchTexts", async (query: string | undefined) => {
-  return api
-    .get(`https://art56-server-v2.vercel.app/text/list/${query ? query : "" }`)
-    .then((response) => response.data.map((text: TextType) => text));
-});
+export const fecthTexts: any = createAsyncThunk("text/fetchTexts", 
+   async (query:string  ,  { rejectWithValue }) => {
+
+    try {
+      const response = await api
+      .get(
+        `/text/list?${query}`
+      )
+      .then((response) =>  response.data);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.data?.message || "Erro ao buscar lista de locacoes");
+    }
+  }    
+);
 
 const textListSlice = createSlice({
   name: "text",
@@ -37,12 +49,12 @@ const textListSlice = createSlice({
     });
     builder.addCase(fecthTexts.fulfilled, (state, action) => {
       state.loading = false;
-      state.texts = action.payload;
+      state.texts = action.payload.data.textList;
       state.error = "";
     }),
     builder.addCase(fecthTexts.rejected, (state, action) => {
       state.loading = false;
-      state.texts = [];
+      state.texts = state.texts;
       state.error = action.error.message;
     });
 
@@ -52,13 +64,13 @@ const textListSlice = createSlice({
     });
     builder.addCase(createTextAsync.fulfilled, (state,action: any) => {
       state.loading = false;
-      state.texts = [...state.texts, action.payload ];
+      state.texts = [...state.texts, action.payload.data ];
       state.error = "";
     }),
     builder.addCase(createTextAsync.rejected, (state, action) => { 
       state.loading = false;
       state.texts = state.texts;
-      state.error = "Oops! Something went wrong. Please try again later.";
+      state.error = action.error.message;
     });
 
     // Update Text Item
@@ -68,8 +80,8 @@ const textListSlice = createSlice({
     builder.addCase(updateTextByIdAsync.fulfilled, (state,action: any) => {
       state.loading = false;
       state.texts = state.texts.map((item:TextType) => {
-        if(item.id === action.payload.id){
-          return item = {...action.payload}
+        if(item.id === action.payload.data.id){
+          return item = {...action.payload.data}
         }else{
           return item
         }
@@ -77,10 +89,9 @@ const textListSlice = createSlice({
       state.error = "";
     }),
     builder.addCase(updateTextByIdAsync.rejected, (state, action) => { 
- 
       state.loading = false;
       state.texts = state.texts;
-      state.error = "Oops! Something went wrong. Please try again later.";
+      state.error = action.error.message;
     });
     
 
@@ -90,7 +101,7 @@ const textListSlice = createSlice({
     });
     builder.addCase(deleteTextByIdAsync.fulfilled, (state,action: any) => {
       state.loading = false;
-      state.texts = state.texts.filter((item:TextType) => item.id != action.payload);
+      state.texts = state.texts.filter((item:TextType) => item.id != action.payload.data.id);
       state.error = "";
     }),
     builder.addCase(deleteTextByIdAsync.rejected, (state, action) => {
@@ -104,36 +115,50 @@ const textListSlice = createSlice({
 
 export const createTextAsync = createAsyncThunk(
   "text/createText",
-  async (createTextParams: TextType) => {
-    const newText = await api.post(
-      `https://art56-server-v2.vercel.app/text/create`,createTextParams
-    ).then((resp) => {
-      return resp.data
-    })
-
-    return newText;
-  }        
+  async (params: CreateTextFormData, { rejectWithValue }) => {
+    try {
+      const response = await api
+      .post(`/text/create`, params)
+      .then((resp) => {
+        return resp.data;
+      })
+    return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }      
 );
 
 export const updateTextByIdAsync = createAsyncThunk(
   "text/updatedTextById",
-  async (updateTextParams: {textId:string, data : TextType}) => {
-    const updatedText = await api.put(
-      `https://art56-server-v2.vercel.app/text/update/${updateTextParams.textId}`,
-      updateTextParams.data
-    ).then((resp : {data: TextType}) => resp.data)
-    return updatedText;
-  }
+  async (params: UpdateTextRequestParams, { rejectWithValue }) => {
+    try {
+      const response = await api
+      .put(`/text/update`, params)
+      .then((resp) => {
+        return resp.data;
+      })
+    return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }    
 );
 
 export const deleteTextByIdAsync = createAsyncThunk(
   "text/deleteTextById",
-  async (textId: string) => {
-    const deletedText = await api.delete(
-      `https://art56-server-v2.vercel.app/text/delete/${textId}`
-    ).then((resp : {data: TextType}) => resp.data)
-    return deletedText.id;
-  }
+  async (textId: string, { rejectWithValue }) => {
+    try {
+      const response = await api
+      .delete(`/text/delete/${textId}`)
+      .then((resp) => {
+        return resp.data;
+      })
+    return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }   
 );
 
 export const { createText, deleteText, updateText } = textListSlice.actions;

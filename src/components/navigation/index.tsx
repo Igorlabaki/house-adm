@@ -1,26 +1,180 @@
-import { InfoScreen } from "../../screens/info";
-import { HomeScreen } from "../../screens/home";
-import { Image, Text, View } from "react-native";
-import { ImageScreen } from "../../screens/images";
-import { BudgetScreen } from "../../screens/budgets";
-import { CalendarioMainScreen } from "../../screens/calendar";
+import MenuComponent from "./menu";
+import { Image } from "react-native";
+import React, { useState } from "react";
+import { RootState } from "@store/index";
+import { VenueTabs } from "./venue-tabs";
+import { useSelector } from "react-redux";
+import { User } from "@store/auth/authSlice";
+import { Venue } from "@store/venue/venueSlice";
+import VenueMenu from "screens/app-routes/venue/byId/menu";
+import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import OrganizationMenu from "@components/organization/menu";
 import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import SelectedVenueScreen from "screens/app-routes/venue/byId";
+import { Organization } from "@store/organization/organizationSlice";
+import OrganizationListScreen from "screens/app-routes/organization";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import {
-  MaterialCommunityIcons,
-  Octicons,
-  MaterialIcons,
-  AntDesign,
-  Ionicons,
-} from "@expo/vector-icons";
-import { StyledImage, StyledText, StyledView } from "styledComponents";
+import { SelectedOrganizationScreen } from "screens/app-routes/organization/byId";
+import { StyledPressable, StyledText, StyledView } from "styledComponents";
+import OwnerScreenComponent from "screens/app-routes/owner/ownerScreen";
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-export default function NavigationComponent() {
+export default function AppNavigator() {
+  const [menuModalIsOpen, setMenuModalIsOpen] = useState<boolean>(false);
+  const [organizationModalIsOpen, setorganizationModalIsOpen] =
+    useState<boolean>(false);
+  const [venueModalIsOpen, setvenueModalIsOpen] = useState<boolean>(false);
+  const [title, setTitle] = useState("");
+  const user: User = useSelector((state: RootState) => state?.user.user);
+  const organization: Organization = useSelector(
+    (state: RootState) => state?.organizationList.organization
+  );
+  const venue: Venue = useSelector(
+    (state: RootState) => state?.venueList.venue
+  );
+
   return (
     <NavigationContainer>
-    <Tab.Navigator
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#1E1F22",
+          },
+          headerTitleStyle: {
+            color: "#fff",
+          },
+          headerLeft: () => {
+            return <StyledText>{title}</StyledText>;
+          },
+          headerRight: () => {
+            if (user?.avatarUrl) {
+              return (
+                <StyledPressable
+                  className="h-11 w-11 rounded-full bg-transparent overflow-hidden mr-4"
+                  onPress={() => setMenuModalIsOpen(true)}
+                >
+                  <Image
+                    source={{ uri: user.avatarUrl }}
+                    style={{ width: "100%", height: "100%" }}
+                    resizeMode="cover"
+                  />
+                </StyledPressable>
+              );
+            }
+            return (
+              <StyledPressable
+                className="mr-2"
+                onPress={() => setMenuModalIsOpen(true)}
+              >
+                <FontAwesome5 name="user-circle" size={24} color="white" />
+              </StyledPressable>
+            );
+          },
+        }}
+      >
+        <Stack.Screen
+          name="OrganizationList"
+          component={OrganizationListScreen}
+          options={{
+            title: "",
+            headerLeft: () => {
+              return (
+                <StyledText className="text-white font-semibold text-lg">
+                  Suas Organizacoes
+                </StyledText>
+              );
+            },
+          }}
+        />
+
+        <Stack.Screen
+          name="OwnersScreen"
+          component={OwnerScreenComponent}
+          options={{
+            title: "",
+            headerLeft: () => {
+              return (
+                <StyledText className="text-white font-semibold text-lg">
+                  Proprietarios
+                </StyledText>
+              );
+            },
+          }}
+        />
+        <Stack.Screen
+          name="VenueTabs"
+          component={VenueTabs}
+          options={{ title: "Venue" }}
+        />
+
+        <Stack.Screen
+          name={"SelectedOrganization"}
+          component={SelectedOrganizationScreen}
+          options={{
+            title: "",
+            headerLeft: () => {
+              return (
+                <StyledView className="flex flex-row gap-x-4 justify-center items-center">
+                  <StyledText className="text-white font-semibold text-lg">
+                    {organization.name}
+                  </StyledText>
+                  <StyledPressable
+                    onPress={() => setorganizationModalIsOpen(true)}
+                  >
+                    <Ionicons name="menu" size={20} color="white" />
+                  </StyledPressable>
+                </StyledView>
+              );
+            },
+          }}
+        />
+        <Stack.Screen
+          name={"SelectedVenue"}
+          component={SelectedVenueScreen}
+          options={{
+            title: "",
+            headerLeft: () => {
+              return (
+                <StyledView className="flex flex-row gap-x-4 justify-center items-center">
+                  <StyledText className="text-white font-semibold text-lg">
+                    {venue.name}
+                  </StyledText>
+                  <StyledPressable onPress={() => setvenueModalIsOpen(true)}>
+                    <Ionicons name="menu" size={20} color="white" />
+                  </StyledPressable>
+                </StyledView>
+              );
+            },
+          }}
+        />
+      </Stack.Navigator>
+      {menuModalIsOpen && (
+        <MenuComponent
+          isModalOpen={menuModalIsOpen}
+          setMenuModalIsOpen={setMenuModalIsOpen}
+        />
+      )}
+      {organizationModalIsOpen && (
+        <OrganizationMenu
+          isModalOpen={organizationModalIsOpen}
+          setMenuModalIsOpen={setorganizationModalIsOpen}
+        />
+      )}
+      {venueModalIsOpen && (
+        <VenueMenu
+          isModalOpen={venueModalIsOpen}
+          setMenuModalIsOpen={setvenueModalIsOpen}
+        />
+      )}
+    </NavigationContainer>
+  );
+}
+
+{
+  /* <Tab.Navigator
       initialRouteName="Home"
       screenOptions={{
         headerStyle: {
@@ -43,9 +197,9 @@ export default function NavigationComponent() {
           />
         ),
         headerRight: () => (
-          <StyledView className="mr-2">
+          <StyledPressable className="mr-2" onPress={() => dispatch(logout())}>
             <StyledText className="text-white text-[11px]">Sair</StyledText>
-          </StyledView>
+          </StyledPressable>
         ),
         tabBarStyle: {
           backgroundColor: "#1E1F22",
@@ -62,7 +216,7 @@ export default function NavigationComponent() {
       }}
     >
       <Tab.Screen
-        name="Inicio"
+        name="Home"
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color }) => (
@@ -110,7 +264,5 @@ export default function NavigationComponent() {
           ),
         }}
       />
-    </Tab.Navigator>
-  </NavigationContainer>
-  )
+    </Tab.Navigator> */
 }

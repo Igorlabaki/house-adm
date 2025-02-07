@@ -19,7 +19,8 @@ export  function CalendarNavigator() {
         height: 2
       },
       tabBarLabelStyle: {
-        fontSize: 10
+        fontSize: 11,
+        fontWeight: "bold",
       },
     }}
     >

@@ -35,7 +35,6 @@ export async function criarPagamento(
         textColor: "white",
       });
     } else {
-      console.log(data.error)
       Toast.show(data.error, 3000, {
         backgroundColor: "#FF9494",
         textColor: "white",

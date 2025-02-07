@@ -1,6 +1,3 @@
-import { SERVER_URL } from "@env";
-import { RootState } from "@store/index";
-import { useSelector } from "react-redux";
 import { NotificationType } from "type";
 
 interface fetchNotificacoesProps {
@@ -33,19 +30,19 @@ export const fetchNotificacoes = async ({
       outros: [],
       todos: [],
     };
-
+    
     // Classifica as notificações em uma única passagem
-    notifications.forEach((notification: NotificationType) => {
-      if (notification.type === "ORCAMENTO") {
+    notifications.map((notification: NotificationType) => {
+      if (notification.type === "PROPOSAL") {
         categorizedNotifications.orcamentos.push(notification);
         categorizedNotifications.todos.push(notification);
-      } else if (notification.type === "EVENTO") {
+      } else if (notification.type === "EVENT") {
         categorizedNotifications.evento.push(notification);
         categorizedNotifications.todos.push(notification);
-      } else if (notification.type === "VISITA") {
+      } else if (notification.type === "VISIT") {
         categorizedNotifications.visitas.push(notification);
         categorizedNotifications.todos.push(notification);
-      } else if (notification.type === "ALERTA") {
+      } else if (notification.type === "ALERT") {
         categorizedNotifications.outros.push(notification);
         categorizedNotifications.todos.push(notification);
       }

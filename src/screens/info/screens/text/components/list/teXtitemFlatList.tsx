@@ -13,17 +13,17 @@ export function TextItemFlatList({ text }: ItemFlatListProps) {
     <StyledPressable onPress={() => setIsModalOpen(true)} className="flex flex-col items-start  justify-center px-5 py-5 bg-[#313338] w-full rounded-md overflow-hidden shadow-lg relative">
       <StyledView className=" flex flex-col gap-y-2  items-start justify-between  overflow-hidden overflow-y-auto w-full">
         <StyledView className="flex-row justify-start items-start gap-x-2">
-          <StyledText className="text-[12px] text-white font-semibold w-[60px]">Position:</StyledText>
+          <StyledText className="text-[12px] text-white font-semibold w-[60px]">Posicao:</StyledText>
           <StyledText className="text-[12px] text-white ">{text?.position}</StyledText>
         </StyledView>
         <StyledView className="flex-row justify-start items-start gap-x-2">
           <StyledText className="text-[12px] text-white font-semibold w-[60px]">Area:</StyledText>
           <StyledText className="text-[12px] text-white ">{text?.area}</StyledText>
-        </StyledView>
-        {text?.titulo && (
+        </StyledView>  
+        {text?.title && (
           <StyledView className="flex-row justify-start items-start gap-x-2">
             <StyledText className="text-[12px] text-white font-semibold w-[60px]">Titulo:</StyledText>
-            <StyledText className="text-[12px] text-white ">{text?.titulo}</StyledText>
+            <StyledText className="text-[12px] text-white ">{text?.title}</StyledText>
           </StyledView>
         )}
         <StyledView className="flex-row  items-start gap-x-2 w-[80%] text-center">

@@ -1,12 +1,13 @@
 import { z } from 'zod';
 
 export const createTextFormSchema = z.object({
+  venueId: z.string(),
   area: z
     .string({
       required_error: 'This field is required',
     })
     .nonempty('This field is required'),
-  titulo: z.string().nullable(),
+  title: z.string().nullable(),
   text: z
     .string({
       required_error: 'This field is required',

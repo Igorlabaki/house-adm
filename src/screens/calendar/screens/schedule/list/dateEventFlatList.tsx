@@ -3,7 +3,6 @@ import { styled } from "nativewind";
 import { RootState } from "../../../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { ActivityIndicator, FlatList } from "react-native";
-
 import { DateEventType } from "type";
 import { ListEmpty } from "@components/list/ListEmpty";
 import { StyledText, StyledView } from "styledComponents";

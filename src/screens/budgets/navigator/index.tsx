@@ -1,8 +1,6 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-
-import { PendingScreen } from "../screens/pending";
-import { AnalysiScreen } from "../screens/analysis";
-import { Concludedcreen } from "../screens/concluded";
+import { PendingScreen } from "../screens/proposal";
+import { Concludedcreen } from "../screens/event";
 
 const BudgetTabNavigator = createMaterialTopTabNavigator();
 
@@ -20,13 +18,14 @@ export function BudgetNavigator() {
           height: 2,
         },
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: 11,
+          fontWeight: "bold", 
         },
       }}
     >
       <BudgetTabNavigator.Screen name="Orcamentos" component={PendingScreen} />
-      <BudgetTabNavigator.Screen name="Analise" component={AnalysiScreen} />
       <BudgetTabNavigator.Screen name="Eventos" component={Concludedcreen} />
+     {/*  <BudgetTabNavigator.Screen name="Analise" component={AnalysiScreen} /> */}
     </BudgetTabNavigator.Navigator>
   );
 }

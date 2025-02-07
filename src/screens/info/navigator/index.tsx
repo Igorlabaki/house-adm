@@ -1,8 +1,8 @@
 import { TextScreen } from '../screens/text';
-import { ValueScreen } from '../screens/value';
+import { ServiceScreen } from '../screens/value';
+import { ExpenseScreen } from '../screens/despesa';
 import { QuestionScreen } from '../screens/question';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { DespesaScreen } from '../screens/despesa';
 
 const InfoTabNavigator = createMaterialTopTabNavigator();
 
@@ -20,7 +20,8 @@ export  function InfoNavigator() {
           height: 2
         },
         tabBarLabelStyle: {
-          fontSize: 10
+          fontSize: 11,
+          fontWeight: "bold", // Torne o texto em negrito
         },
       }}
     >
@@ -33,12 +34,12 @@ export  function InfoNavigator() {
         component={QuestionScreen}
       />
       <InfoTabNavigator.Screen
-        name="Valores"
-        component={ValueScreen}
+        name="Servicos"
+        component={ServiceScreen}
       />
       <InfoTabNavigator.Screen
         name="Despesas"
-        component={DespesaScreen}
+        component={ExpenseScreen}
       />
     </InfoTabNavigator.Navigator>
   )

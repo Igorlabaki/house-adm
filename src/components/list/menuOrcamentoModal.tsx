@@ -1,13 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
-import OptionsComponent from "screens/budgets/screens/pending/components/modal/infoSection/options";
+import OptionsComponent from "screens/budgets/screens/proposal/components/modal/infoSection/options";
 import {
   StyledModal,
   StyledPressable,
   StyledText,
   StyledView,
 } from "styledComponents";
-import { BugdetType } from "type";
 
 interface DeleteConfirmationProps {
   visible: boolean;

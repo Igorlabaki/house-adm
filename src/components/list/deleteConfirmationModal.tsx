@@ -16,13 +16,13 @@ interface DeleteConfirmationProps {
 export const DeleteConfirmationModal = ({entity,onCancel,onConfirm,visible}: DeleteConfirmationProps) => {
   return (
     <StyledModal
-      animationType="fade"
+      animationType="none"
       transparent={true}
       visible={visible}
       onRequestClose={onCancel}
     >
-      <StyledView className={"flex-1 justify-center items-center bg-black/20"}>
-        <StyledView className={"w-4/5 bg-gray-dark rounded-lg p-6 items-center"}>
+      <StyledView className={"flex-1 justify-center items-center "}>
+        <StyledView className={"w-4/5 bg-gray-900 rounded-lg p-6 items-center"}>
           <StyledText className={"text-ms font-semibold text-custom-white text-center mb-8"}>
             Tem certeza que deseja deletar este {entity}?
           </StyledText>

@@ -1,15 +1,15 @@
-import { BugdetType } from "type";
+import { ProposalType } from "type";
 import { Linking } from "react-native";
 
-export const captureAndShare = async (budget: BugdetType) => {
+export const captureAndShare = async (proposal: ProposalType) => {
     const message = `
-    Olá ${budget?.nome},
+    Olá ${proposal?.name},
 
     Vimos que você fez um orçamento conosco para sua festa e estamos muito felizes em saber que a nossa casa de eventos te chamou a atenção. ✨
 
     Aqui está o link para o seu orçamento:
 
-    https://www.ar756.com/orcamento/byId/${budget?.id}
+    https://www.ar756.com/orcamento/byId/${proposal?.id}
 
     Para que você possa ter a certeza de que a AR756 é o local perfeito para realizar o seu grande dia, gostaríamos de te convidar para uma visita sem compromisso!
 
@@ -30,7 +30,7 @@ export const captureAndShare = async (budget: BugdetType) => {
     ❓ Perguntas Frequentes: www.ar756.com/faq
     💰 Consulta de Preços: www.ar756.com/consultar
     `;
-    const formattedNumber = `+55${budget.telefone
+    const formattedNumber = `+55${proposal.whatsapp
       .replace("-", "")
       .replace(/[\s()]/g, "")}`; // Adiciona o código do Brasil
 

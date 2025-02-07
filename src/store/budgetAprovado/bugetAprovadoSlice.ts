@@ -4,8 +4,8 @@ import {
   PayloadAction,
   configureStore,
 } from "@reduxjs/toolkit";
-import { api } from "../../services/axios";
-import { BugdetType } from "../../type";
+import {api} from "../../services/axios";
+import { ProposalType } from "../../type";
 
 const initialState = {
   loading: false,
@@ -18,7 +18,7 @@ export const fecthOrcamentosAprovados: any = createAsyncThunk(
   async ({ url }: { url: string | undefined }) => {
     return api
       .get(`https://art56-server-v2.vercel.app/orcamento/listAprovado?${url}`)
-      .then((response) => response.data.map((value: BugdetType) => value));
+      .then((response) => response.data.map((value: ProposalType) => value));
   }
 );
 
@@ -52,7 +52,7 @@ const orcamentoAprovadoListSlice = createSlice({
     });
     builder.addCase(
       createOrcamentoAprovadoValueAsync.fulfilled,
-      (state, action: PayloadAction<BugdetType[]>) => {
+      (state, action: PayloadAction<ProposalType[]>) => {
         state.loading = false;
         state.orcamentosAprovado = [
           ...state.orcamentosAprovado,
@@ -76,10 +76,10 @@ const orcamentoAprovadoListSlice = createSlice({
     });
     builder.addCase(
       updateOrcamentoAprovadoByIdAsync.fulfilled,
-      (state, action: PayloadAction<BugdetType>) => {
+      (state, action: PayloadAction<ProposalType>) => {
         state.loading = false;
         state.orcamentosAprovado = state.orcamentosAprovado.map(
-          (item: BugdetType) => {
+          (item: ProposalType) => {
             if (item.id === action.payload.id) {
               return (item = { ...action.payload });
             } else {
@@ -105,7 +105,7 @@ const orcamentoAprovadoListSlice = createSlice({
       (state, action: PayloadAction<string>) => {
         state.loading = false;
         state.orcamentosAprovado = state.orcamentosAprovado.filter(
-          (item: BugdetType) => item.id != action.payload
+          (item: ProposalType) => item.id != action.payload
         );
         state.error = "";
       }
@@ -120,7 +120,7 @@ const orcamentoAprovadoListSlice = createSlice({
 
 export const createOrcamentoAprovadoValueAsync = createAsyncThunk(
   "orcamentoAprovado/createOrcamentoAprovado",
-  async (createValueParams: BugdetType) => {
+  async (createValueParams: ProposalType) => {
     const newValue = await api
       .post(
         `https://art56-server-v2.vercel.app/orcamento/create`,
@@ -141,7 +141,7 @@ export const updateOrcamentoAprovadoByIdAsync = createAsyncThunk(
         `https://art56-server-v2.vercel.app/orcamento/update/${updateOrcamentoParams.orcamentoId}`,
         updateOrcamentoParams.data
       )
-      .then((resp: { data: BugdetType }) => resp.data);
+      .then((resp: { data: ProposalType }) => resp.data);
     return updatedOrcamento;
   }
 );
@@ -153,7 +153,7 @@ export const deleteOrcamentoAprovadoByIdAsync = createAsyncThunk(
       .delete(
         `https://art56-server-v2.vercel.app/orcamento/delete/${orcamentoId}`
       )
-      .then((resp: { data: BugdetType }) => resp.data);
+      .then((resp: { data: ProposalType }) => resp.data);
     return orcamentoValue.id;
   }
 );

@@ -47,7 +47,7 @@ export const deletePagamentoOrcamentoByIdAsync = createAsyncThunk(
   "orcamento/deletePagamentoOrcamentoById",
   async (pagamentoId: string) => {
     const pagamentoDeleted = await api.delete(`https://art56-server-v2.vercel.app/pagamento/delete/${pagamentoId}`);
-    console.log(pagamentoDeleted.data)
+
     return pagamentoDeleted
   }
 );
@@ -56,7 +56,6 @@ export const deleteDateOrcamentoByIdAsync = createAsyncThunk(
   "orcamento/deleteDateOrcamentoById",
   async (dateEvent: string) => {
     const pagamentoDeleted = await api.delete(`https://art56-server-v2.vercel.app/dateEvent/delete/${dateEvent}`);
-    console.log(pagamentoDeleted.data)
     return pagamentoDeleted
   }
 );

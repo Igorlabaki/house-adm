@@ -14,12 +14,7 @@ import { styled } from "nativewind";
 export const StyledFlatList = styled(FlatList<QuestionType>);
 
 export function QuestionFlatList() {
-  const dispatch = useDispatch();
   const questionList = useSelector((state: RootState) => state.questionList);
-
-  useEffect(() => {
-    dispatch(fecthQuestions());
-  }, []);
 
   if (questionList.loading) {
     return (
@@ -52,7 +47,7 @@ export function QuestionFlatList() {
           );
         }}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
-        ListEmptyComponent={() => <ListEmpty dataType="question" />}
+        ListEmptyComponent={() => <ListEmpty dataType="pergunta" />}
         className="flex-1"
       />
     </>
