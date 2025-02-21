@@ -22,6 +22,7 @@ import {
 import { useState } from "react";
 import { Button, Image, Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { api } from "services/axios";
 interface ImageFormProps {
   imageItem?: ImageType;
 }
@@ -36,36 +37,34 @@ export function ImageForm({ imageItem }: ImageFormProps) {
   /* const [urlImage, setUrlImage] = useState(); */
 
   async function handleFile() {
-    const formData = new FormData();
-
-    formData.append("api_key", "972746539144337");
-    formData.append("api_secret", "-odjGAqU-hd76JQeZUCHx5tbC8Y");
-    formData.append("upload_preset", "onbridge");
-
-    if (newImage) {
-      const uriParts = newImage.split(".");
-      const fileType = uriParts[uriParts.length - 1];
-
-      formData.append("file", {
-        uri: newImage,
-        name: `photo.${fileType}`,
-        type: `image/${fileType}`,
-      } as any);
-
-      // Envia a imagem para o Cloudinary
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/dzvyh5r33/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await response.json();
-      console.log("Upload bem-sucedido:", data);
-      return data;
-    } else {
+    if (!newImage) {
       console.log("Nenhuma imagem foi selecionada.");
+      return;
+    }
+  
+    const uriParts = newImage.split(".");
+    const fileType = uriParts[uriParts.length - 1];
+  
+    const formData = new FormData();
+    formData.append("file", {
+      uri: newImage,
+      name: `photo.${fileType}`,
+      type: `image/${fileType}`,
+    } as any);
+  
+    try {
+      const response = await api.post("/image/upload", {
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Upload bem-sucedido:", response);
+
+      return response.data.url
+    } catch (error) {
+      console.error("Erro ao fazer upload:", error);
     }
   }
 
@@ -138,59 +137,24 @@ export function ImageForm({ imageItem }: ImageFormProps) {
         }
       }}
       onSubmit={async (values: ImageType) => {
-        if (!imageItem) {
-          handleFile();
-          const newText = await dispatch(
-            createImageAsync({
-              tag: values?.tag,
-              area: values.area,
-              imageUrl: values.imageUrl,
-              position: Number(values.position),
-              responsiveMode: values?.responsiveMode,
-            })
-          );
-
-          if (newText.meta.requestStatus == "fulfilled") {
-            Toast.show("Text created successfully." as string, 3000, {
-              backgroundColor: "rgb(75,181,67)",
-              textColor: "white",
-            });
-          }
-
-          if (newText.meta.requestStatus == "rejected") {
-            Toast.show(error as string, 3000, {
-              backgroundColor: "#FF9494",
-              textColor: "white",
-            });
-          }
-        } else {
-          handleFile();
-          const updatedText = await dispatch(
-            updateImageByIdAsync({
-              imageId: imageItem.id,
-              data: {
-                tag: values?.tag,
-                area: values.area,
-                imageUrl: values.imageUrl,
-                position: Number(values.position),
-                responsiveMode: values?.responsiveMode,
-              },
-            })
-          );
-
-          if (updatedText.meta.requestStatus == "fulfilled") {
-            Toast.show("Text updated successfully." as string, 3000, {
-              backgroundColor: "rgb(75,181,67)",
-              textColor: "white",
-            });
-          }
-
-          if (updatedText.meta.requestStatus == "rejected") {
-            Toast.show(error as string, 3000, {
-              backgroundColor: "#FF9494",
-              textColor: "white",
-            });
-          }
+        const uploadedImageUrl = await handleFile();
+      
+      
+        const newText = await dispatch(
+          createImageAsync({
+            tag: values?.tag,
+            area: values.area,
+            imageUrl: uploadedImageUrl, // Salva a URL do S3
+            position: Number(values.position),
+            responsiveMode: values?.responsiveMode,
+          })
+        );
+      
+        if (newText.meta.requestStatus == "fulfilled") {
+          Toast.show("Imagem enviada com sucesso.", 3000, {
+            backgroundColor: "rgb(75,181,67)",
+            textColor: "white",
+          });
         }
       }}
     >

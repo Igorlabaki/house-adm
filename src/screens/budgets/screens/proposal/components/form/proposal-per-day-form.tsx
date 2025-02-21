@@ -249,12 +249,12 @@ export function ProposalPerDayForm({
                   }`}
                   type="cel-phone"
                   placeholder={
-                    errors.description
-                      ? errors.description.toString()
+                    errors.whatsapp
+                      ? errors.whatsapp.toString()
                       : "Digite o whatsapp do cliente..."
                   }
                   placeholderTextColor={
-                    errors.description ? "rgb(127 29 29)" : "rgb(156 163 175)"
+                    errors.whatsapp ? "rgb(127 29 29)" : "rgb(156 163 175)"
                   }
                   options={{
                     maskType: "BRL",

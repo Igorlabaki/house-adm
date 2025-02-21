@@ -15,9 +15,36 @@ export interface ExpenseType {
   category:  "TAX" | "INVESTMENT" | "MAINTENANCE" | "ADVERTISING";
 }
 
-const initialState = {
+export type ExpenseRecurring = {
+  name: string;
+  monthly: number;
+  annual: number;
+}
+
+export type ExpenseEsporadic = {
+  name: string;
+  total: number
+}
+
+export interface ExpenseAnaliseType {
+  error: string,
+  loading: boolean,
+  analysis: {
+    total: {
+      monthly: number,
+      annual: number,
+      esporadic: number
+    },
+    recurring : ExpenseRecurring[],
+    esporadic : ExpenseEsporadic[],
+  }
+  expenses: ExpenseType[],
+}
+
+const initialState : ExpenseAnaliseType = {
   loading: false,
   expenses: [],
+  analysis: null,
   error: "",
 };
 
@@ -58,6 +85,21 @@ const expenseListSlice = createSlice({
     builder.addCase(fecthExpenses.rejected, (state, action) => {
       state.loading = false;
       state.expenses = state.expenses;
+      state.error = action.error.message;
+    });
+
+    // get Analysis
+    builder.addCase(getAnalysisExpenseAsync.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(getAnalysisExpenseAsync.fulfilled, (state, action) => {
+      state.loading = false;
+      state.analysis = action.payload.data;
+      state.error = "";
+    }),
+    builder.addCase(getAnalysisExpenseAsync.rejected, (state, action) => {
+      state.loading = false;
+      state.analysis = state.analysis;
       state.error = action.error.message;
     });
 
@@ -122,6 +164,22 @@ export const createExpenseAsync = createAsyncThunk(
     try {
       const response = await api
       .post(`/expense/create`, params)
+      .then((resp) => {
+        return resp.data;
+      })
+    return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }      
+);
+
+export const getAnalysisExpenseAsync = createAsyncThunk(
+  "expense/getAnalysisExpense",
+  async (url:string, { rejectWithValue }) => {
+    try {
+      const response = await api
+      .get(`/expense/analysis?${url}`)
       .then((resp) => {
         return resp.data;
       })

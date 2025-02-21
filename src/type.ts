@@ -36,6 +36,13 @@ export interface QuestionType {
   response: string;
   venueId: string;
 }
+export interface ContactType {
+  id?: string;
+  name: string;
+  role: string;
+  venueId: string;
+  whatsapp: string;
+}
 
 export interface ImageType {
   id?: string;

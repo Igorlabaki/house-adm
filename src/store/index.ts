@@ -9,14 +9,15 @@ import { personListReducer } from "./person/person-slice";
 import { optionStateReducer } from "./option/optionSlice";
 import { expenseListReducer } from "./expense/expenseSlice";
 import { serviceListReducer } from "./service/service-slice";
+import { contactListReducer } from "./contact/contact-slice";
 import { dateEventReducer } from "./dateEvent/dateEventSlice";
 import { questionListReducer } from "./question/questionSlice";
+import { scheduleListReducer } from "./schedule/schedule-slice";
 import { proposalListReducer } from "./proposal/proposal-slice";
 import { orcamentoByIdReducer } from "./orcamento/orcamentoSlice";
 import { organizationListReducer } from "./organization/organizationSlice";
 import { notificationListReducer } from "./notifications/notificationsSlice";
 import { orcamentoAprovadoListReducer } from "./budgetAprovado/bugetAprovadoSlice";
-import { scheduleListReducer } from "./schedule/schedule-slice";
 
 export const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ export const store = configureStore({
     optionState: optionStateReducer,
     daveEventList: dateEventReducer,
     expenseList: expenseListReducer,
+    contactList: contactListReducer,
     serviceList: serviceListReducer,
     proposalList: proposalListReducer,
     questionList: questionListReducer,

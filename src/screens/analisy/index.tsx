@@ -1,9 +1,9 @@
-import { StyledView } from "styledComponents";
+import { StyledScrollView, StyledView } from "styledComponents";
 import { AnalysisNavigator } from "./navigator";
 
 export function AnalisisScreen() {
   return (
-    <StyledView className="bg-gray-dark flex-1 flex flex-col h-full w-full">
+    <StyledView className="bg-gray-dark flex flex-col min-h-full w-full">
         <AnalysisNavigator />
     </StyledView>
   );

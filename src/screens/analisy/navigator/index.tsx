@@ -1,12 +1,14 @@
-import EventAnalysisScreen from "../events-analysis";
-import ProposalAnalysisScreen from "../proposal-analysis";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { ProposalAnalysis } from "../proposal-analysis";
+import { EventsAnalysis } from "../events-analysis";
+import FinancialAnalysisComponent from "../financial-analysis";
 
-const BudgetTabNavigator = createMaterialTopTabNavigator();
+
+const AnalysisTabNavigator = createMaterialTopTabNavigator();
 
 export function AnalysisNavigator() {
   return (
-    <BudgetTabNavigator.Navigator
+    <AnalysisTabNavigator.Navigator
       screenOptions={{
         tabBarStyle: {
           backgroundColor: "#1E1F22",
@@ -23,9 +25,9 @@ export function AnalysisNavigator() {
         },
       }}
     >
-      <BudgetTabNavigator.Screen name="Orcamentos" component={ProposalAnalysisScreen} />
-      <BudgetTabNavigator.Screen name="Eventos" component={EventAnalysisScreen} />
-     {/*  <BudgetTabNavigator.Screen name="Analise" component={AnalysiScreen} /> */}
-    </BudgetTabNavigator.Navigator>
+      <AnalysisTabNavigator.Screen name="Eventos" component={EventsAnalysis} />
+      <AnalysisTabNavigator.Screen name="Orcamentos" component={ProposalAnalysis} />
+     <AnalysisTabNavigator.Screen name="Financeiro" component={FinancialAnalysisComponent} />
+    </AnalysisTabNavigator.Navigator>
   );
 }

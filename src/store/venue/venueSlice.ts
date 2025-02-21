@@ -35,6 +35,18 @@ export interface VenueListDataResponse {
   type: string
 }
 
+export interface AnalysisByMonth {
+  month: string;
+  count: number;
+  total: number;
+  guestNumber: number;
+}
+export interface AnalysisTotal {
+  count: number;
+  total: number;
+  guestNumber: number;
+}
+
 export interface CreateVenueDataResponse {
   success: boolean,
   message: string,
@@ -45,14 +57,54 @@ export interface CreateVenueDataResponse {
   type: string
 }
 
-const initialState : {
+export interface TrafegoCountResponse {
+  success: boolean,
+  message: string,
+  data: {
+    all: number;
+    sortedSources: { name: string; count: number }[];
+  },
+  count: number,
+  type: string
+}
+export interface AnalysisResponse {
+  success: boolean,
+  message: string,
+  data: {
+    total: AnalysisTotal;
+    approved: AnalysisTotal;
+    analysisEventsByMonth: AnalysisByMonth[];
+    analysisProposalByMonth: AnalysisByMonth[];
+  },
+  count: number,
+  type: string
+}
+
+const initialState: {
   error: string,
   loading: boolean,
   venues: Venue[],
   venue: Venue,
-}  = {
-  loading: false,
+  eventTrafficNumbers: {
+    all: number;
+    sortedSources: { name: string; count: number }[];
+  },
+  proposalTrafficNumbers: {
+    all: number;
+    sortedSources: { name: string; count: number }[];
+  },
+  analysis: {
+    total: AnalysisTotal,
+    approved: AnalysisTotal;
+    analysisEventsByMonth: AnalysisByMonth[];
+    analysisProposalByMonth: AnalysisByMonth[];
+  }
+} = {
   venues: [],
+  analysis: null,
+  loading: false,
+  eventTrafficNumbers: null,
+  proposalTrafficNumbers: null,
   venue: {
     name: "",
     id: "",
@@ -83,10 +135,10 @@ export const fecthVenueByUserEmail: any = createAsyncThunk(
 
     try {
       const response = await api
-      .get(
-        `/venue/list?${url}`
-      )
-      .then((response) =>  response.data);
+        .get(
+          `/venue/list?${url}`
+        )
+        .then((response) => response.data);
 
       return response;
     } catch (error: any) {
@@ -108,12 +160,57 @@ const venueListSlice = createSlice({
     builder.addCase(fecthVenueByUserEmail.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(fecthVenueByUserEmail.fulfilled, (state, action:PayloadAction<VenueListDataResponse>) => {
+    builder.addCase(fecthVenueByUserEmail.fulfilled, (state, action: PayloadAction<VenueListDataResponse>) => {
       state.loading = false;
       state.venues = action.payload.data.venueList;
       state.error = "";
     }),
       builder.addCase(fecthVenueByUserEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.venues = [];
+        state.error = action.error.message;
+      });
+
+    // Fecth Traffic numbers
+    builder.addCase(getProposalTrafficNumberVenueAsync.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(getProposalTrafficNumberVenueAsync.fulfilled, (state, action: PayloadAction<TrafegoCountResponse>) => {
+      state.loading = false;
+      state.proposalTrafficNumbers = action.payload.data;
+      state.error = "";
+    }),
+      builder.addCase(getProposalTrafficNumberVenueAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.proposalTrafficNumbers = state.proposalTrafficNumbers;
+        state.error = action.error.message;
+      });
+
+    // Fecth Traffic numbers
+    builder.addCase(getEventTrafficNumberVenueAsync.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(getEventTrafficNumberVenueAsync.fulfilled, (state, action: PayloadAction<TrafegoCountResponse>) => {
+      state.loading = false;
+      state.eventTrafficNumbers = action.payload.data;
+      state.error = "";
+    }),
+      builder.addCase(getEventTrafficNumberVenueAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.eventTrafficNumbers = state.eventTrafficNumbers;
+        state.error = action.error.message;
+      });
+
+    // Fecth Traffic numbers
+    builder.addCase(analysisByMonthVenueAsync.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(analysisByMonthVenueAsync.fulfilled, (state, action: PayloadAction<AnalysisResponse>) => {
+      state.loading = false;
+      state.analysis = action.payload.data;
+      state.error = "";
+    }),
+      builder.addCase(analysisByMonthVenueAsync.rejected, (state, action) => {
         state.loading = false;
         state.venues = [];
         state.error = action.error.message;
@@ -148,7 +245,7 @@ const venueListSlice = createSlice({
         }
       });
       state.venue = action.payload.data,
-      state.error = "";
+        state.error = "";
     }),
       builder.addCase(updateVenueAsync.rejected, (state, action) => {
         state.loading = false;
@@ -192,18 +289,69 @@ const venueListSlice = createSlice({
 
 export const createVenueAsync = createAsyncThunk(
   "venue/create",
-  async (params: {organizationId: string, data: CreateVenueFormSchema}, { rejectWithValue }) => {
+  async (params: { organizationId: string, data: CreateVenueFormSchema }, { rejectWithValue }) => {
     try {
       const newVenue = await api
-      .post(`/venue/create`, params)
-      .then((resp) => {
-        return resp.data;
-      })
-    return newVenue;
+        .post(`/venue/create`, params)
+        .then((resp) => {
+          return resp.data;
+        })
+      return newVenue;
     } catch (error) {
       return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
     }
-   
+
+  }
+);
+
+export const getProposalTrafficNumberVenueAsync = createAsyncThunk(
+  "venue/proposalTrafficNumbers",
+  async (url: string, { rejectWithValue }) => {
+    try {
+      const response = await api
+        .get(`/venue/trafficCount?${url}`)
+        .then((resp) => {
+          return resp.data;
+        })
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+
+  }
+);
+
+export const getEventTrafficNumberVenueAsync = createAsyncThunk(
+  "venue/eventTrafficNumbers",
+  async (url: string, { rejectWithValue }) => {
+    try {
+      const response = await api
+        .get(`/venue/trafficCount?${url}`)
+        .then((resp) => {
+          return resp.data;
+        })
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+
+  }
+);
+
+export const analysisByMonthVenueAsync = createAsyncThunk(
+  "venue/analysis",
+  async (url: string, { rejectWithValue }) => {
+    try {
+      const response = await api
+        .get(`/venue/analysisByMonth?${url}`)
+        .then((resp) => {
+          return resp.data;
+        })
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+
   }
 );
 
@@ -225,18 +373,18 @@ export const selectVenueAsync = createAsyncThunk(
 
 export const updateVenueAsync = createAsyncThunk(
   "venue/updated",
-  async (data: UpdateVenueSchema , { rejectWithValue }) => {
+  async (data: UpdateVenueSchema, { rejectWithValue }) => {
     try {
-      const  updatedVenue = await api
-      .put(
-        `/venue/update`,
-        data
-      )
-      .then((resp: { data: any }) => resp.data);
+      const updatedVenue = await api
+        .put(
+          `/venue/update`,
+          data
+        )
+        .then((resp: { data: any }) => resp.data);
       return updatedVenue
-    return updatedVenue;
+      return updatedVenue;
     } catch (error) {
-      
+
       return rejectWithValue(error.data?.message || "Erro ao deletar locacao.");
     }
   }

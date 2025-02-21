@@ -11,6 +11,7 @@ import {
   Feather,
   FontAwesome5,
   FontAwesome6,
+  Foundation,
   Ionicons,
 } from "@expo/vector-icons";
 
@@ -64,6 +65,10 @@ export default function VenueMenu({
     navigation.navigate("OwnersScreen", { type: "VENUE"});
   };
 
+  const navigateToContactScreen = () => {
+    navigation.navigate("ContactScreen");
+  };
+
 
   return (
     <StyledModal
@@ -104,6 +109,18 @@ export default function VenueMenu({
               Proprietarios
             </StyledText>
             <Feather name="users" size={20} color="white" />
+          </StyledPressable>
+          <StyledPressable
+            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+            onPress={() =>{ 
+              navigateToContactScreen()
+              setMenuModalIsOpen(false)
+            }}
+          >
+            <StyledText className="text-white font-bold text-start w-[130px]">
+              Contatos
+            </StyledText>
+            <Foundation name="telephone" size={20} color="white" />
           </StyledPressable>
           <StyledPressable
             className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"

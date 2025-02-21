@@ -58,7 +58,6 @@ export const authenticateUser: any = createAsyncThunk(
       if (response?.accessToken) {
         await storageAccessTokenSave(response?.accessToken);
       }
-    
       return response;
     } catch (error: any) {
       return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");

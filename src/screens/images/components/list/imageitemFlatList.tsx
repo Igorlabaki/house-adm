@@ -15,7 +15,7 @@ export  function ImageItemFlatList({ image }: ItemFlatListProps) {
   return (
     <StyledPressable
       onPress={() => setIsModalOpen(true)}
-      className="flex flex-row items-start  justify-center px-3 py-5 bg-[#313338] w-full rounded-md overflow-hidden shadow-lg relative gap-x-3"
+      className="flex flex-row items-start  justify-center px-1 py-5 bg-[#313338] w-full rounded-lg overflow-hidden shadow-lg relative gap-x-3"
     >
       <StyledView className="overflow-hidden rounded-md">
       <Image

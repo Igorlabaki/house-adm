@@ -25,7 +25,6 @@ export function BudgetNavigator() {
     >
       <BudgetTabNavigator.Screen name="Orcamentos" component={PendingScreen} />
       <BudgetTabNavigator.Screen name="Eventos" component={Concludedcreen} />
-     {/*  <BudgetTabNavigator.Screen name="Analise" component={AnalysiScreen} /> */}
     </BudgetTabNavigator.Navigator>
   );
 }
