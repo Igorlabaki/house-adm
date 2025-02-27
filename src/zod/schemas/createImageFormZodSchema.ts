@@ -3,8 +3,8 @@ import { z } from 'zod';
 export const createImageFormSchema = z.object({
   imageUrl: z.unknown({
     required_error: 'Este campo e obrigatorio!',
-  }),
-  area: z
+  }).optional(),
+  description: z
     .string({
       required_error: 'Este campo e obrigatorio!',
     })

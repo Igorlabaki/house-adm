@@ -1,22 +1,19 @@
+import { useState } from "react";
 import { format } from "date-fns";
 import { PaymentType } from "type";
+import { PaymentModal } from "../modal";
 import { formatCurrency } from "react-native-format-currency";
 import { StyledPressable, StyledText, StyledView } from "styledComponents";
 
-interface PaymentItemListProps {
-  index: number;
+interface ItemFlatListProps {
   payment: PaymentType;
-  setSelectedPayment: React.Dispatch<React.SetStateAction<PaymentType>>;
 }
 
-export default function PaymentItemList({
-  index,
-  payment,
-  setSelectedPayment
-}: PaymentItemListProps) {
+export function PaymentItemFlatList({ payment }: ItemFlatListProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <StyledPressable
-      onPress={() => setSelectedPayment(payment)}
+      onPress={() => setIsModalOpen(true)}
       delayLongPress={5000}
       key={payment?.id}
       className="flex flex-col items-start justify-start px-5 py-5 bg-[#313338] w-full rounded-md overflow-hidden shadow-lg relative mt-2"
@@ -40,6 +37,14 @@ export default function PaymentItemList({
           </StyledText>
         </StyledView>
       </StyledView>
+      {isModalOpen && (
+        <PaymentModal
+          type="UPDATE"
+          payment={payment}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        />
+      )}
     </StyledPressable>
   );
 }

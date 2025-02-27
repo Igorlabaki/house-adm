@@ -7,19 +7,15 @@ import { ActivityIndicator, FlatList } from "react-native";
 import { AppDispatch, RootState } from "@store/index";
 import { ListEmpty } from "@components/list/ListEmpty";
 import { fecthImages } from "@store/image/imagesSlice";
-import { ImageItemFlatList } from "./imageitemFlatList";
+import { ImageItemFlatList } from "./item-flat-list";
 import { StyledText, StyledView } from "styledComponents";
 import { ItemSeparatorList } from "@components/list/itemSeparatorList";
+import { Venue } from "@store/venue/venueSlice";
 
 export const StyledFlatList = styled(FlatList<ImageType>);
 
 export function ImageFlatList() {
-  const dispatch = useDispatch<AppDispatch>();
   const imageList = useSelector((state: RootState) => state.imageList);
-
-  useEffect(() => {
-    dispatch(fecthImages());
-  }, []);
 
   if (imageList.loading) {
     return (
@@ -29,7 +25,7 @@ export function ImageFlatList() {
       </StyledView>
     );
   }
-  
+
   return (
     <>
       <StyledFlatList

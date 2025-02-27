@@ -1,15 +1,17 @@
 import moment from "moment";
 import { Formik } from "formik";
-import { PaymentType } from "type";
-import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@store/index";
+import { Image } from "react-native";
+import { useRef, useState } from "react";
 import Toast from "react-native-simple-toast";
+import * as ImagePicker from "expo-image-picker";
 import { Calendar } from "react-native-calendars";
+import { MaterialIcons } from "@expo/vector-icons";
+import { AppDispatch, RootState } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import {
-  createPaymentAsync,
-  updatePaymentAsync,
+  createPaymentWhitoutImageAsync,
+  createPaymentWithImageAsync,
 } from "@store/payment/payment-slice";
 import { fetchProposalByIdAsync } from "@store/proposal/proposal-slice";
 import { transformMoneyToNumber } from "function/transform-money-to-number";
@@ -25,35 +27,57 @@ import {
   StyledTouchableOpacity,
   StyledView,
 } from "styledComponents";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface PaymentFormProps {
   proposalId: string;
-  selectedPayment: PaymentType;
-  setDeleteModalIsOpen: (value: React.SetStateAction<boolean>) => void;
-  setSelectedPayment: (value: React.SetStateAction<PaymentType | null>) => void;
+  setIsModalOpen: (value: React.SetStateAction<boolean>) => void;
 }
 
-export function PaymentFormComponent({
+export function CretePaymentFormComponent({
   proposalId,
-  selectedPayment,
-  setSelectedPayment,
-  setDeleteModalIsOpen,
+  setIsModalOpen,
 }: PaymentFormProps) {
-  const [selected, setSelected] = useState<any>();
-  const [isLoading, setIsLoading] = useState<boolean>();
-  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
+  const [selected, setSelected] = useState<any>();
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+
   const formikRef = useRef(null);
+
   const venue = useSelector((state: RootState) => state?.venueList.venue);
+  const loading = useSelector(
+    (state: RootState) => state?.proposalList.loading
+  );
+
   const user = useSelector((state: RootState) => state?.user.user);
+
+  const pickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permissão para acessar as fotos é necessária!");
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    return result.assets[0].uri;
+  };
+
   return (
     <Formik
       innerRef={formikRef}
       validationSchema={toFormikValidationSchema(createPaymentFormSchema)}
       initialValues={{
-        amount: selectedPayment ? String(selectedPayment?.amount * 100) : "0",
-        paymentDate: selectedPayment ? selectedPayment?.paymentDate : "",
+        amount: "",
+        paymentDate: "",
       }}
       validate={(values) => {
         try {
@@ -71,98 +95,119 @@ export function PaymentFormComponent({
       }}
       onSubmit={async (values: CreatePaymentFormSchema) => {
         dispatch(fetchProposalByIdAsync(proposalId));
-        setIsLoading(true);
-        if (selectedPayment) {
+
+        if (values.imageUrl) {
+          const uriParts = values.imageUrl.split(".");
+          const fileType = uriParts[uriParts.length - 1];
+
+          const formData = new FormData();
+
+          formData.append("file", {
+            uri: values.imageUrl,
+            name: `photo.${fileType}`,
+            type: `image/${fileType}`,
+          } as any);
+
+          formData.append("userId", user?.id);
+          formData.append("venueId", venue?.id);
+          formData.append("proposalId", proposalId);
+          formData.append("username", user?.username);
+          formData.append("paymentDate", values.paymentDate);
+          formData.append("amount", transformMoneyToNumber(values.amount));
+
           const response = await dispatch(
-            updatePaymentAsync({
-              data: {
-                amount: Number(transformMoneyToNumber(values.amount)),
-                paymentDate: values.paymentDate,
-              },
-              userId: user?.id,
-              venueId: venue?.id,
+            createPaymentWithImageAsync(formData)
+          );
+
+          if (response.meta.requestStatus == "fulfilled") {
+            dispatch(fetchProposalByIdAsync(proposalId));
+            Toast.show("Pagamento cadastrado com sucesso.", 3000, {
+              backgroundColor: "rgb(75,181,67)",
+              textColor: "white",
+            });
+            setIsModalOpen(false);
+          }
+
+          if (response.meta.requestStatus == "rejected") {
+            Toast.show(response.payload.data, 3000, {
+              backgroundColor: "rgb(75,181,67)",
+              textColor: "white",
+            });
+          }
+        } else {
+          const response = await dispatch(
+            createPaymentWhitoutImageAsync({
+              amount: Number(transformMoneyToNumber(values.amount)),
+              paymentDate: values.paymentDate,
               proposalId: proposalId,
+              userId: user?.id,
               username: user?.username,
-              paymentId: selectedPayment.id
+              venueId: venue?.id,
             })
           );
 
           if (response.meta.requestStatus == "fulfilled") {
             dispatch(fetchProposalByIdAsync(proposalId));
-            Toast.show(response?.payload?.message as string, 3000, {
+            Toast.show(response?.payload?.message, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
-            setSelectedPayment(null);
+            setIsModalOpen(false);
           }
 
           if (response.meta.requestStatus == "rejected") {
-            Toast.show(response.payload as string, 3000, {
+            Toast.show(response?.payload, 3000, {
               backgroundColor: "#FF9494",
               textColor: "white",
             });
           }
-
-          setIsLoading(false);
-          return;
         }
-
-        const response = await dispatch(
-          createPaymentAsync({
-            amount: Number(transformMoneyToNumber(values.amount)),
-            paymentDate: values.paymentDate,
-            proposalId: proposalId,
-            userId: user?.id,
-            username: user?.username,
-            venueId: venue?.id,
-          })
-        );
-
-        if (response.meta.requestStatus == "fulfilled") {
-          dispatch(fetchProposalByIdAsync(proposalId));
-          Toast.show(response?.payload?.message, 3000, {
-            backgroundColor: "rgb(75,181,67)",
-            textColor: "white",
-          });
-        }
-
-        if (response.meta.requestStatus == "rejected") {
-          Toast.show(response?.payload, 3000, {
-            backgroundColor: "#FF9494",
-            textColor: "white",
-          });
-        }
-
-        setIsLoading(false);
-        return;
       }}
     >
       {({
-        handleChange,
-        handleBlur,
-        handleSubmit,
         values,
         errors,
+        handleBlur,
+        handleSubmit,
         getFieldMeta,
+        handleChange,
         setFieldValue,
-        resetForm,
       }) => {
-        useEffect(() => {
-          // Utilize o `setFieldValue` fora do componente, usando a referência do Formik
-          if (formikRef.current && selectedPayment) {
-            formikRef.current.setFieldValue(
-              "paymentDate",
-              moment.utc(selectedPayment?.paymentDate).format("DD/MM/yyyy")
-            );
-            formikRef.current.setFieldValue(
-              "amount",
-              String(selectedPayment?.amount)
-            );
-          }
-        }, [selectedPayment]);
         return (
-          <StyledView className=" w-full mx-auto my-5 flex flex-col">
+          <StyledView className=" w-full mx-auto my-5 flex flex-col px-3">
             <StyledView className="flex flex-col gap-2 ">
+              <StyledView className="relative flex-col gap-y-2 flex justify-center items-center w-full ">
+                <StyledView className="h-[100px] flex justify-center items-center w-[100%] border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
+                  {getFieldMeta("imageUrl").value ? (
+                    <Image
+                      source={{ uri: getFieldMeta("imageUrl").value as string }}
+                      style={{ width: "100%", height: "100%" }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <StyledText className="text-md text-white font-bold">
+                      Selecione o comprovante
+                    </StyledText>
+                  )}
+                </StyledView>
+                <StyledView className=" flex justify-center flex-row items-center gap-x-10 py-3 w-full">
+                  <StyledPressable
+                    onPress={async () => {
+                      const url = await pickImage();
+                      setFieldValue("imageUrl", url);
+                    }}
+                  >
+                    <MaterialIcons
+                      name="add-photo-alternate"
+                      size={24}
+                      color="white"
+                    />
+                  </StyledPressable>
+                </StyledView>
+                <StyledText className="text-red-700 text-[15px] w-full">
+                  {errors.imageUrl && errors.imageUrl}
+                </StyledText>
+              </StyledView>
               <StyledText className="font-semibold text-custom-gray text-[14px]">
                 Data do Pagamento:
               </StyledText>
@@ -228,11 +273,12 @@ export function PaymentFormComponent({
                   </StyledView>
                 </StyledTouchableOpacity>
               </StyledModal>
-              {errors?.paymentDate && errors?.paymentDate.toString() != "Required" && (
-                <StyledText className="text-red-700 font-semibold">
-                  {errors.paymentDate?.toString()}
-                </StyledText>
-              )}
+              {errors?.paymentDate &&
+                errors?.paymentDate.toString() != "Required" && (
+                  <StyledText className="text-red-700 font-semibold">
+                    {errors.paymentDate?.toString()}
+                  </StyledText>
+                )}
             </StyledView>
             <StyledView className="flex flex-col gap-y-2 mt-2">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
@@ -268,25 +314,9 @@ export function PaymentFormComponent({
                 className="bg-gray-ligth flex justify-center items-center py-3  rounded-md w-full"
               >
                 <StyledText className="font-bold text-custom-white">
-                  {isLoading
-                    ? "Enviando"
-                    : selectedPayment
-                    ? "Atualizar"
-                    : "Criar"}
+                  {loading ? "Enviando" : "Cadastrar"}
                 </StyledText>
               </StyledPressable>
-              {selectedPayment && (
-                <StyledPressable
-                  onPress={() => {
-                    setDeleteModalIsOpen(true);
-                  }}
-                  className="bg-gray-ligth flex justify-center items-center py-3 rounded-md w-full"
-                >
-                  <StyledText className="font-bold text-custom-white">
-                    {isLoading ? "Deletando" : "Deletar"}
-                  </StyledText>
-                </StyledPressable>
-              )}
             </StyledView>
           </StyledView>
         );

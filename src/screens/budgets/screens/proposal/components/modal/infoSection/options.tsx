@@ -5,12 +5,12 @@ import {
   Ionicons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProposalModal } from "..";
 import { ProposalType } from "type";
 import HistoryModal from "../history";
-import { RootState } from "@store/index";
-import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
 import ContratoFormModal from "../contratoForm";
 import { SendModal } from "@components/list/sendModal";
 import { useNavigation } from "@react-navigation/native";
@@ -18,6 +18,7 @@ import { captureAndShare } from "function/captureAnsShare";
 import { proposalViaEmail } from "function/proposalViaEmail";
 import { proposalViaWhatsapp } from "function/proposalViaWhatsapp";
 import { StyledPressable, StyledText, StyledView } from "styledComponents";
+import { fecthContracts } from "@store/contract/contract-slice";
 interface OptionsComponentProps {
   onCancel: () => void;
 }
@@ -32,7 +33,23 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
   const proposal: ProposalType = useSelector(
     (state: RootState) => state.proposalList.proposal
   );
+
+  const organization = useSelector(
+    (state: RootState) => state.organizationList.organization
+  );
+  const contracts = useSelector(
+    (state: RootState) => state.contractList.contract
+  );
+
+  const dispatch = useDispatch<AppDispatch>();
+  const queryParams = new URLSearchParams();
+
   const navigation = useNavigation();
+
+  useEffect(() => {
+   queryParams.append("organizationId",organization?.id)
+  }, [organization])
+  
   return (
     <StyledView className="w-full">
       <StyledPressable
@@ -73,7 +90,10 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
       </StyledPressable>
       <StyledPressable
         className="bg-gray-reg   px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
-        onPress={() => setContratoModalIsOpen(true)}
+        onPress={async () => {
+          await dispatch(fecthContracts(`${queryParams.toString()}`));
+          setContratoModalIsOpen(true);
+        }}
       >
         <StyledText className="text-white font-bold text-start w-[130px]">
           Enviar Contrato
@@ -82,7 +102,7 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
       </StyledPressable>
       <StyledPressable
         className="bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
-        onPress={() =>{
+        onPress={() => {
           onCancel();
           navigation.navigate("PagamentoScreen");
         }}

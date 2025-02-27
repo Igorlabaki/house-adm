@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Entypo } from "@expo/vector-icons";
-import ContratoPessoaFisicaForm from "../form/contratoPessoaFisicaForm";
 import ContratoPessoaJuridicaForm from "../form/contratoPessoaJuridicaForm";
 import {
   StyledModal,
@@ -9,6 +8,7 @@ import {
   StyledText,
   StyledView,
 } from "styledComponents";
+import NaturalPersonContractForm from "../form/natural-person-contract-form";
 
 interface ContratoModalProps {
   isModalOpen: boolean;
@@ -76,7 +76,7 @@ export default function ContratoFormModal({
           </StyledView>
         </StyledView>
         {formType === "Pessoa Fisica" ? (
-          <ContratoPessoaFisicaForm />
+          <NaturalPersonContractForm />
         ) : (
           <ContratoPessoaJuridicaForm  />
         )}

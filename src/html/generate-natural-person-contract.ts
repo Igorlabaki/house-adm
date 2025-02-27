@@ -1,30 +1,61 @@
-import { format } from "date-fns";
-import { BugdetType } from "type";
-import numeroPorExtenso from "numero-por-extenso";
 import moment from "moment";
+import { format } from "date-fns";
+import { ClauseType, ClientType, OwnerType, ProposalType } from "type";
+import { UpdatePersonalInfoRequestParamSchema } from "@schemas/contract/natural-person-contract-form";
+import { clientVariables, ownerVariables, proposalVariables, venueVariables } from "const/contract-variables";
+import { Venue } from "@store/venue/venueSlice";
 
-export interface gerarContratoHTMLParams {
-    orcamento: BugdetType;
-    infoPessoais: InfoPessoaisFisicaFormParams;
+export interface GenerateNaturalPersonContract {
+    contractInformation: {
+        title?: string,
+        clauses: ClauseType[]
+    },
+    venue: Venue;
+    owner: OwnerType;
+    client: ClientType;
+    proposal: ProposalType;
 }
 
-export interface InfoPessoaisFisicaFormParams {
-    nomeCompleto: string;
-    cpf: string;
-    rg?: string;
-    rua: string;
-    numero: string;
-    bairro: string;
-    cep: string;
-    cidade: string;
-    estado: string;
-}
-
-export function gerarContratoPessoaFisicaHTML(
-    dadosContrato: gerarContratoHTMLParams
+export function generateNaturalPersonContractHTML(
+    data: GenerateNaturalPersonContract
 ) {
-    const { orcamento, infoPessoais } = dadosContrato;
+    const { proposal, client, contractInformation, owner } = data;
     const dataHoje = new Date();
+/*     console.log("OWNER","\n",owner,"\n")
+    console.log("Proposal","\n",proposal,"\n")
+    console.log("Client","\n",client,"\n") */
+
+    function createVariablesMap(data: GenerateNaturalPersonContract) {
+        const allVariables = [...venueVariables, ...ownerVariables, ...clientVariables, ...proposalVariables];
+    
+        const variables: Record<string, string> = {};
+    
+        allVariables.forEach(({ key }) => {
+            // Divide a chave "venue.cep" -> ["venue", "cep"]
+            const path = key.split('.');
+    
+            // Percorre o objeto `data` para obter o valor real
+            let value: any = data;
+            for (const prop of path) {
+                if (value && typeof value === 'object') {
+                    value = value[prop];
+                } else {
+                    value = "";
+                    break;
+                }
+            }
+    
+            variables[key] = value?.toString() || "";
+        });
+        return variables;
+    }
+    
+    const variables = createVariablesMap(data);
+
+    function replaceVariables(text: string, variables: Record<string, string>): string {
+        return text.replace(/{{(.*?)}}/g, (_, key) => variables[key] || "");
+    }
+
     const htmlContrato = `
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -74,8 +105,35 @@ export function gerarContratoPessoaFisicaHTML(
     </style>
 </head>
 <body>
-    <h1>CONTRATO DE LOCAÇÃO PARA TEMPORADA</h1>
+    <h1>${contractInformation.title}</h1>
 
+     ${contractInformation.clauses.map((item: ClauseType) => `
+        <div class="section">
+            <p class="clause-title">${item.title}</p>
+            <p>${replaceVariables(item.text, variables)}</p>
+        </div>
+    `).join("")}
+
+   <div class="section">
+        <p class="clause-title">XX - DAS ASSINATURAS:</p>
+        <p>Por estarem acordadas, assinam o presente instrumento.</p>
+    </div>
+    <div class="signatures">
+        <p>São Paulo, ${format(dataHoje, "dd/MM/yyyy")}.</p>
+        <div class="signature-line"></div>
+        <p>Assinatura do(a) Locador(a)</p>
+        <div class="signature-line"></div>
+        <p>Assinatura do(a) Locatário(a)</p>
+    </div>
+</body>
+</html>
+`;
+
+    return htmlContrato;
+}
+
+/*     
+  
     <div class="section margin-top">
         <p class="clause-title">I - O LOCADOR:</p>
         <p>Rafael Alberto Gonçalo, RG 6.556.401-7, CPF 017.160.788-06, Brasileiro, residente e domiciliado na Av. Alberto Ramos 756, São Paulo/SP, CEP 03222-00;</p>
@@ -83,7 +141,7 @@ export function gerarContratoPessoaFisicaHTML(
 
     <div class="section">
         <p class="clause-title">II - O(A) LOCATÁRIO(A):</p>
-        <p><strong>${infoPessoais?.nomeCompleto}, ${infoPessoais?.rg ? `RG ${infoPessoais.rg
+        <p><strong>${infoPessoais?.co}, ${infoPessoais?.rg ? `RG ${infoPessoais.rg
             },` : ""}  CPF ${infoPessoais.cpf
         }</strong>, residente e domiciliado na Rua <strong>${infoPessoais?.rua
         } ${infoPessoais?.numero} - ${infoPessoais?.bairro
@@ -263,16 +321,6 @@ export function gerarContratoPessoaFisicaHTML(
     </ul>
 
     <div class="page-break"></div>
-</body>
-</html>
-`;
-
-    return htmlContrato;
-}
-
-/*     
-  
-  
   
   
    

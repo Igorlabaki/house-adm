@@ -1,7 +1,7 @@
 import {
   gerarContratoHTMLParams,
   gerarContratoPessoaFisicaHTML,
-} from "html/contrato-pessoa-fisica";
+} from "html/generate-natural-person-contract";
 import * as MailComposer from "expo-mail-composer";
 import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";

@@ -1,72 +1,41 @@
+import { useState } from "react";
 import { Formik } from "formik";
-import Toast from "react-native-simple-toast";
-import * as ImagePicker from "expo-image-picker";
-import { useDispatch, useSelector } from "react-redux";
-
 import { ImageType } from "type";
+import { Image } from "react-native";
+import { api } from "services/axios";
+import Toast from "react-native-simple-toast";
+import { Venue } from "@store/venue/venueSlice";
+import * as ImagePicker from "expo-image-picker";
+import { MaterialIcons } from "@expo/vector-icons";
 import { AppDispatch, RootState } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { createImageFormSchema } from "@schemas/createImageFormZodSchema";
+import { updateImageRequestParams } from "@schemas/image/update-image-in-db-params-schema";
 import {
   createImageAsync,
   updateImageByIdAsync,
+  updateImageInfoByIdAsync,
 } from "@store/image/imagesSlice";
 import {
-  StyledButton,
   StyledPressable,
   StyledScrollView,
   StyledText,
   StyledTextInput,
   StyledView,
 } from "styledComponents";
-import { useState } from "react";
-import { Button, Image, Pressable } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { api } from "services/axios";
+import { createImageRequestParams, CreateImageRequestParams } from "@schemas/image/create-image-params-schema";
+
 interface ImageFormProps {
-  imageItem?: ImageType;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function ImageForm({ imageItem }: ImageFormProps) {
+export function CreateImageForm({setIsModalOpen }: ImageFormProps) {
   const [newImage, setNewImage] = useState(null);
   const dispatch = useDispatch<AppDispatch>();
-  const error = useSelector<RootState>(
-    (state: RootState) => state.imageList.error
-  );
 
-  /* const [urlImage, setUrlImage] = useState(); */
-
-  async function handleFile() {
-    if (!newImage) {
-      console.log("Nenhuma imagem foi selecionada.");
-      return;
-    }
-  
-    const uriParts = newImage.split(".");
-    const fileType = uriParts[uriParts.length - 1];
-  
-    const formData = new FormData();
-    formData.append("file", {
-      uri: newImage,
-      name: `photo.${fileType}`,
-      type: `image/${fileType}`,
-    } as any);
-  
-    try {
-      const response = await api.post("/image/upload", {
-        body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log("Upload bem-sucedido:", response);
-
-      return response.data.url
-    } catch (error) {
-      console.error("Erro ao fazer upload:", error);
-    }
-  }
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
+  const isLoading : boolean = useSelector((state: RootState) => state.imageList.loading);
 
   const pickImage = async () => {
     const permissionResult =
@@ -115,16 +84,16 @@ export function ImageForm({ imageItem }: ImageFormProps) {
       validateOnBlur={false}
       validationSchema={toFormikValidationSchema(createImageFormSchema)}
       initialValues={{
-        id: imageItem?.id && imageItem.id,
-        imageUrl: imageItem?.imageUrl && imageItem.imageUrl,
-        area: imageItem?.area && imageItem.area,
-        responsiveMode: imageItem?.responsiveMode && imageItem.responsiveMode,
-        position: imageItem?.position && imageItem.position,
-        tag: imageItem?.tag && imageItem.tag,
+        venueId: venue?.id,
+        tag: "",
+        position: "",
+        imageUrl: "",
+        description: "",
+        responsiveMode: "",
       }}
       validate={(values) => {
         try {
-          createImageFormSchema.parse(values);
+          createImageRequestParams.safeParse(values);
           return {};
         } catch (error) {
           return error.errors.reduce((acc, curr) => {
@@ -136,25 +105,48 @@ export function ImageForm({ imageItem }: ImageFormProps) {
           }, {});
         }
       }}
-      onSubmit={async (values: ImageType) => {
-        const uploadedImageUrl = await handleFile();
-      
-      
-        const newText = await dispatch(
-          createImageAsync({
-            tag: values?.tag,
-            area: values.area,
-            imageUrl: uploadedImageUrl, // Salva a URL do S3
-            position: Number(values.position),
-            responsiveMode: values?.responsiveMode,
-          })
-        );
-      
-        if (newText.meta.requestStatus == "fulfilled") {
-          Toast.show("Imagem enviada com sucesso.", 3000, {
+
+      onSubmit={async (values: CreateImageRequestParams) => {
+        if (!newImage) {
+          Toast.show("Selecione uma imagem.", 3000, {
             backgroundColor: "rgb(75,181,67)",
             textColor: "white",
           });
+        }
+
+        if (newImage) {
+          const uriParts = newImage.split(".");
+          const fileType = uriParts[uriParts.length - 1];
+
+          const formData = new FormData();
+          formData.append("file", {
+            uri: newImage,
+            name: `photo.${fileType}`,
+            type: `image/${fileType}`,
+          } as any);
+          formData.append("tag", values.tag);
+          formData.append("position", values.position);
+          formData.append("venueId", String(values.venueId)); // Convertendo para string
+          formData.append("description", values.description);
+          formData.append("responsiveMode", values.responsiveMode); // Convertendo boolean para string
+
+          const response = await dispatch(createImageAsync(formData));
+
+          if (response.meta.requestStatus == "fulfilled") {
+            Toast.show("Imagem enviada com sucesso.", 3000, {
+              backgroundColor: "rgb(75,181,67)",
+              textColor: "white",
+            });
+            setIsModalOpen(false);
+          }
+
+          if (response.meta.requestStatus == "rejected") {
+            Toast.show(response.payload.data, 3000, {
+              backgroundColor: "rgb(75,181,67)",
+              textColor: "white",
+            });
+            setIsModalOpen(false);
+          }
         }
       }}
     >
@@ -170,9 +162,9 @@ export function ImageForm({ imageItem }: ImageFormProps) {
           <StyledView className="flex flex-col gap-y-3">
             <StyledView className="relative flex-col gap-y-2 flex justify-center items-center w-full ">
               <StyledView className="h-[200px] flex justify-center items-center w-full border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
-                {newImage || imageItem && (
+                {newImage && (
                   <Image
-                    source={{ uri: newImage ? newImage : imageItem.imageUrl }}
+                    source={{ uri: newImage }}
                     style={{ width: "100%", height: "100%" }}
                     resizeMode="cover"
                   />
@@ -180,7 +172,7 @@ export function ImageForm({ imageItem }: ImageFormProps) {
               </StyledView>
               <StyledView className=" flex justify-center flex-row items-center gap-x-10 py-3 w-full">
                 <StyledPressable
-                  onPress={() => {
+                  onPress={async () => {
                     pickImage();
                     setFieldValue("imageUrl", newImage);
                   }}
@@ -193,7 +185,7 @@ export function ImageForm({ imageItem }: ImageFormProps) {
                   {/* Se você quiser adicionar texto ou outros filhos, pode fazer aqui */}
                 </StyledPressable>
                 <StyledPressable
-                  onPress={() => {
+                  onPress={async () => {
                     takePhoto();
                     setFieldValue("imageUrl", newImage);
                   }}
@@ -215,7 +207,9 @@ export function ImageForm({ imageItem }: ImageFormProps) {
                 onBlur={handleBlur("position")}
                 value={values?.position?.toString()}
                 placeholder={
-                  errors.position ? errors.position : "Type the position"
+                  errors.position
+                    ? errors.position
+                    : "Digite a posicao da imagem"
                 }
                 placeholderTextColor={
                   errors.position ? "rgb(127 29 29)" : "rgb(156 163 175)"
@@ -229,18 +223,22 @@ export function ImageForm({ imageItem }: ImageFormProps) {
             </StyledView>
             <StyledView className="flex flex-col gap-y-1">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
-                Area
+                Descricao
               </StyledText>
               <StyledTextInput
-                onChangeText={handleChange("area")}
-                onBlur={handleBlur("area")}
-                value={values.area}
-                placeholder={errors.area ? errors.area : "Type the area"}
+                onChangeText={handleChange("description")}
+                onBlur={handleBlur("description")}
+                value={values.description}
+                placeholder={
+                  errors.description
+                    ? errors.description
+                    : "Type the description"
+                }
                 placeholderTextColor={
-                  errors.area ? "rgb(127 29 29)" : "rgb(156 163 175)"
+                  errors.description ? "rgb(127 29 29)" : "rgb(156 163 175)"
                 }
                 className={`rounded-md px-3 py-1 text-white ${
-                  errors.area
+                  errors.description
                     ? "bg-red-50 border-[2px] border-red-900 "
                     : "bg-gray-ligth"
                 }`}
@@ -275,7 +273,7 @@ export function ImageForm({ imageItem }: ImageFormProps) {
                 placeholder={
                   errors.responsiveMode
                     ? errors.responsiveMode
-                    : "Type the responsive mode"
+                    : "Digite a resonsividade da imagem"
                 }
                 style={{ textAlignVertical: "top" }}
                 placeholderTextColor={
@@ -290,13 +288,16 @@ export function ImageForm({ imageItem }: ImageFormProps) {
             </StyledView>
           </StyledView>
           <StyledPressable
-            onPress={() => handleSubmit()}
-            className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
-          >
-            <StyledText className="font-bold text-custom-white">
-              {imageItem ? "UPDATE" : "CREATE"}
-            </StyledText>
-          </StyledPressable>
+              disabled={isLoading ? true : false}
+              onPress={() => {
+                handleSubmit();
+              }}
+              className={`bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md`}
+            >
+              <StyledText className="font-bold text-custom-white">
+                {isLoading ? "Enviando" :  "Cadastrar"}
+              </StyledText>
+            </StyledPressable>
         </StyledScrollView>
       )}
     </Formik>

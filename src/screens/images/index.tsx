@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ImageModal } from "./components/modal";
-import { ImageFlatList } from "./components/list/imageFlatList";
-
+import { fecthImages } from "@store/image/imagesSlice";
+import { ImageFlatList } from "./components/list/flat-list";
 import { StyledPressable, StyledText, StyledView } from "styledComponents";
 import { SearchFilterListComponent } from "@components/list/searchFilterList";
+import { SearchFilterListByQueryComponent } from "@components/list/searchFilterListByQuery";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@store/index";
-import { fecthImages } from "@store/image/imagesSlice";
+import { AppDispatch, RootState } from "@store/index";
+import { Venue } from "@store/venue/venueSlice";
 
 export function ImageScreen() {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fecthImages());
-  }, []);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
+
+  const queryParams = new URLSearchParams();
+  queryParams.append("venueId", venue.id);
 
   return (
     <StyledView className="bg-gray-dark flex-1 pt-5 flex flex-col h-full w-full">
@@ -34,7 +34,13 @@ export function ImageScreen() {
         setIsModalOpen={setIsModalOpen}
         type="CREATE"
       />
-      <SearchFilterListComponent fectData={fecthImages} />
+      <SearchFilterListByQueryComponent
+        entityId={venue.id}
+        queryName="description"
+        entityName="venueId"
+        fectData={fecthImages}
+        queryParams={queryParams}
+      />
       <ImageFlatList />
     </StyledView>
   );

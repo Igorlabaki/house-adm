@@ -2,6 +2,7 @@ import { api } from "../../services/axios";
 import { UpdateVenueSchema } from "@schemas/venue/update-venue-params-schema";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { CreateVenueFormSchema } from "@schemas/venue/create-venue-params-schema";
+import { OwnerType, OwnerVenueType } from "type";
 
 export interface Venue {
   name: string;
@@ -12,7 +13,7 @@ export interface Venue {
   street: string;
   checkIn: string;
   createdAt: Date;
-  owners: String[];
+  ownerVenue: OwnerVenueType[] | null;
   maxGuest: number;
   checkOut: string;
   streetNumber: string;
@@ -112,11 +113,11 @@ const initialState: {
     city: "",
     state: "",
     street: "",
-    owners: [],
     maxGuest: 0,
     checkIn: "",
     checkOut: "",
     neighborhood: "",
+    ownerVenue: null,
     complement: null,
     streetNumber: "",
     pricePerDay: null,

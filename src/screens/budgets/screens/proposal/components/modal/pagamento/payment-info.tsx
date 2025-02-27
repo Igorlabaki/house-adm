@@ -19,7 +19,7 @@ export function PaymentInfo() {
   
   return (
     <StyledView>
-      <StyledView className="flex flex-row w-full justify-between items-center mt-10">
+      <StyledView className="flex flex-row w-full justify-between items-center my-3 px-1">
         <StyledView className="flex flex-row gap-x-2">
           <StyledText className="text-custom-white font-semibold text-md">
             Pago:

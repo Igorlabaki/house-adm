@@ -5,6 +5,7 @@ import { CreateProposalRequestParamsSchema } from "@schemas/proposal/create-prop
 import {  CreateProposaPerDaylRequestchema } from "@schemas/proposal/create-proposal-peer-day-form-schema";
 import { UpdateProposalPerDayRequestParamsSchema } from "@schemas/proposal/update-proposal-per-day-params-schema";
 import { UpdateProposalPerPersonRequestParamsSchema } from "@schemas/proposal/update-proposal-per-person-params-schema";
+import { UpdatePersonalInfoProposalSchema } from "@schemas/proposal/update-personal-info-proposal-params-schema";
 
 const initialState : {
   error: string;
@@ -43,6 +44,11 @@ const initialState : {
     },
     endDate: new Date(),
     email: "",
+    cep: "",
+    cpf: "",
+    street: "",
+    streetnumber: "",
+    completeName: "",
     paid: false,
     startDate: new Date(),
     venueId: "",
@@ -290,6 +296,22 @@ export const updateProposalPerPersonAsync = createAsyncThunk(
     try {
       const response = await api
         .put(`/proposal/updatePerPerson`, params)
+        .then((resp) => {
+          return resp.data;
+        })
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }
+);
+
+export const updateProposalPersonalInfoAsync = createAsyncThunk(
+  "proposal/updatedProposalPersonalInfo",
+  async (params: UpdatePersonalInfoProposalSchema, { rejectWithValue }) => {
+    try {
+      const response = await api
+        .put(`/proposal/updatePersonalInfo`, params)
         .then((resp) => {
           return resp.data;
         })

@@ -1,4 +1,4 @@
-import { gerarContratoHTMLParams, gerarContratoPessoaFisicaHTML } from "html/contrato-pessoa-fisica";
+import { gerarContratoHTMLParams, gerarContratoPessoaFisicaHTML } from "html/generate-natural-person-contract";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";

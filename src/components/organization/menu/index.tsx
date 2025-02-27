@@ -63,6 +63,10 @@ export default function OrganizationMenu({
     navigation.navigate("OwnersScreen", { type: "ORGANIZATION"});
   };
 
+  const navigateToContractScreen = () => {
+    navigation.navigate("ContractScreen");
+  };
+
   return (
     <StyledModal
       visible={isModalOpen}
@@ -102,6 +106,18 @@ export default function OrganizationMenu({
               Proprietarios
             </StyledText>
             <Feather name="users" size={20} color="white" />
+          </StyledPressable>
+          <StyledPressable
+            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+            onPress={() =>{ 
+              navigateToContractScreen()
+              setMenuModalIsOpen(false)
+            }}
+          >
+            <StyledText className="text-white font-bold text-start w-[130px]">
+              Contratos
+            </StyledText>
+            <Feather name="file-text" size={20} color="white" />
           </StyledPressable>
           <StyledPressable
             className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"

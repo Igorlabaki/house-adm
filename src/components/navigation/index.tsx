@@ -19,6 +19,7 @@ import { SelectedOrganizationScreen } from "screens/app-routes/organization/byId
 import { StyledPressable, StyledText, StyledView } from "styledComponents";
 import OwnerScreenComponent from "screens/app-routes/owner/ownerScreen";
 import ContactScreenComponent from "screens/app-routes/contact";
+import ContractScreen from "@components/contract";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -100,6 +101,22 @@ export default function AppNavigator() {
               return (
                 <StyledText className="text-white font-semibold text-lg">
                   Proprietarios
+                </StyledText>
+              );
+            },
+          }}
+
+        />
+
+        <Stack.Screen
+          name="ContractScreen"
+          component={ContractScreen}
+          options={{
+            title: "",
+            headerLeft: () => {
+              return (
+                <StyledText className="text-white font-semibold text-lg">
+                  Contrato
                 </StyledText>
               );
             },

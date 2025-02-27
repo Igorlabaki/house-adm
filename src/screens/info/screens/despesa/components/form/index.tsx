@@ -23,7 +23,6 @@ import {
   ExpenseType,
   updateExpenseByIdAsync,
 } from "@store/expense/expenseSlice";
-import { CreateDateEventFormData } from "zod/zodTypes/createDateFormZodType";
 import { Venue } from "@store/venue/venueSlice";
 import { transformMoneyToNumber } from "function/transform-money-to-number";
 

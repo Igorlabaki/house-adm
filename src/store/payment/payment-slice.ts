@@ -52,15 +52,30 @@ const paymentListSlice = createSlice({
       });
 
     // Create Payment Item
-    builder.addCase(createPaymentAsync.pending, (state) => {
+    builder.addCase(createPaymentWithImageAsync.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(createPaymentAsync.fulfilled, (state, action: any) => {
+    builder.addCase(createPaymentWithImageAsync.fulfilled, (state, action: any) => {
       state.loading = false;
       state.payments = [...state.payments, action.payload.data];
       state.error = "";
     }),
-      builder.addCase(createPaymentAsync.rejected, (state, action) => {
+      builder.addCase(createPaymentWithImageAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.payments = state.payments;
+        state.error = action.error.message;
+      });
+
+    // Create Payment Item
+    builder.addCase(createPaymentWhitoutImageAsync.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(createPaymentWhitoutImageAsync.fulfilled, (state, action: any) => {
+      state.loading = false;
+      state.payments = [...state.payments, action.payload.data];
+      state.error = "";
+    }),
+      builder.addCase(createPaymentWhitoutImageAsync.rejected, (state, action) => {
         state.loading = false;
         state.payments = state.payments;
         state.error = action.error.message;
@@ -106,8 +121,28 @@ const paymentListSlice = createSlice({
   },
 });
 
-export const createPaymentAsync = createAsyncThunk(
-  "payment/createPayment",
+export const createPaymentWithImageAsync = createAsyncThunk(
+  "payment/createPaymentWithImage",
+  async (params: FormData, { rejectWithValue }) => {
+    try {
+      const response = await api
+        .post(`/payment/create`, params, {
+          headers: {
+            "Content-Type": "multipart/form-data", // Importante para envio de arquivos
+          },
+        })
+        .then((resp) => {
+          return resp.data;
+        })
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }
+);
+
+export const createPaymentWhitoutImageAsync = createAsyncThunk(
+  "payment/createPaymentWithoutImage",
   async (params: CreatePaymentRequestParamsSchema, { rejectWithValue }) => {
     try {
       const response = await api

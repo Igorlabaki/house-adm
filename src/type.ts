@@ -10,24 +10,32 @@ export interface TextType {
   position: number;
   title: string | null;
 }
+export interface ClauseType {
+  id?: string;
+  text?: string;
+  updatedAt?: Date;
+  created_at?: Date;
+  position?: number;
+  title?: string | null;
+}
 
 export interface OwnerType {
   id?: string;
-  cep: string;
-  cpf: string;
-  pix: string;
-  city: string;
-  state: string;
-  street: string;
-  bankName: string;
-  bankAgency: string;
-  rg: string | null;
-  streetNumber: string;
-  neighborhood: string;
-  completeName: string;
-  organizationId: string;
-  bankAccountNumber: string;
-  complement: string | null;
+  cep?: string;
+  cpf?: string;
+  pix?: string;
+  city?: string;
+  state?: string;
+  street?: string;
+  bankName?: string;
+  bankAgency?: string;
+  rg?: string | null;
+  streetNumber?: string;
+  neighborhood?: string;
+  completeName?: string;
+  organizationId?: string;
+  bankAccountNumber?: string;
+  complement?: string | null;
 }
 
 export interface QuestionType {
@@ -47,9 +55,9 @@ export interface ContactType {
 export interface ImageType {
   id?: string;
   tag: string;
-  area: string;
   position: number;
   imageUrl: string;
+  description: string;
   responsiveMode: string;
 }
 export interface DateEventType {
@@ -100,8 +108,9 @@ export interface GuestType {
 export interface PaymentType {
   id?: string;
   amount: number;
-  venueId: string; 
-  proposalId: string; 
+  venueId: string;
+  imageUrl: string;
+  proposalId: string;
   paymentDate: string;
 }
 
@@ -121,15 +130,46 @@ export interface ServiceType {
   venueId: string;
   proposalServices: ProposalService[];
 }
+export interface ContractType {
+  id?: string;
+  title?: string;
+  name?: string;
+  contractId?: string;
+  organizationId?: string;
+  clauses?: ClauseType[];
+}
+export interface OwnerVenueType {
+  id?: string;
+  owner: OwnerType;
+}
+
+export interface ClientType{
+  cep?: string;
+  cpf?: string;
+  rg?: string;
+  city?: string;
+  state?: string;
+  street?: string;
+  completeName?: string;
+  streetNumber?: string;
+  neighborhood?: string;
+}
 
 export interface History { action: string, username?: string, createdAt: Date, id: string }
 export interface ProposalType {
   id?: string;
+  cep?: string;
+  cpf?: string;
+  rg?: string;
   name: string;
   venue: Venue;
+  city?: string;
   endDate: Date;
   email: string;
   paid: boolean;
+  state?: string;
+  street?: string;
+  streetNumber?: string;
   startDate: Date;
   venueId: string;
   updatedAt: Date;
@@ -143,6 +183,9 @@ export interface ProposalType {
   totalAmount: number;
   knowsVenue: boolean;
   guestNumber: number;
+  completeName: string;
+  streetnumber?: string;
+  neighborhood?: string;
   extraHoursQty: number;
   extraHourPrice: number;
   termsAccepted: boolean;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import InfoSection from "./infoSection";
-import { Entypo } from "@expo/vector-icons";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "@store/proposal/proposal-slice";
@@ -29,12 +29,12 @@ export function ProposaInfoScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <StyledPressable
-          className="absolute top-0 right-5 z-50"
+          className="absolute top-5 right-5 z-50"
           onPress={() => {
             setOptionModal(true);
           }}
         >
-          <Entypo name="menu" size={24} color="white" />
+          <AntDesign name="setting" size={16} color="white" />
         </StyledPressable>
         <InfoSection />
       </StyledScrollView>

@@ -26,18 +26,18 @@ export  function ImageItemFlatList({ image }: ItemFlatListProps) {
       </StyledView>
       <StyledView className=" flex flex-col gap-y-2  items-start justify-between  overflow-hidden overflow-y-auto">
         <StyledView className="flex-row justify-start items-start gap-x-2">
+          <StyledText className="text-[12px] text-custom-gray">Tag:</StyledText>
+          <StyledText className="text-[12px] text-custom-gray">{image?.tag}</StyledText>
+        </StyledView>
+        <StyledView className="flex-row justify-start items-start gap-x-2">
           <StyledText className="text-[12px] text-custom-gray">Position:</StyledText>
           <StyledText className="text-[12px] text-custom-gray">
             {image?.position}
           </StyledText>
         </StyledView>
         <StyledView className="flex-row justify-start items-start gap-x-2">
-          <StyledText className="text-[12px] text-custom-gray">Area:</StyledText>
-          <StyledText className="text-[12px] text-custom-gray">{image?.area}</StyledText>
-        </StyledView>
-        <StyledView className="flex-row justify-start items-start gap-x-2">
-          <StyledText className="text-[12px] text-custom-gray">Tag:</StyledText>
-          <StyledText className="text-[12px] text-custom-gray">{image?.tag}</StyledText>
+          <StyledText className="text-[12px] text-custom-gray">Descricao:</StyledText>
+          <StyledText className="text-[12px] text-custom-gray">{image?.description}</StyledText>
         </StyledView>
         <StyledView className="flex-row  items-start gap-x-2 w-[90%] text-center">
           <StyledText className="text-[12px] text-custom-gray">Responsive Mode:</StyledText>

@@ -1,33 +1,27 @@
 import {
-  gerarContratoHTMLParams,
-  gerarContratoPessoaFisicaHTML,
-} from "html/contrato-pessoa-fisica";
+  GenerateNaturalPersonContract,
+  generateNaturalPersonContractHTML
+} from "html/generate-natural-person-contract";
+
 import * as MailComposer from "expo-mail-composer";
 import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 
 export async function sendContractPessoFisicaEmail(
-  values: gerarContratoHTMLParams
+  values: GenerateNaturalPersonContract
 ) {
-  const { infoPessoais, orcamento } = values;
+  const { contractInformation,client,owner,proposal,venue } = values;
 
   try {
-    const nomeArquivo = `Contrato_AR756_${infoPessoais.nomeCompleto}.pdf`;
+    const nomeArquivo = `Contrato_AR756_${client.completeName}.pdf`;
     // Gerar o PDF
     const { uri } = await Print.printToFileAsync({
-      html: gerarContratoPessoaFisicaHTML({
-        infoPessoais: {
-          cpf: infoPessoais.cpf,
-          nomeCompleto: infoPessoais.nomeCompleto,
-          bairro: infoPessoais?.bairro,
-          cep: infoPessoais?.cep,
-          cidade: infoPessoais?.cidade,
-          estado: infoPessoais?.estado,
-          numero: infoPessoais?.numero,
-          rua: infoPessoais?.rua,
-          rg: infoPessoais?.rg,
-        },
-        orcamento: orcamento,
+      html: generateNaturalPersonContractHTML({
+        owner,
+        venue,
+        client,
+        proposal,
+        contractInformation
       }),
       base64: false,
     });
@@ -43,8 +37,8 @@ export async function sendContractPessoFisicaEmail(
     // Opções do e-mail com o URI do PDF como anexo
     const options = {
       subject: "Contrato AR756",
-      recipients: [`${orcamento?.email}`],
-      body: `Olá, ${infoPessoais?.nomeCompleto}!
+      recipients: [`${proposal?.email}`],
+      body: `Olá, ${client?.completeName}!
 
         Esperamos que esteja bem. É com grande satisfação que enviamos o contrato para o seu evento na AR756. No documento em anexo, você encontrará todos os detalhes e condições acordados para o aluguel do nosso espaço.
 

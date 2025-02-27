@@ -1,33 +1,20 @@
-import { gerarContratoHTMLParams, gerarContratoPessoaFisicaHTML } from "html/contrato-pessoa-fisica";
+import { GenerateNaturalPersonContract,generateNaturalPersonContractHTML} from "html/generate-natural-person-contract";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 
-export async function sendContractPessoFisicaWhatsapp(values: gerarContratoHTMLParams) {
-    const { infoPessoais, orcamento } = values;
+export async function sendContractPessoFisicaWhatsapp(values: GenerateNaturalPersonContract) {
+    const { client } = values;
     // Gerar o PDF
     let options = {
-      fileName: `Contrato_Locacao-${infoPessoais.nomeCompleto}.pdf`,
+      fileName: `Contrato_Locacao-${client.completeName}.pdf`,
       directory: "Documents",
     };
 
     try {
       // Gerar o PDF
       const { uri } = await Print.printToFileAsync({
-        html: gerarContratoPessoaFisicaHTML({
-          infoPessoais: {
-            cpf: infoPessoais.cpf,
-            nomeCompleto: infoPessoais.nomeCompleto,
-            bairro: infoPessoais?.bairro,
-            cep: infoPessoais?.cep,
-            cidade: infoPessoais?.cidade,
-            estado: infoPessoais?.estado,
-            numero: infoPessoais?.numero,
-            rua: infoPessoais?.rua,
-            rg: infoPessoais?.rg,
-          },
-          orcamento: orcamento,
-        }),
+        html: generateNaturalPersonContractHTML(values),
         base64: false,
       });
 
