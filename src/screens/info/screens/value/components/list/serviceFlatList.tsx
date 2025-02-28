@@ -34,7 +34,7 @@ export function ServiceFlatList() {
           return <ServiceItemFlatList service={item} key={item?.id} />;
         }}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
-        ListEmptyComponent={() => <ListEmpty dataType="valor" />}
+        ListEmptyComponent={() => <ListEmpty dataType="servico" />}
         className="flex-1"
       />
     </>

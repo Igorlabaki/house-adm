@@ -143,7 +143,7 @@ export function PersonForm({ person, setIsModalOpen,personType }: PersonFormProp
           } else {
             const response = await dispatch(
               updatePersonAsync({
-                personId: person.id,
+                personId: person?.id,
                 data: {
                   rg: values?.rg,
                   name: values?.name,

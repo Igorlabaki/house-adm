@@ -218,9 +218,13 @@ export function ClauseFormComponent({
                 {venueVariables.map(({ key, label }) => (
                   <StyledPressable
                     key={key}
-                    onPress={() =>
-                      setFieldValue("text", values.text + ` {{${key}}} `)
-                    }
+                    onPress={() => {
+                      const { start } = selection;
+                      const newText =
+                        values.text.slice(0, start) + `{{${key}}}` + values.text.slice(start); 
+                      setFieldValue("text", newText);
+                      setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
+                    }}
                     className="bg-gray-300 px-3 py-1 rounded-md"
                   >
                     <StyledText className="text-black">{label}</StyledText>

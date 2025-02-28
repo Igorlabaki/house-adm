@@ -1,5 +1,5 @@
 import { View, Text, ActivityIndicator } from "react-native";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   StyledModal,
   StyledPressable,
@@ -9,13 +9,17 @@ import {
 } from "styledComponents";
 import { Formik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-
+import Toast from "react-native-simple-toast";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
 import { createOrganizationFormSchema } from "@schemas/organization/createOrganizationZodSchema";
-import { createOrganizationAsync, Organization, updateOrganizationAsync } from "@store/organization/organizationSlice";
-
+import {
+  createOrganizationAsync,
+  fecthOrganizations,
+  Organization,
+  updateOrganizationAsync,
+} from "@store/organization/organizationSlice";
 
 interface OrganizationFormModalComponentProps {
   isModalOpen: boolean;
@@ -34,13 +38,14 @@ export default function OrganizationFormModalComponent({
     (state: RootState) => state.organizationList.loading
   );
 
-  const error = useSelector(
-    (state: RootState) => state.organizationList.error
-  );
+  const error = useSelector((state: RootState) => state.organizationList.error);
 
-  const user = useSelector(
-    (state: RootState) => state.user.user
-  );
+  const user = useSelector((state: RootState) => state.user.user);
+  const queryParams = new URLSearchParams();
+
+  useEffect(() => {
+    queryParams.append("userId", user?.id);
+  }, [user]);
 
   return (
     <StyledModal
@@ -59,7 +64,9 @@ export default function OrganizationFormModalComponent({
           validationSchema={toFormikValidationSchema(
             createOrganizationFormSchema
           )}
-          initialValues={{ name: organization?.name && organization?.name || "" }}
+          initialValues={{
+            name: (organization?.name && organization?.name) || "",
+          }}
           validate={(values) => {
             try {
               createOrganizationFormSchema.parse(values);
@@ -75,59 +82,53 @@ export default function OrganizationFormModalComponent({
             }
           }}
           onSubmit={async (values: { name: string }) => {
+            if (organization?.name) {
+              const response = await dispatch(
+                updateOrganizationAsync({
+                  data: { name: values?.name },
+                  organizationId: organization.id,
+                })
+              );
 
-            if(organization?.name){
-              const response = await dispatch(updateOrganizationAsync({data: {name: values?.name},organizationId:organization.id}));
+              if (response.meta.requestStatus == "fulfilled") {
+                Toast.show(
+                  "Organizacao atualizada com sucesso." as string,
+                  3000,
+                  {
+                    backgroundColor: "rgb(75,181,67)",
+                    textColor: "white",
+                  }
+                );
+                setMenuModalIsOpen(false);
+              }
 
               if (response.meta.requestStatus == "rejected") {
-                showMessage({
-                  type: "danger",
-                  floating: true,
-                  duration: 3000,
-                  position: "bottom",
-                  message: "Erro ao atuliazar a organizacao",
-                  description: `Esta organizacao ${response.payload}` || "Ocorreu um erro inesperado.",
+                Toast.show(response.payload as string, 3000, {
+                  backgroundColor: "#FF9494",
+                  textColor: "white",
                 });
               }
-  
-              if (response.meta.requestStatus == "fulfilled") {
-                showMessage({
-                  duration: 3000,
-                  floating: true,
-                  type: "success",
-                  position: "bottom",
-                  message: "Sucesso",
-                  description:`Organizacao ${response.payload.data.organization.name} foi atualizada!`,
-                });
-                setMenuModalIsOpen(false)
-              }
 
-              return
+              return;
             }
 
-            const response = await dispatch(createOrganizationAsync({userId: user.id, name: values?.name}));
-
-            if (response.meta.requestStatus == "rejected") {
-              showMessage({
-                type: "danger",
-                floating: true,
-                duration: 3000,
-                position: "bottom",
-                message: "Erro ao criar a organizacao",
-                description: `Esta organizacao ${response.payload}` || "Ocorreu um erro inesperado.",
-              });
-            }
+            const response = await dispatch(
+              createOrganizationAsync({ userId: user.id, name: values?.name })
+            );
 
             if (response.meta.requestStatus == "fulfilled") {
-              showMessage({
-                duration: 3000,
-                floating: true,
-                type: "success",
-                position: "bottom",
-                message: "Sucesso",
-                description:`Organizacao ${response.payload?.data?.organization?.name} foi criada!`,
+              Toast.show("Organizacao criada com sucesso." as string, 3000, {
+                backgroundColor: "rgb(75,181,67)",
+                textColor: "white",
               });
-              setMenuModalIsOpen(false)
+              setMenuModalIsOpen(false);
+            }
+
+            if (response.meta.requestStatus == "rejected") {
+              Toast.show(response.payload as string, 3000, {
+                backgroundColor: "#FF9494",
+                textColor: "white",
+              });
             }
           }}
         >

@@ -21,9 +21,6 @@ export function generateNaturalPersonContractHTML(
 ) {
     const { proposal, client, contractInformation, owner } = data;
     const dataHoje = new Date();
-/*     console.log("OWNER","\n",owner,"\n")
-    console.log("Proposal","\n",proposal,"\n")
-    console.log("Client","\n",client,"\n") */
 
     function createVariablesMap(data: GenerateNaturalPersonContract) {
         const allVariables = [...venueVariables, ...ownerVariables, ...clientVariables, ...proposalVariables];

@@ -31,7 +31,7 @@ export const ownerVariables = [
 ];
 
 export const clientVariables = [
-    { key: "client.cep", label: "Cep" },
+    { key: "client.cep", label: "Cep", },
     { key: "client.streetNumber", label: "Numero" },
     { key: "client.street", label: "Rua" },
     { key: "client.neighborhood", label: "Bairro" },

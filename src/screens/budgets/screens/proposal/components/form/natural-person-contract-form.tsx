@@ -471,7 +471,6 @@ export default function NaturalPersonContractForm() {
                 viaEmail={() =>
                 {
                   const {contract,owner,...rest} = values
-                  console.log("owner", owner)
                   sendContractPessoFisicaEmail({
                     owner: owner,
                     venue: venue,

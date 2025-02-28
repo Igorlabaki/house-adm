@@ -35,7 +35,7 @@ export function ImageFlatList() {
           return <ImageItemFlatList image={item} key={item.id} />;
         }}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
-        ListEmptyComponent={() => <ListEmpty dataType="image" />}
+        ListEmptyComponent={() => <ListEmpty dataType="imagem" />}
         className="flex-1"
       />
     </>

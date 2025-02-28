@@ -1,4 +1,5 @@
 import {
+  Entypo,
   FontAwesome,
   FontAwesome5,
   FontAwesome6,
@@ -147,6 +148,18 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
           Programacao
         </StyledText>
         <MaterialIcons name="schedule" size={24} color="white" />
+      </StyledPressable>
+      <StyledPressable
+        className="bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+        onPress={() => {
+          onCancel();
+          navigation.navigate("DocumentScreen");
+        }}
+      >
+        <StyledText className="text-white font-bold text-start w-[130px]">
+          Documentos
+        </StyledText>
+        <Ionicons name="documents-outline" size={20} color="white" />
       </StyledPressable>
       {sendProposalModal && (
         <SendModal

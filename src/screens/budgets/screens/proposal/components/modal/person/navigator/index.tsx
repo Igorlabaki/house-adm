@@ -1,7 +1,7 @@
 
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import GuestScreen from '../guest-screen';
 import WorkerScreen from '../worker-screen';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 const InfoTabNavigator = createMaterialTopTabNavigator();
 

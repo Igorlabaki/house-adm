@@ -18,6 +18,11 @@ export interface ClauseType {
   position?: number;
   title?: string | null;
 }
+export interface DocumentType {
+  id?: string;
+  title?: string;
+  imageUrl?: string | null;
+}
 
 export interface OwnerType {
   id?: string;

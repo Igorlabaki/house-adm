@@ -38,7 +38,7 @@ const initialState : {
       pricingModel: "PER_PERSON",
       checkIn: "",
       createdAt: new Date(),
-      owners: [],
+      ownerVenue: [],
       maxGuest: 0,
       checkOut: "",
     },

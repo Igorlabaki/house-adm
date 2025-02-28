@@ -177,7 +177,7 @@ export function CretePaymentFormComponent({
           <StyledView className=" w-full mx-auto my-5 flex flex-col px-3">
             <StyledView className="flex flex-col gap-2 ">
               <StyledView className="relative flex-col gap-y-2 flex justify-center items-center w-full ">
-                <StyledView className="h-[100px] flex justify-center items-center w-[100%] border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
+                <StyledView className="h-[320px] flex justify-center items-center w-[100%] border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
                   {getFieldMeta("imageUrl").value ? (
                     <Image
                       source={{ uri: getFieldMeta("imageUrl").value as string }}

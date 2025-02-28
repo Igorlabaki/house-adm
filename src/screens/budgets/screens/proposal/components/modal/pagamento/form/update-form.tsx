@@ -149,7 +149,7 @@ export function UpdatePaymentFormComponent({
           <StyledView className=" w-full mx-auto my-5 flex flex-col px-3">
             <StyledView className="flex flex-col gap-2 ">
               <StyledView className="relative flex-col gap-y-2 flex justify-center items-center w-full ">
-                <StyledView className="h-[250px] flex justify-center items-center w-full border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
+                <StyledView className="h-[320px] flex justify-center items-center w-full border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
                   {payment?.imageUrl || getFieldMeta("imageUrl").value ? (
                     <Image
                       source={{

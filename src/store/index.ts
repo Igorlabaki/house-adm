@@ -19,6 +19,7 @@ import { organizationListReducer } from "./organization/organizationSlice";
 import { notificationListReducer } from "./notifications/notificationsSlice";
 import { orcamentoAprovadoListReducer } from "./budgetAprovado/bugetAprovadoSlice";
 import { contractListReducer } from "./contract/contract-slice";
+import { documentListReducer } from "./document/document-slice";
 
 export const store = configureStore({
   reducer: {
@@ -35,6 +36,7 @@ export const store = configureStore({
     expenseList: expenseListReducer,
     contactList: contactListReducer,
     serviceList: serviceListReducer,
+    documentList: documentListReducer,
     contractList: contractListReducer,
     proposalList: proposalListReducer,
     questionList: questionListReducer,

@@ -118,7 +118,7 @@ const personListSlice = createSlice({
     builder.addCase(updatePersonAsync.fulfilled, (state, action: any) => {
       state.loading = false;
       state.people = state.people.map((item: Person) => {
-        if (item.id === action.payload.data.id) {
+        if (item.id === action.payload.data?.id) {
           return (item = { ...action.payload.data });
         } else {
           return item;
@@ -184,6 +184,23 @@ export const createPersonAsync = createAsyncThunk(
   }
 );
 
+export const updatePersonAsync = createAsyncThunk(
+  "person/updated",
+  async (params: UpdatePersonRequestParams, { rejectWithValue }) => {
+    try {
+      const newPERSON = await api
+        .put(`/person/update`, params)
+        .then((resp) => {
+          return resp.data;
+        })
+      return newPERSON;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+
+  }
+);
+
 export const selectPersonAsync = createAsyncThunk(
   "person/select",
   async (personId: string, { rejectWithValue }) => {
@@ -196,24 +213,6 @@ export const selectPersonAsync = createAsyncThunk(
       return selectedPERSON;
     } catch (error) {
       return rejectWithValue(error.data?.message || "Erro ao buscar locacao.");
-    }
-  }
-);
-
-export const updatePersonAsync = createAsyncThunk(
-  "person/updated",
-  async (data: UpdatePersonRequestParams, { rejectWithValue }) => {
-    try {
-      const updatedPERSON = await api
-        .put(
-          `/person/update`,
-          data
-        )
-        .then((resp) => resp.data);
-      return updatedPERSON
-    } catch (error) {
-
-      return rejectWithValue(error.data?.message || "Erro ao deletar locacao.");
     }
   }
 );

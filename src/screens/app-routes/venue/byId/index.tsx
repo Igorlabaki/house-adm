@@ -19,6 +19,7 @@ import AgendamentoScreen from 'screens/budgets/screens/proposal/components/modal
 import ScheduleProposalScreen from 'screens/budgets/screens/proposal/components/modal/schedule-proposal';
 import { AntDesign, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { AnalisisScreen } from 'screens/analisy';
+import DocumentScreen from 'screens/budgets/screens/proposal/components/modal/document';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -97,9 +98,12 @@ export default function SelectedVenueScreen() {
   const venue: Venue = useSelector((state: RootState) => state?.venueList.venue);
   const organization: Organization = useSelector((state: RootState) => state.organizationList.organization);
   const dispatch = useDispatch<AppDispatch>();
+  const queryParams = new URLSearchParams();
+
 
   useEffect(() => {
-    dispatch(fecthServices(venue?.id));
+    queryParams.append("venueId",venue?.id)
+    dispatch(fecthServices(`${queryParams.toString()}`));
     dispatch(fecthOwnersByVenue({ organizationId: organization?.id, venueId: venue?.id }));
   }, [venue]);
 
@@ -111,6 +115,7 @@ export default function SelectedVenueScreen() {
       <Stack.Screen name="ProposaInfoScreen" component={ProposaInfoScreen} />
       <Stack.Screen name="AgendamentoScreen" component={AgendamentoScreen} />
       <Stack.Screen name="ScheduleScreen" component={ScheduleProposalScreen} />
+      <Stack.Screen name="DocumentScreen" component={DocumentScreen} />
     </Stack.Navigator>
   );
 }
