@@ -1,4 +1,6 @@
+import { api } from 'services/axios';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { UpdateUserRequestParams } from '@schemas/user/update-user-params-schema';
 import { getUserSave, removeUserSave, storageUserSave } from 'storage/storage-user';
 
 // Ação assíncrona para buscar o usuário do AsyncStorage
@@ -39,8 +41,40 @@ const userSlice = createSlice({
       .addCase(fetchUser.rejected, (state) => {
         state.loading = false;
       });
+
+    // Update USER Item
+    builder.addCase(updateUserAsync.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(updateUserAsync.fulfilled, (state, action: any) => {
+      state.loading = false;
+      state.user = action.payload.data
+      storageUserSave(action.payload.data);
+    }),
+      builder.addCase(updateUserAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.user = state.user;
+      });
   },
 });
+
+export const updateUserAsync = createAsyncThunk(
+  "user/updated",
+  async (params: FormData, { rejectWithValue }) => {
+    try {
+      const newUSER = await api
+        .put(`/user/update`, params, {
+          headers: {
+            "Content-Type": "multipart/form-data", // Importante para envio de arquivos
+          },
+        })
+        .then((response) => response?.data);
+      return newUSER;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+
+  })
 
 export const { logout, setUser } = userSlice.actions;
 export const userReducer = userSlice.reducer;

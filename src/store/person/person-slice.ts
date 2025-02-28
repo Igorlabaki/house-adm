@@ -25,13 +25,11 @@ export interface PERSONListDataResponse {
 }
 
 export interface CreatePERSONDataResponse {
-  success: boolean,
-  message: string,
-  data: {
-    person: Person
-  },
-  count: number,
-  type: string
+  data:Person;
+  type: string;
+  count: number;
+  message: string;
+  success: boolean;
 }
 
 const initialState: {
@@ -102,7 +100,7 @@ const personListSlice = createSlice({
     });
     builder.addCase(createPersonAsync.fulfilled, (state, action: PayloadAction<CreatePERSONDataResponse>) => {
       state.loading = false;
-      state.people = [...state.people, action.payload.data.person];
+      state.people = [...state.people, action.payload.data];
       state.error = "";
     }),
       builder.addCase(createPersonAsync.rejected, (state, action) => {

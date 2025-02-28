@@ -1,5 +1,5 @@
 import { View, Text, Image } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import {
   StyledModal,
   StyledPressable,
@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { User } from "@store/auth/authSlice";
 import { logout } from "@store/user/userSlice";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { boolean } from "zod";
+import { UpdateUserFormComponent } from "@components/user/form/update-form";
 
 interface MenuComponentProps {
   isModalOpen: boolean;
@@ -23,6 +25,7 @@ export default function MenuComponent({
 }: MenuComponentProps) {
   const dispatch = useDispatch<AppDispatch>();
   const user: User = useSelector((state: RootState) => state?.user.user);
+  const [formIsOpen, setFormIsOpen] = useState<boolean>(false);
   return (
     <StyledModal
       visible={isModalOpen}
@@ -33,6 +36,9 @@ export default function MenuComponent({
       animationType="slide"
     >
       <StyledView className="w-screen h-screen bg-gray-reg ">
+        <StyledPressable  onPress={() => setFormIsOpen(true)} className="absolute top-10 right-5">
+          <FontAwesome5 name="edit" size={20} color="white" />
+        </StyledPressable>
         <StyledView className="flex justify-start items-center h-full py-20">
           {user.avatarUrl ? (
             <StyledPressable
@@ -73,6 +79,18 @@ export default function MenuComponent({
           </StyledView>
         </StyledView>
       </StyledView>
+      <StyledModal
+        visible={formIsOpen}
+        transparent={true}
+        onRequestClose={() => {
+          setFormIsOpen(false);
+        }}
+        animationType="slide"
+      >
+        <StyledView className="w-screen h-screen bg-gray-dark ">
+          <UpdateUserFormComponent  user={user} setIsModalOpen={setFormIsOpen} />
+        </StyledView>
+      </StyledModal>
     </StyledModal>
   );
 }

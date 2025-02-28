@@ -48,9 +48,9 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
   const navigation = useNavigation();
 
   useEffect(() => {
-   queryParams.append("organizationId",organization?.id)
-  }, [organization])
-  
+    queryParams.append("organizationId", organization?.id);
+  }, [organization]);
+
   return (
     <StyledView className="w-full">
       <StyledPressable
@@ -105,18 +105,6 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
         className="bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
         onPress={() => {
           onCancel();
-          navigation.navigate("PagamentoScreen");
-        }}
-      >
-        <StyledText className="text-white font-bold text-start w-[130px]">
-          Efetuar Pagamento
-        </StyledText>
-        <MaterialIcons name="attach-money" size={24} color="white" />
-      </StyledPressable>
-      <StyledPressable
-        className="bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
-        onPress={() => {
-          onCancel();
           navigation.navigate("AgendamentoScreen");
         }}
       >
@@ -126,7 +114,25 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
         <FontAwesome5 name="calendar-alt" size={18} color="white" />
       </StyledPressable>
       <StyledPressable
-        className="bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+        disabled={proposal.approved ? false : true}
+        className={`bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center first-letter 
+          ${proposal.approved ? "opacity-100 " : "opacity-50"}
+          `}
+        onPress={() => {
+          onCancel();
+          navigation.navigate("PagamentoScreen");
+        }}
+      >
+        <StyledText className="text-white font-bold text-start w-[130px]">
+          Efetuar Pagamento
+        </StyledText>
+        <MaterialIcons name="attach-money" size={24} color="white" />
+      </StyledPressable>
+      <StyledPressable
+        disabled={proposal.approved ? false : true}
+        className={`bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center first-letter 
+         ${proposal.approved ? "opacity-100 " : "opacity-50"}
+         `}
         onPress={() => {
           onCancel();
           navigation.navigate("PersonListScreen");
@@ -138,7 +144,10 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
         <FontAwesome5 name="user-friends" size={15} color="white" />
       </StyledPressable>
       <StyledPressable
-        className="bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+        disabled={proposal.approved ? false : true}
+        className={`bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center first-letter 
+          ${proposal.approved ? "opacity-100 " : "opacity-50"}
+          `}
         onPress={() => {
           onCancel();
           navigation.navigate("ScheduleScreen");
@@ -150,7 +159,10 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
         <MaterialIcons name="schedule" size={24} color="white" />
       </StyledPressable>
       <StyledPressable
-        className="bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+        disabled={proposal.approved ? false : true}
+        className={`bg-gray-reg  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center first-letter 
+          ${proposal.approved ? "opacity-100 " : "opacity-50"}
+          `}
         onPress={() => {
           onCancel();
           navigation.navigate("DocumentScreen");
