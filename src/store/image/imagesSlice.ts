@@ -129,6 +129,7 @@ const imageListSlice = createSlice({
 export const createImageAsync = createAsyncThunk(
   "image/createImage",
   async (createImageParams: FormData, { rejectWithValue }) => {
+    console.log("foi")
     try {
       const response = await api.post(`/image/upload`, createImageParams, {
         headers: {
@@ -136,8 +137,10 @@ export const createImageAsync = createAsyncThunk(
         },
       })
         .then((response) => response?.data);
+        console.log(response)
       return response;
     } catch (error: any) {
+      console.log(error)
       return rejectWithValue(error.data?.message || "Erro ao buscar lista de imagens");
     }
   }

@@ -24,18 +24,23 @@ import {
   StyledTextInput,
   StyledView,
 } from "styledComponents";
-import { createImageRequestParams, CreateImageRequestParams } from "@schemas/image/create-image-params-schema";
+import {
+  createImageRequestParams,
+  CreateImageRequestParams,
+} from "@schemas/image/create-image-params-schema";
 
 interface ImageFormProps {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function CreateImageForm({setIsModalOpen }: ImageFormProps) {
+export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
   const [newImage, setNewImage] = useState(null);
   const dispatch = useDispatch<AppDispatch>();
 
   const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
-  const isLoading : boolean = useSelector((state: RootState) => state.imageList.loading);
+  const isLoading: boolean = useSelector(
+    (state: RootState) => state.imageList.loading
+  );
 
   const pickImage = async () => {
     const permissionResult =
@@ -48,34 +53,10 @@ export function CreateImageForm({setIsModalOpen }: ImageFormProps) {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
     });
 
-    if (!result.canceled) {
-      setNewImage(result.assets[0].uri);
-      setNewImage(result.assets[0].uri);
-    }
-  };
-
-  const takePhoto = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert("Permissão para acessar a câmera é necessária!");
-      return;
-    }
-
-    let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setNewImage(result.assets[0].uri);
-    }
+    return result.assets[0].uri;
   };
 
   return (
@@ -105,66 +86,64 @@ export function CreateImageForm({setIsModalOpen }: ImageFormProps) {
           }, {});
         }
       }}
-
       onSubmit={async (values: CreateImageRequestParams) => {
-        if (!newImage) {
+        if (!values.imageUrl) {
           Toast.show("Selecione uma imagem.", 3000, {
             backgroundColor: "rgb(75,181,67)",
             textColor: "white",
           });
         }
+        const uriParts = values.imageUrl.split(".");
+        const fileType = uriParts[uriParts.length - 1];
 
-        if (newImage) {
-          const uriParts = newImage.split(".");
-          const fileType = uriParts[uriParts.length - 1];
+        const formData = new FormData();
+        formData.append("file", {
+          uri: values.imageUrl,
+          name: `photo.${fileType}`,
+          type: `image/${fileType}`,
+        } as any);
 
-          const formData = new FormData();
-          formData.append("file", {
-            uri: newImage,
-            name: `photo.${fileType}`,
-            type: `image/${fileType}`,
-          } as any);
-          formData.append("tag", values.tag);
-          formData.append("position", values.position);
-          formData.append("venueId", String(values.venueId)); // Convertendo para string
-          formData.append("description", values.description);
-          formData.append("responsiveMode", values.responsiveMode); // Convertendo boolean para string
+        formData.append("tag", values.tag);
+        formData.append("position", values.position);
+        formData.append("venueId", venue?.id); // Convertendo para string
+        formData.append("description", values.description);
+        formData.append("responsiveMode", values.responsiveMode); // Convertendo boolean para string
 
-          const response = await dispatch(createImageAsync(formData));
+        const response = await dispatch(createImageAsync(formData));
 
-          if (response.meta.requestStatus == "fulfilled") {
-            Toast.show("Imagem enviada com sucesso.", 3000, {
-              backgroundColor: "rgb(75,181,67)",
-              textColor: "white",
-            });
-            setIsModalOpen(false);
-          }
+        if (response.meta.requestStatus == "fulfilled") {
+          Toast.show("Imagem enviada com sucesso.", 3000, {
+            backgroundColor: "rgb(75,181,67)",
+            textColor: "white",
+          });
+          setIsModalOpen(false);
+        }
 
-          if (response.meta.requestStatus == "rejected") {
-            Toast.show(response.payload.data, 3000, {
-              backgroundColor: "rgb(75,181,67)",
-              textColor: "white",
-            });
-            setIsModalOpen(false);
-          }
+        if (response.meta.requestStatus == "rejected") {
+          Toast.show(response.payload.data, 3000, {
+            backgroundColor: "rgb(75,181,67)",
+            textColor: "white",
+          });
+          setIsModalOpen(false);
         }
       }}
     >
       {({
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        setFieldValue,
         values,
         errors,
+        handleBlur,
+        getFieldMeta,
+        handleSubmit,
+        handleChange,
+        setFieldValue,
       }) => (
         <StyledScrollView className="w-[90%] mx-auto my-5 flex flex-col">
           <StyledView className="flex flex-col gap-y-3">
             <StyledView className="relative flex-col gap-y-2 flex justify-center items-center w-full ">
               <StyledView className="h-[200px] flex justify-center items-center w-full border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
-                {newImage && (
+                {getFieldMeta("imageUrl").value && (
                   <Image
-                    source={{ uri: newImage }}
+                    source={{ uri: getFieldMeta("imageUrl").value as string }}
                     style={{ width: "100%", height: "100%" }}
                     resizeMode="cover"
                   />
@@ -173,8 +152,8 @@ export function CreateImageForm({setIsModalOpen }: ImageFormProps) {
               <StyledView className=" flex justify-center flex-row items-center gap-x-10 py-3 w-full">
                 <StyledPressable
                   onPress={async () => {
-                    pickImage();
-                    setFieldValue("imageUrl", newImage);
+                    const url = await pickImage();
+                    setFieldValue("imageUrl", url);
                   }}
                 >
                   <MaterialIcons
@@ -183,14 +162,6 @@ export function CreateImageForm({setIsModalOpen }: ImageFormProps) {
                     color="white"
                   />
                   {/* Se você quiser adicionar texto ou outros filhos, pode fazer aqui */}
-                </StyledPressable>
-                <StyledPressable
-                  onPress={async () => {
-                    takePhoto();
-                    setFieldValue("imageUrl", newImage);
-                  }}
-                >
-                  <MaterialIcons name="add-a-photo" size={24} color="white" />
                 </StyledPressable>
               </StyledView>
               <StyledText className="text-red-700 text-[15px] w-full">
@@ -288,16 +259,16 @@ export function CreateImageForm({setIsModalOpen }: ImageFormProps) {
             </StyledView>
           </StyledView>
           <StyledPressable
-              disabled={isLoading ? true : false}
-              onPress={() => {
-                handleSubmit();
-              }}
-              className={`bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md`}
-            >
-              <StyledText className="font-bold text-custom-white">
-                {isLoading ? "Enviando" :  "Cadastrar"}
-              </StyledText>
-            </StyledPressable>
+            disabled={isLoading ? true : false}
+            onPress={() => {
+              handleSubmit();
+            }}
+            className={`bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md`}
+          >
+            <StyledText className="font-bold text-custom-white">
+              {isLoading ? "Enviando" : "Cadastrar"}
+            </StyledText>
+          </StyledPressable>
         </StyledScrollView>
       )}
     </Formik>
