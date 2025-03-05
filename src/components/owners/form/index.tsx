@@ -558,6 +558,7 @@ export function OwnerFormComponent({
                     onChangeText={handleChange("state")}
                     onBlur={handleBlur("state")}
                     value={values.state}
+                    maxLength={2}
                     placeholder={
                       errors.state
                         ? String(errors.state)

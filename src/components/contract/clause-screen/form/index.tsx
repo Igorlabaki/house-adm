@@ -20,10 +20,11 @@ import {
   StyledView,
 } from "styledComponents";
 import { Venue } from "@store/venue/venueSlice";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   clientVariables,
   ownerVariables,
+  paymentInfoVariables,
   proposalVariables,
   venueVariables,
 } from "const/contract-variables";
@@ -43,13 +44,22 @@ export function ClauseFormComponent({
   );
 
   const [info, setInfo] = useState<
-    "Locacao" | "Proposta" | "Cliente" | "Proprietario"
+    "Locacao" | "Proposta" | "Cliente" | "Proprietario" | "Pagamento"
   >("Locacao");
 
   const organization: Organization = useSelector<RootState>(
     (state: RootState) => state.organizationList.organization
   );
+
   const [selection, setSelection] = useState({ start: 0, end: 0 });
+
+  const variableGroups = {
+    Locacao: venueVariables,
+    Proprietario: ownerVariables,
+    Cliente: clientVariables,
+    Proposta: proposalVariables,
+  };
+
   return (
     <Formik
       validationSchema={toFormikValidationSchema(createClauseSchema)}
@@ -154,6 +164,12 @@ export function ClauseFormComponent({
               </StyledText>
               <StyledTextInput
                 onChangeText={handleChange("text")}
+                onKeyPress={({ nativeEvent }) => {
+                  if (nativeEvent.key === "Enter") {
+                    setFieldValue("text", values.text + "[PULA LINHA]");
+                    return false; // Evita o comportamento padrão de pular linha
+                  }
+                }}
                 onBlur={handleBlur("text")}
                 value={values.text}
                 multiline={true}
@@ -212,6 +228,15 @@ export function ClauseFormComponent({
                   Proposta
                 </StyledText>
               </StyledPressable>
+              <StyledPressable onPress={() => setInfo("Pagamento")}>
+                <StyledText
+                  className={` ${
+                    info === "Pagamento" ? "opacity-100" : "opacity-40"
+                  } text-white text-[14px] font-semibold pt-3"`}
+                >
+                  Pagamento
+                </StyledText>
+              </StyledPressable>
             </StyledView>
             {info === "Locacao" && (
               <StyledView className="flex flex-wrap flex-row gap-2 mt-3">
@@ -221,7 +246,7 @@ export function ClauseFormComponent({
                     onPress={() => {
                       const { start } = selection;
                       const newText =
-                        values.text.slice(0, start) + `{{${key}}}` + values.text.slice(start); 
+                        values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
                       setFieldValue("text", newText);
                       setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
                     }}
@@ -240,7 +265,7 @@ export function ClauseFormComponent({
                     onPress={() => {
                       const { start } = selection;
                       const newText =
-                        values.text.slice(0, start) + `{{${key}}}` + values.text.slice(start); 
+                      values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
                       setFieldValue("text", newText);
                       setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
                     }}
@@ -256,9 +281,13 @@ export function ClauseFormComponent({
                 {clientVariables.map(({ key, label }) => (
                   <StyledPressable
                     key={key}
-                    onPress={() =>
-                      setFieldValue("text", values.text + ` {{${key}}} `)
-                    }
+                    onPress={() => {
+                      const { start } = selection;
+                      const newText =
+                      values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
+                      setFieldValue("text", newText);
+                      setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
+                    }}
                     className="bg-gray-300 px-3 py-1 rounded-md"
                   >
                     <StyledText className="text-black">{label}</StyledText>
@@ -271,9 +300,32 @@ export function ClauseFormComponent({
                 {proposalVariables.map(({ key, label }) => (
                   <StyledPressable
                     key={key}
-                    onPress={() =>
-                      setFieldValue("text", values.text + ` {{${key}}} `)
-                    }
+                    onPress={() => {
+                      const { start } = selection;
+                      const newText =
+                      values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
+                      setFieldValue("text", newText);
+                      setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
+                    }}
+                    className="bg-gray-300 px-3 py-1 rounded-md"
+                  >
+                    <StyledText className="text-black">{label}</StyledText>
+                  </StyledPressable>
+                ))}
+              </StyledView>
+            )}
+            {info === "Pagamento" && (
+              <StyledView className="flex flex-wrap flex-row gap-2 mt-3">
+                {paymentInfoVariables.map(({ key, label }) => (
+                  <StyledPressable
+                    key={key}
+                    onPress={() => {
+                      const { start } = selection;
+                      const newText =
+                      values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
+                      setFieldValue("text", newText);
+                      setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
+                    }}
                     className="bg-gray-300 px-3 py-1 rounded-md"
                   >
                     <StyledText className="text-black">{label}</StyledText>

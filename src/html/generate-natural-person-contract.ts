@@ -1,9 +1,9 @@
 import moment from "moment";
-import { format } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 import { ClauseType, ClientType, OwnerType, ProposalType } from "type";
-import { UpdatePersonalInfoRequestParamSchema } from "@schemas/contract/natural-person-contract-form";
-import { clientVariables, ownerVariables, proposalVariables, venueVariables } from "const/contract-variables";
+import { clientVariables, ownerVariables, paymentInfoVariables, proposalVariables, venueVariables } from "const/contract-variables";
 import { Venue } from "@store/venue/venueSlice";
+import extenso from "extenso"
 
 export interface GenerateNaturalPersonContract {
     contractInformation: {
@@ -14,23 +14,48 @@ export interface GenerateNaturalPersonContract {
     owner: OwnerType;
     client: ClientType;
     proposal: ProposalType;
+    paymentInfo: {
+        dueDate: number;
+        signalAmount: number;
+        numberPayments: number;
+        paymentValue: number
+    }
 }
 
 export function generateNaturalPersonContractHTML(
     data: GenerateNaturalPersonContract
 ) {
-    const { proposal, client, contractInformation, owner } = data;
+    const { contractInformation } = data;
     const dataHoje = new Date();
 
+    function toRoman(num) {
+        const romanNumerals = [
+            ["M", 1000], ["CM", 900], ["D", 500], ["CD", 400],
+            ["C", 100], ["XC", 90], ["L", 50], ["XL", 40],
+            ["X", 10], ["IX", 9], ["V", 5], ["IV", 4], ["I", 1]
+        ];
+
+        let roman = "";
+
+        for (const [letter, value] of romanNumerals) {
+            while (num >= value) {
+                roman += letter;
+                num -= value as number;
+            }
+        }
+
+        return roman;
+    }
+    console.log(data.paymentInfo.signalAmount)
     function createVariablesMap(data: GenerateNaturalPersonContract) {
-        const allVariables = [...venueVariables, ...ownerVariables, ...clientVariables, ...proposalVariables];
-    
+        const allVariables = [...venueVariables, ...ownerVariables, ...clientVariables, ...proposalVariables, ...paymentInfoVariables];
+
         const variables: Record<string, string> = {};
-    
+   
         allVariables.forEach(({ key }) => {
             // Divide a chave "venue.cep" -> ["venue", "cep"]
             const path = key.split('.');
-    
+
             // Percorre o objeto `data` para obter o valor real
             let value: any = data;
             for (const prop of path) {
@@ -41,16 +66,40 @@ export function generateNaturalPersonContractHTML(
                     break;
                 }
             }
-    
-            variables[key] = value?.toString() || "";
+
+            if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
+                const parsedDate = parseISO(value);
+
+                if (isValid(parsedDate)) {
+                    const hasTime = parsedDate.getHours() !== 0 || parsedDate.getMinutes() !== 0;
+                    variables[key] = hasTime
+                        ? format(parsedDate, "dd/MM/yyyy 'às' HH:mm")
+                        : format(parsedDate, "dd/MM/yyyy");
+                } else {
+                    variables[key] = value; // Se não for uma data válida, mantém a string original
+                }
+            } else if (path[1] === "totalAmount" || path[1] === "signalAmount" || path[1] === "paymentValue") {
+                const formattedValue = Number(value).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                    minimumFractionDigits: 2,
+                });
+
+                const cleanValue = Number(value).toFixed(2); // Garante formato numérico correto
+                const valueExtenso = extenso(cleanValue.replace(".", ","), { mode: "currency" });
+
+                 variables[key] = `${formattedValue} (${valueExtenso})`;
+            }  else {
+                variables[key] = value?.toString() || "";
+            }
         });
         return variables;
     }
-    
+
     const variables = createVariablesMap(data);
 
     function replaceVariables(text: string, variables: Record<string, string>): string {
-        return text.replace(/{{(.*?)}}/g, (_, key) => variables[key] || "");
+        return text.replace(/{{(.*?)}}/g, (_, key) => variables[key] || "").replace(/\n/g, "<br>");
     }
 
     const htmlContrato = `
@@ -72,6 +121,9 @@ export function generateNaturalPersonContractHTML(
         }
         .section {
             margin-bottom: 20px;
+        }
+        .clause-section {
+            page-break-inside: avoid;
         }
         .section p {
             margin: 5px 0;
@@ -104,23 +156,23 @@ export function generateNaturalPersonContractHTML(
 <body>
     <h1>${contractInformation.title}</h1>
 
-     ${contractInformation.clauses.map((item: ClauseType) => `
-        <div class="section">
-            <p class="clause-title">${item.title}</p>
-            <p>${replaceVariables(item.text, variables)}</p>
+     ${contractInformation.clauses.map((item: ClauseType, index: number) => `
+        <div class="section clause-section">
+            <p class="clause-title ">${`${toRoman(index + 1)}) ${item.title}`}</p>
+            <p>${`${replaceVariables(item.text, variables)}`}</p>
         </div>
     `).join("")}
 
-   <div class="section">
-        <p class="clause-title">XX - DAS ASSINATURAS:</p>
+   <div class="section clause-section">
+        <p class="clause-title">${`${toRoman(contractInformation.clauses.length + 1)}) DAS ASSINATURAS`}</p>
         <p>Por estarem acordadas, assinam o presente instrumento.</p>
-    </div>
-    <div class="signatures">
-        <p>São Paulo, ${format(dataHoje, "dd/MM/yyyy")}.</p>
-        <div class="signature-line"></div>
-        <p>Assinatura do(a) Locador(a)</p>
-        <div class="signature-line"></div>
-        <p>Assinatura do(a) Locatário(a)</p>
+        <div class="signatures">
+            <p>São Paulo, ${format(dataHoje, "dd/MM/yyyy")}.</p>
+            <div class="signature-line"></div>
+            <p>Assinatura do(a) Locador(a)</p>
+            <div class="signature-line"></div>
+            <p>Assinatura do(a) Locatário(a)</p>
+        </div>
     </div>
 </body>
 </html>

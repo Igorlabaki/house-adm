@@ -8,6 +8,7 @@ export const updateImageRequestParams = z.object({
     }).optional(),
   tag: z.string().min(1, "A tag é obrigatória."),
   imageId: z.string(),
+  venueId: z.string(),
   imageUrl: z.string(),
   position: z.string().optional(),
   description: z.string().optional(),

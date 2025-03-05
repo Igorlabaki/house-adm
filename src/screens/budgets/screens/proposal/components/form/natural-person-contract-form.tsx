@@ -23,6 +23,8 @@ import { ContractType, OwnerType, OwnerVenueType } from "type";
 import { updateProposalPersonalInfoAsync } from "@store/proposal/proposal-slice";
 import { Venue } from "@store/venue/venueSlice";
 import { sendContractPessoFisicaEmail } from "function/send-natural-person-contrat-email";
+import { selectOwnerAsync } from "@store/owner/ownerSlice";
+import { transformMoneyToNumber } from "function/transform-money-to-number";
 
 export default function NaturalPersonContractForm() {
   const [isLoading, setIsLoding] = useState(false);
@@ -34,10 +36,10 @@ export default function NaturalPersonContractForm() {
   const contracts = useSelector(
     (state: RootState) => state.contractList.contracts
   );
-
-  const venue : Venue = useSelector(
-    (state: RootState) => state.venueList.venue
+  const [paymentMethod, setPaymentMethod] = useState<"vista" | "parcelado">(
+    "vista"
   );
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
 
   return (
     <>
@@ -50,7 +52,12 @@ export default function NaturalPersonContractForm() {
         initialValues={{
           rg: proposal?.rg || "",
           cep: proposal?.cep || "",
-          cpf: proposal?.cpf || "",   
+          cpf: proposal?.cpf || "",
+          paymentInfo: {
+            dueDate: "5",
+            numberPayments: "1",
+            signalAmount: String(proposal.totalAmount / 2),
+          },
           proposalId: proposal?.id,
           state: proposal?.state || "SP",
           street: proposal?.street || "",
@@ -61,8 +68,9 @@ export default function NaturalPersonContractForm() {
         }}
         validate={(values) => {
           try {
-            const teste = updatePersonalInfoRequestParamSchema.safeParse(values);
-            
+            const teste =
+              updatePersonalInfoRequestParamSchema.safeParse(values);
+
             return {}; // Retorna um objeto vazio se os dados estiverem válidos
           } catch (error) {
             return error.errors.reduce((acc, curr) => {
@@ -75,13 +83,15 @@ export default function NaturalPersonContractForm() {
           }
         }}
         onSubmit={async (values: UpdatePersonalInfoRequestParamSchema) => {
-          const {contract,...rest} = values
-          const response = await dispatch(updateProposalPersonalInfoAsync({
-            proposalId: proposal?.id,
-            data:{
-              ...rest
-            }
-          }));
+          const { contract, ...rest } = values;
+          const response = await dispatch(
+            updateProposalPersonalInfoAsync({
+              proposalId: proposal?.id,
+              data: {
+                ...rest,
+              },
+            })
+          );
 
           if (response.meta.requestStatus == "fulfilled") {
             Toast.show("Dados atualizados com sucesso." as string, 3000, {
@@ -116,18 +126,18 @@ export default function NaturalPersonContractForm() {
               <StyledTextInput
                 onFocus={(e) => e.stopPropagation()}
                 className={`bg-gray-ligth rounded-md px-3 py-1 text-white z-50 ${
-                  errors.completeName
+                  errors.name
                     ? "bg-red-50  border-[2px] border-red-900 text-red-800"
                     : "bg-gray-ligth"
                 }`}
-                onChangeText={handleChange("completeName")}
-                onBlur={handleBlur("completeName")}
-                value={values.completeName}
+                onChangeText={handleChange("name")}
+                onBlur={handleBlur("name")}
+                value={values.name}
               />
-              {errors?.completeName &&
-                errors?.completeName.toString() != "Required" && (
+              {errors?.name &&
+                errors?.name.toString() != "Required" && (
                   <StyledText className="text-red-700 font-semibold">
-                    {errors.completeName?.toString()}
+                    {errors.name?.toString()}
                   </StyledText>
                 )}
             </StyledView>
@@ -325,12 +335,140 @@ export default function NaturalPersonContractForm() {
                 onChangeText={handleChange("state")}
                 onBlur={handleBlur("state")}
                 value={values.state}
+                maxLength={2}
               />
               {errors?.state && errors?.state.toString() != "Required" && (
                 <StyledText className="text-red-700 font-semibold">
                   {errors.state?.toString()}
                 </StyledText>
               )}
+              <StyledView className="flex flex-col gap-y-2 mb-4">
+                <StyledText className="text-custom-gray text-[14px] font-semibold">
+                  Metodo de pagamento
+                </StyledText>
+                <StyledView className="flex flex-row gap-x-3">
+                  <StyledView
+                    className="
+            flex flex-wrap flex-col justify-start items-center gap-1 text-sm font-light text-veryDarkGraishCyan  
+            text-[12px] md:text-[15px]"
+                  >
+                    <StyledPressable
+                      className={`flex flex-row items-start justify-center cursor-pointer rounded-sm `}
+                      onPress={async () => {
+                        if (paymentMethod === "parcelado") {
+                          setPaymentMethod("vista");
+                        }
+                      }}
+                    >
+                      <StyledView
+                        className={`
+                              w-4 h-4 border-[1px] border-gray-500 cursor-pointer 
+                              flex justify-center items-center rounded-sm overflow-hidden `}
+                      >
+                        {paymentMethod === "vista" && (
+                          <Entypo name="check" size={12} color="white" />
+                        )}
+                      </StyledView>
+                      <StyledText className="text-custom-gray text-[14px] font-semibold ml-2">
+                        A vista
+                      </StyledText>
+                    </StyledPressable>
+                  </StyledView>
+                  <StyledView
+                    className="
+            flex flex-wrap flex-col justify-start items-center gap-1 text-sm font-light text-veryDarkGraishCyan  
+            text-[12px] md:text-[15px]"
+                  >
+                    <StyledPressable
+                      className={`flex flex-row items-start justify-center cursor-pointer rounded-sm `}
+                      onPress={async () => {
+                        if (paymentMethod === "vista") {
+                          setPaymentMethod("parcelado");
+                        }
+                      }}
+                    >
+                      <StyledView
+                        className={`
+                              w-4 h-4 border-[1px] border-gray-500 cursor-pointer 
+                              flex justify-center items-center rounded-sm overflow-hidden `}
+                      >
+                        {paymentMethod === "parcelado" && (
+                          <Entypo name="check" size={12} color="white" />
+                        )}
+                      </StyledView>
+                      <StyledText className="text-custom-gray text-[14px] font-semibold ml-2">
+                        Parcelado
+                      </StyledText>
+                    </StyledPressable>
+                  </StyledView>
+                </StyledView>
+              </StyledView>
+              {paymentMethod === "parcelado" ? (
+                <>
+                  <StyledView className="flex flex-col gap-y-2">
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Valor do Sinal
+                    </StyledText>
+                    <StyledTextInputMask
+                      onFocus={(e) => e.stopPropagation()}
+                      className={`bg-gray-ligth rounded-md px-3 py-1 text-white ${
+                        errors.paymentInfo?.signalAmount
+                          ? "bg-red-50  border-[2px] border-red-900 text-red-800"
+                          : "bg-gray-ligth"
+                      }`}
+                      type="money"
+                      options={{
+                        maskType: "BRL",
+                      }}
+                      onChangeText={handleChange("paymentInfo.signalAmount")}
+                      onBlur={handleBlur("paymentInfo.signalAmount")}
+                      value={String(
+                        Number(values.paymentInfo?.signalAmount) * 100
+                      )}
+                    />
+                    {errors?.paymentInfo?.signalAmount &&
+                      errors?.paymentInfo?.signalAmount.toString() !=
+                        "Required" && (
+                        <StyledText className="text-red-700 font-semibold">
+                          {errors.paymentInfo?.signalAmount?.toString()}
+                        </StyledText>
+                      )}
+                  </StyledView>
+                  <StyledView className="flex flex-col gap-y-2 mt-1">
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Numero de parcelas
+                    </StyledText>
+                    <StyledTextInput
+                      onFocus={(e) => e.stopPropagation()}
+                      keyboardType="numeric"
+                      maxLength={2}
+                      className={`bg-gray-ligth rounded-md px-3 py-1 text-white z-50 ${
+                        errors.city
+                          ? "bg-red-50  border-[2px] border-red-900 text-red-800"
+                          : "bg-gray-ligth"
+                      }`}
+                      onChangeText={handleChange("paymentInfo.numberPayments")}
+                      onBlur={handleBlur("paymentInfo.numberPayments")}
+                      value={values.paymentInfo?.numberPayments}
+                    />
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Dia do limite para pagamento
+                    </StyledText>
+                    <StyledTextInput
+                      onFocus={(e) => e.stopPropagation()}
+                      className={`bg-gray-ligth rounded-md px-3 py-1 text-white z-50 ${
+                        errors.paymentInfo?.dueDate
+                          ? "bg-red-50  border-[2px] border-red-900 text-red-800"
+                          : "bg-gray-ligth"
+                      }`}
+                      onChangeText={handleChange("paymentInfo.dueDate")}
+                      onBlur={handleBlur("paymentInfo.dueDate")}
+                      value={values?.paymentInfo?.dueDate}
+                      maxLength={2}
+                    />
+                  </StyledView>
+                </>
+              ) : null}
               <StyledView className="font-semibold text-custom-gray text-[14px] gap-y-3">
                 <StyledText className="font-semibold text-custom-gray text-[14px]">
                   Proprietario:
@@ -353,7 +491,7 @@ export default function NaturalPersonContractForm() {
                     venue.ownerVenue?.map((item: OwnerVenueType) => {
                       const isSelected = String(
                         getFieldMeta("owner").value?.id
-                      ).includes(item.id); // Verifica se o proprietário já foi selecionado
+                      ).includes(item.owner.id); // Verifica se o proprietário já foi selecionado
 
                       return (
                         <StyledView
@@ -364,13 +502,13 @@ export default function NaturalPersonContractForm() {
                         >
                           <StyledPressable
                             className={`flex flex-row items-start justify-center cursor-pointer rounded-sm `}
-                            onPress={() => {
+                            onPress={async () => {
                               if (isSelected) {
                                 // Remove o proprietário se ele já estiver na lista
                                 setFieldValue("owner", {});
                               } else {
                                 // Adiciona o proprietário
-                                setFieldValue("owner", item);
+                                setFieldValue("owner", item.owner);
                               }
                             }}
                           >
@@ -414,7 +552,7 @@ export default function NaturalPersonContractForm() {
                   ) : (
                     contracts?.map((item: ContractType) => {
                       const isSelected = String(
-                        getFieldMeta("contract").value?.id 
+                        getFieldMeta("contract").value?.id
                       ).includes(item.id); // Verifica se o proprietário já foi selecionado
 
                       return (
@@ -468,30 +606,39 @@ export default function NaturalPersonContractForm() {
             </StyledPressable>
             {sendModal && (
               <SendModal
-                viaEmail={() =>
-                {
-                  const {contract,owner,...rest} = values
+                viaEmail={() => {
+                  const { contract, owner, paymentInfo, ...rest } = values;
                   sendContractPessoFisicaEmail({
                     owner: owner,
                     venue: venue,
-                    client: {...rest},
+                    client: { ...rest },
                     proposal: proposal,
                     contractInformation: contract,
-                  })
-                }
-                }
-                viaWhatsapp={() =>{
-                  const {contract,owner,...rest} = values
+                    paymentInfo: {
+                      dueDate: Number(paymentInfo.dueDate),
+                      signalAmount: Number(
+                        transformMoneyToNumber(paymentInfo.signalAmount)
+                      ),
+                      numberPayments: Number(paymentInfo.numberPayments),
+                      paymentValue:
+                        (proposal.totalAmount -
+                          Number(
+                            transformMoneyToNumber(paymentInfo.signalAmount)
+                          )) /
+                          Number(paymentInfo.numberPayments) || 1,
+                    },
+                  });
+                }}
+                viaWhatsapp={() => {
+                  const { contract, owner, ...rest } = values;
                   sendContractPessoFisicaWhatsapp({
                     owner: owner,
                     venue: venue,
-                    client: {...rest},
+                    client: { ...rest },
                     proposal: proposal,
                     contractInformation: contract,
-                  })
-                }
-                  
-                }
+                  });
+                }}
                 entity="contrato"
                 visible={sendModal}
                 onCancel={() => setSendModal(false)}

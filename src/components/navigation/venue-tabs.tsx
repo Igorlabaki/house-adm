@@ -18,7 +18,8 @@ import {
   AntDesign,
   Ionicons,
 } from "@expo/vector-icons";
-
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -37,6 +38,7 @@ export function VenueTabs() {
           fontSize: 20,
           color: "rgb(156 163 175)",
         },
+        headerShown: false, // Esconde o Header nativo
         headerTitle: "",
         headerTitleAlign: "center",
         headerLeft: () => (
@@ -75,13 +77,6 @@ export function VenueTabs() {
               color={color}
             />
           ),
-        }}
-      />
-      <Stack.Screen
-        name="ProposaInfoScreen"
-        component={ProposaInfoScreen}
-        options={{
-          title: "Ocamento",
         }}
       />
       <Tab.Screen

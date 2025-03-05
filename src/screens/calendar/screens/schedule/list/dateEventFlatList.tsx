@@ -9,16 +9,12 @@ import { StyledText, StyledView } from "styledComponents";
 import { DateEventItemFlatList } from "./dateEventItemFlatList";
 import { fecthDateEvents } from "@store/dateEvent/dateEventSlice";
 import { ItemSeparatorList } from "@components/list/itemSeparatorList";
+import moment from "moment";
 
 export const StyledFlatList = styled(FlatList<DateEventType>);
 
 export function EventDateFlatList() {
-  const dispatch = useDispatch();
   const dateEventList = useSelector((state: RootState) => state.daveEventList);
-
-  useEffect(() => {
-    dispatch(fecthDateEvents());
-  }, []);
 
   if (dateEventList.loading) {
     return (
@@ -37,7 +33,9 @@ export function EventDateFlatList() {
       <StyledFlatList
         removeClippedSubviews={false}
         keyExtractor={(item: DateEventType) => item.id}
-        data={dateEventList?.dateEvents}
+        data={dateEventList?.dateEvents.filter(
+          (item: DateEventType) => moment(item.startDate).isValid() && moment(item.startDate).isAfter(moment())
+        )}
         renderItem={({ item }: { item: DateEventType }) => {
           return <DateEventItemFlatList dateEvent={item} key={item.id} />;
         }}

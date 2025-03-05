@@ -2,12 +2,19 @@ import { Formik } from "formik";
 import Toast from "react-native-simple-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-
 import { QuestionType } from "type";
 import { AppDispatch, RootState } from "@store/index";
 import { createQuestionFormSchema } from "@schemas/createQuestionFormZodSchema";
-import { StyledPressable, StyledText, StyledTextInput, StyledView } from "styledComponents";
-import { createQuestionAsync, updateQuestionByIdAsync } from "@store/question/questionSlice";
+import {
+  StyledPressable,
+  StyledText,
+  StyledTextInput,
+  StyledView,
+} from "styledComponents";
+import {
+  createQuestionAsync,
+  updateQuestionByIdAsync,
+} from "@store/question/questionSlice";
 import { Venue } from "@store/venue/venueSlice";
 
 interface TextFormProps {
@@ -15,16 +22,18 @@ interface TextFormProps {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps) {
+export function QuestionFormComponent({
+  question,
+  setIsModalOpen,
+}: TextFormProps) {
   const dispatch = useDispatch<AppDispatch>();
   const error = useSelector<RootState>(
     (state: RootState) => state.questionList.error
   );
 
-  const venue : Venue = useSelector<RootState>(
-    (state: RootState) => state.venueList.venue
+  const venue: Venue = useSelector(
+    (state: RootState) => state?.venueList.venue
   );
-
   return (
     <Formik
       validationSchema={toFormikValidationSchema(createQuestionFormSchema)}
@@ -50,16 +59,14 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
       }}
       onSubmit={async (values: QuestionType) => {
         if (!question) {
-          const response = await dispatch(
-            createQuestionAsync(values)
-          );
+          const response = await dispatch(createQuestionAsync(values));
 
           if (response.meta.requestStatus == "fulfilled") {
             Toast.show("Pergunta criada com sucesso." as string, 3000, {
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
-            setIsModalOpen(false)
+            setIsModalOpen(false);
           }
 
           if (response.meta.requestStatus == "rejected") {
@@ -71,6 +78,7 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
         } else {
           const response = await dispatch(
             updateQuestionByIdAsync({
+              venueId: venue?.id,
               questionId: question.id,
               data: {
                 question: values.question,
@@ -84,11 +92,11 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
-            setIsModalOpen(false)
+            setIsModalOpen(false);
           }
 
           if (response.meta.requestStatus == "rejected") {
-            Toast.show(response.payload  as string, 3000, {
+            Toast.show(response.payload as string, 3000, {
               backgroundColor: "#FF9494",
               textColor: "white",
             });
@@ -97,9 +105,9 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
       }}
     >
       {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-        <StyledView  className="w-[90%] mx-auto my-5 flex flex-col">
-          <StyledView  className="flex flex-col gap-y-3">
-            <StyledView  className="flex flex-col gap-y-1">
+        <StyledView className="w-[90%] mx-auto my-5 flex flex-col">
+          <StyledView className="flex flex-col gap-y-3">
+            <StyledView className="flex flex-col gap-y-1">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Pergunta
               </StyledText>
@@ -120,7 +128,7 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
                 }`}
               />
             </StyledView>
-            <StyledView  className="flex flex-col gap-y-1">
+            <StyledView className="flex flex-col gap-y-1">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
                 Resposta
               </StyledText>
@@ -144,7 +152,7 @@ export function QuestionFormComponent({ question,setIsModalOpen }: TextFormProps
           </StyledView>
           <StyledPressable
             onPress={() => {
-              handleSubmit()
+              handleSubmit();
             }}
             className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
           >

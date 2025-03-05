@@ -43,7 +43,6 @@ export function ContractFormComponent({
   );
   const queryParams = new URLSearchParams();
 
-
   const [selectedClauses, setSelectedClauses] = useState<ClauseType[]>([]);
 
   useEffect(() => {
@@ -53,9 +52,8 @@ export function ContractFormComponent({
   }, [contract?.clauses]);
 
   useEffect(() => {
-    queryParams.append("organizationId",organization?.id)
-  }, [organization])
-  
+    queryParams.append("organizationId", organization?.id);
+  }, [organization]);
 
   return (
     <Formik
@@ -113,7 +111,7 @@ export function ContractFormComponent({
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
-            await dispatch(fecthContracts(`${queryParams.toString()}`))
+            await dispatch(fecthContracts(`${queryParams.toString()}`));
             setIsModalOpen(false);
           }
 

@@ -255,7 +255,6 @@ export const selectOwnerAsync = createAsyncThunk(
         .then((resp) => {
           return resp.data;
         })
-
       return selectedOwner;
     } catch (error) {
       return rejectWithValue(error.data?.message || "Erro ao buscar locacao.");

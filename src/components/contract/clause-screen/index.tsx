@@ -20,7 +20,7 @@ export default function ClauseScreen() {
     (state: RootState) => state.organizationList.organization
   );
   return (
-    <StyledView className="bg-gray-dark  flex-1 flex flex-col h-full w-full pt-5">
+    <StyledView className="bg-gray-dark  flex-1 flex flex-col h-full w-full pt-5 pb-10">
       <StyledPressable
         onPress={() => setIsModalOpen(true)}
         className="

@@ -5,6 +5,7 @@ export const venueVariables = [
     { key: "venue.neighborhood", label: "Bairro" },
     { key: "venue.complement", label: "Complemento" },
     { key: "venue.city", label: "Cidade" },
+    { key: "venue.email", label: "Email" },
     { key: "venue.state", label: "Estado" },
     { key: "venue.checkIn", label: "Check In" },
     { key: "venue.checkOut", label: "Check Out" },
@@ -42,7 +43,8 @@ export const clientVariables = [
     { key: "client.rg", label: "Rg" },
     { key: "client.cpf", label: "Cpf" },
     { key: "client.cnpj", label: "Cnpj" },
-    { key: "client.completeName", label: "Nome Completo" },
+    { key: "client.completeName", label: "Nome da Empresa Completo" },
+    { key: "client.name", label: "Nome Completo" },
 ];
 
 export const proposalVariables = [
@@ -53,4 +55,13 @@ export const proposalVariables = [
     { key: "proposal.extraHourPrice", label: "Preco da hora extra" },
     { key: "proposal.totalAmount", label: "Preco total" },
     { key: "proposal.guestNumber", label: "Numero de convidados" },
+    { key: "proposal.startHour", label: "Check In" },
+    { key: "proposal.endHour", label: "Check Out" },
+];
+
+export const paymentInfoVariables = [
+    { key: "paymentInfo.dueDate", label: "Dia do vencimento da parcela" },
+    { key: "paymentInfo.numberPayments", label: "Numero de parcelas" },
+    { key: "paymentInfo.signalAmount", label: "Valor do sinal" },
+    { key: "paymentInfo.paymentValue", label: "Valor da parcela" },
 ];

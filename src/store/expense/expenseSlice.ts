@@ -167,6 +167,7 @@ export const createExpenseAsync = createAsyncThunk(
       .then((resp) => {
         return resp.data;
       })
+      console.log(response)
     return response;
     } catch (error) {
       return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");

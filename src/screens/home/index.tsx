@@ -23,7 +23,7 @@ export function HomeScreen() {
   );
 
   return (
-    <StyledView className="bg-gray-dark flex-1  flex flex-col h-full w-full">
+    <StyledView className="bg-gray-dark flex flex-col h-full w-full">
       <ListNotifications />
     </StyledView>
   );

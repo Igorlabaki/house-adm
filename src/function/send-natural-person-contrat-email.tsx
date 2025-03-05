@@ -10,19 +10,13 @@ import * as Print from "expo-print";
 export async function sendContractPessoFisicaEmail(
   values: GenerateNaturalPersonContract
 ) {
-  const { contractInformation,client,owner,proposal,venue } = values;
-
+  const { contractInformation,client,owner,proposal,venue,paymentInfo } = values;
+  console.log(paymentInfo)
   try {
     const nomeArquivo = `Contrato_AR756_${client.completeName}.pdf`;
     // Gerar o PDF
     const { uri } = await Print.printToFileAsync({
-      html: generateNaturalPersonContractHTML({
-        owner,
-        venue,
-        client,
-        proposal,
-        contractInformation
-      }),
+      html: generateNaturalPersonContractHTML(values),
       base64: false,
     });
 

@@ -28,10 +28,7 @@ export function TextForm({ text, setIsModalOpen }: TextFormProps) {
   const error = useSelector<RootState>(
     (state: RootState) => state.textList.error
   );
-
-  const venue : Venue = useSelector<RootState>(
-    (state: RootState) => state.venueList.venue
-  );
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
   const flashMessageRef = useRef(null);
 
   return (
@@ -88,6 +85,7 @@ export function TextForm({ text, setIsModalOpen }: TextFormProps) {
           const response = await dispatch(
             updateTextByIdAsync({
               textId: text.id,
+              venueId: venue?.id,
               data: {
                 area: values.area,
                 text: values.text,

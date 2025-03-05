@@ -2,8 +2,8 @@ import { Formik } from "formik";
 import { useState } from "react";
 import { ImageType } from "type";
 import { Image } from "react-native";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@store/index";
 import Toast from "react-native-simple-toast";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -20,6 +20,7 @@ import {
   StyledTextInput,
   StyledView,
 } from "styledComponents";
+import { Venue } from "@store/venue/venueSlice";
 
 interface ImageFormProps {
   imageItem: ImageType;
@@ -29,7 +30,7 @@ interface ImageFormProps {
 export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
   const [newImage, setNewImage] = useState(null);
   const dispatch = useDispatch<AppDispatch>();
-
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -81,6 +82,7 @@ export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
       validationSchema={toFormikValidationSchema(updateImageRequestParams)}
       initialValues={{
         tag: imageItem?.tag,
+        venueId: venue?.id,
         imageId: imageItem?.id, 
         imageUrl: imageItem?.imageUrl,
         description: imageItem?.description,
@@ -116,6 +118,7 @@ export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
           formData.append("position", values.position);
           formData.append("imageId", String(values.imageId)); // Convertendo para string
           formData.append("description", values.description);
+          formData.append("venueId", String(values.venueId));
           formData.append("imageUrl", String(values.imageUrl)); // Convertendo para string
           formData.append("responsiveMode", values.responsiveMode); // Convertendo boolean para string
           

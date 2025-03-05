@@ -61,24 +61,24 @@ export default function ClauseListComponent({
         Selecione as cláusulas
       </StyledText>
       <StyledView>
-        <StyledView className="w-full py-3 px-2 flex justify-start items-center  rounded-md bg-white flex-row my-3">
+        <StyledView className="w-full py-3 px-2 flex justify-start items-center rounded-md bg-white flex-row my-3">
           <EvilIcons name="search" size={24} color="black" />
           <StyledTextInput
             onChangeText={(value) => setQuery(value)}
             value={query}
             placeholder={"Procurar..."}
-            className="text-sm text-text-gray  outline-none  flex-1"
+            className="text-sm text-text-gray outline-none flex-1"
           />
         </StyledView>
       </StyledView>
       <StyledView className="flex-1">
         <StyledFlatList
-          contentContainerStyle={{ flexGrow: 0 }} // Impede o crescimento excessivo
+          contentContainerStyle={{ flexGrow: 0 }}
           removeClippedSubviews={false}
           keyExtractor={(item: ClauseType) => item.id}
           data={clausesToShow}
-          initialNumToRender={4} // Exibe 10 itens inicialmente
-          maxToRenderPerBatch={4} // Limita 5 itens por vez para carregar
+          initialNumToRender={4}
+          maxToRenderPerBatch={4}
           windowSize={4}
           renderItem={({ item }: { item: ClauseType }) => {
             if (
@@ -89,8 +89,8 @@ export default function ClauseListComponent({
               return null;
             }
 
-            // Descobrir a posição correta da cláusula dentro das selecionadas
-            const selectedIndex = selectedClauses?.findIndex(
+            // Verifica se a cláusula já foi selecionada e sua posição
+            const selectedIndex = selectedClauses.findIndex(
               (cl) => cl?.id === item?.id
             );
             const isSelected = selectedIndex !== -1;
@@ -102,16 +102,15 @@ export default function ClauseListComponent({
                 onPress={() => {
                   setSelectedClauses((prev) => {
                     if (isSelected) {
-                      // Remove a cláusula e reordena as posições
-                      return prev
-                        .filter((cl) => cl.id !== item?.id)
-                        .map((cl, index) => ({ ...cl, position: index + 1 }));
+                      // Remove a cláusula, mas mantém a posição
+                      return prev.filter((cl) => cl.id !== item?.id);
                     } else {
+                      // Adiciona a cláusula mantendo a posição
                       return [...prev, { ...item, position: prev.length + 1 }];
                     }
                   });
                 }}
-                className={`flex flex-col items-start justify-center px-5 py-5 w-full rounded-md overflow-hidden shadow-lg relative bg-[#313338]`}
+                className="flex flex-col items-start justify-center px-5 py-5 w-full rounded-md overflow-hidden shadow-lg relative bg-[#313338]"
               >
                 {/* Mostra o número da posição apenas se estiver selecionado */}
                 {isSelected && (
@@ -131,7 +130,7 @@ export default function ClauseListComponent({
           }}
           ItemSeparatorComponent={() => <ItemSeparatorList />}
           ListEmptyComponent={() => <ListEmpty dataType="clausula" />}
-          className="flex-1" // Permite que a FlatList ocupe o espaço restante
+          className="flex-1"
         />
       </StyledView>
     </StyledView>

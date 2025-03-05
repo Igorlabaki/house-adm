@@ -156,6 +156,7 @@ export interface ClientType{
   state?: string;
   street?: string;
   completeName?: string;
+  name?: string;
   streetNumber?: string;
   neighborhood?: string;
 }

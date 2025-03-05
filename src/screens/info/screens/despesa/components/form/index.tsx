@@ -8,7 +8,10 @@ import { Calendar } from "react-native-calendars";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { CreateExpenseFormData, createExpenseFormSchema } from "@schemas/expense/create-expense-params-schema";
+import {
+  CreateExpenseFormData,
+  createExpenseFormSchema,
+} from "@schemas/expense/create-expense-params-schema";
 import {
   StyledModal,
   StyledPressable,
@@ -26,7 +29,6 @@ import {
 import { Venue } from "@store/venue/venueSlice";
 import { transformMoneyToNumber } from "function/transform-money-to-number";
 
-
 interface ExpenseFormProps {
   expense?: ExpenseType;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,7 +43,7 @@ export function ExpenseForm({ expense, setIsModalOpen }: ExpenseFormProps) {
   const error = useSelector<RootState>(
     (state: RootState) => state.expenseList.error
   );
-
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
   const types = [
     { display: "Anual", value: "ANNUAL" },
     { display: "Mensal", value: "MONTHLY" },
@@ -55,9 +57,7 @@ export function ExpenseForm({ expense, setIsModalOpen }: ExpenseFormProps) {
     { display: "Manutencao", value: "MAINTENANCE" },
     { display: "Investimento", value: "INVESTMENT" },
   ];
-  const venue: Venue = useSelector<RootState>(
-    (state: RootState) => state.venueList.venue
-  );
+
   return (
     <Formik
       validationSchema={toFormikValidationSchema(createExpenseFormSchema)}
@@ -67,10 +67,11 @@ export function ExpenseForm({ expense, setIsModalOpen }: ExpenseFormProps) {
         name: expense?.name && expense.name,
         category: expense?.category || "TAX",
         amount: expense?.amount && String(expense?.amount),
-        description: expense?.description && expense.description || "",
+        description: (expense?.description && expense.description) || "",
         recurring: expense?.recurring ? expense.recurring : false,
         paymentDate:
-          expense?.paymentDate && format(expense?.paymentDate, "dd/MM/yyyy").toString(),
+          expense?.paymentDate &&
+          format(expense?.paymentDate, "dd/MM/yyyy").toString(),
       }}
       validateOnChange={false}
       validateOnBlur={false}
@@ -89,21 +90,31 @@ export function ExpenseForm({ expense, setIsModalOpen }: ExpenseFormProps) {
         }
       }}
       onSubmit={async (values: CreateExpenseFormData) => {
-        const { amount,paymentDate, ...rest } = values;
-        const [dayInicio, monthInicio, yearInicio] =
-        values.paymentDate.split("/");
+        const { amount, paymentDate, ...rest } = values;
+
+        const today = new Date();
+        const formattedDate = format(today, "dd/MM/yyyy"); // "04/03/2025" (exemplo)
+
+        // Verifica se existe `paymentDate`, senão usa a data de hoje
+        const [dayInicio, monthInicio, yearInicio] = paymentDate
+          ? paymentDate.split("/")
+          : formattedDate.split("/");
+
+        // Criando a data corretamente (ano, mês-1, dia)
         const dataPagamento = new Date(
-          `${yearInicio}-${monthInicio}-${dayInicio}`
+          Number(yearInicio),
+          Number(monthInicio) - 1, // O mês no JS começa do 0 (Janeiro = 0, Fevereiro = 1, ...)
+          Number(dayInicio)
         );
-      
-        const formatedAmount = transformMoneyToNumber(values?.amount)
+        const formatedAmount = transformMoneyToNumber(values?.amount);
 
         if (!expense) {
           const response = await dispatch(
             createExpenseAsync({
               amount: Number(formatedAmount),
               paymentDate: dataPagamento,
-              ...rest
+              venueId: venue?.id,
+              ...rest,
             })
           );
 
@@ -206,64 +217,7 @@ export function ExpenseForm({ expense, setIsModalOpen }: ExpenseFormProps) {
                   </StyledText>
                 )}
               </StyledView>
-              <StyledView className="flex flex-col gap-2">
-                <StyledText className="font-semibold text-custom-gray text-[14px]">
-                  Data do Pagamento :
-                </StyledText>
-                <StyledPressable
-                  onPress={() => setIsCalendarModalOpen(true)}
-                  className={`rounded-md px-3 py-1 text-white ${
-                    errors.paymentDate
-                      ? "bg-red-50 border-[2px] border-red-900 text-red-800 "
-                      : "bg-gray-ligth"
-                  }`}
-                >
-                  <StyledText
-                    className={`
-                    ${
-                      (getFieldMeta("paymentDate")?.value as string)
-                        ? "text-white"
-                        : "text-['rgb(156 163 175)']"
-                    }
-                    text-white  py-1 ${
-                      errors.paymentDate
-                        ? " text-red-800 font-normal"
-                        : "font-semibold"
-                    }}`}
-                  >
-                    {(getFieldMeta("paymentDate")?.value as string)
-                      ? getFieldMeta("paymentDate")?.value?.toString()
-                      : "Escolha a data"}
-                  </StyledText>
-                </StyledPressable>
-                <StyledModal
-                  visible={isCalendarModalOpen}
-                  onRequestClose={() => setIsCalendarModalOpen(false)}
-                  animationType="fade"
-                  transparent={true}
-                  className="bg-black"
-                >
-                  <StyledTouchableOpacity
-                    style={{ flex: 1 }}
-                    onPress={() => {
-                      setIsCalendarModalOpen(false);
-                    }}
-                  >
-                    <StyledView className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
-                      <Calendar
-                        onDayPress={(day) => {
-                          setFieldValue(
-                            "paymentDate",
-                            moment.utc(day.dateString).format("DD/MM/yyyy")
-                          );
-                          setSelected(day.dateString);
-                          setIsCalendarModalOpen(false);
-                        }}
-                      />
-                    </StyledView>
-                  </StyledTouchableOpacity>
-                </StyledModal>
-              </StyledView>
+
               <StyledView className="pt-3">
                 <StyledText className="text-custom-gray text-[14px] font-semibold">
                   Recorrente:
@@ -274,6 +228,7 @@ export function ExpenseForm({ expense, setIsModalOpen }: ExpenseFormProps) {
                       className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                       onPress={() => {
                         setFieldValue("recurring", true);
+                        setFieldValue("paymentDate", undefined);
                       }}
                     >
                       <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -306,6 +261,66 @@ export function ExpenseForm({ expense, setIsModalOpen }: ExpenseFormProps) {
                   </StyledView>
                 </StyledView>
               </StyledView>
+              {getFieldMeta("recurring").value === false && (
+                <StyledView className="flex flex-col gap-2 mb-2">
+                  <StyledText className="font-semibold text-custom-gray text-[14px]">
+                    Data do Pagamento :
+                  </StyledText>
+                  <StyledPressable
+                    onPress={() => setIsCalendarModalOpen(true)}
+                    className={`rounded-md px-3 py-1 text-white ${
+                      errors.paymentDate
+                        ? "bg-red-50 border-[2px] border-red-900 text-red-800 "
+                        : "bg-gray-ligth"
+                    }`}
+                  >
+                    <StyledText
+                      className={`
+                    ${
+                      (getFieldMeta("paymentDate")?.value as string)
+                        ? "text-white"
+                        : "text-['rgb(156 163 175)']"
+                    }
+                    text-white  py-1 ${
+                      errors.paymentDate
+                        ? " text-red-800 font-normal"
+                        : "font-semibold"
+                    }}`}
+                    >
+                      {(getFieldMeta("paymentDate")?.value as string)
+                        ? getFieldMeta("paymentDate")?.value?.toString()
+                        : "Escolha a data"}
+                    </StyledText>
+                  </StyledPressable>
+                  <StyledModal
+                    visible={isCalendarModalOpen}
+                    onRequestClose={() => setIsCalendarModalOpen(false)}
+                    animationType="fade"
+                    transparent={true}
+                    className="bg-black"
+                  >
+                    <StyledTouchableOpacity
+                      style={{ flex: 1 }}
+                      onPress={() => {
+                        setIsCalendarModalOpen(false);
+                      }}
+                    >
+                      <StyledView className="rounded-md overflow-hidden flex justify-center min-w-[80%] mx-auto h-full z-40">
+                        <Calendar
+                          onDayPress={(day) => {
+                            setFieldValue(
+                              "paymentDate",
+                              moment.utc(day.dateString).format("DD/MM/yyyy")
+                            );
+                            setSelected(day.dateString);
+                            setIsCalendarModalOpen(false);
+                          }}
+                        />
+                      </StyledView>
+                    </StyledTouchableOpacity>
+                  </StyledModal>
+                </StyledView>
+              )}
               {getFieldMeta("recurring").value && (
                 <StyledView className="py-3">
                   <StyledText className="text-custom-gray text-[14px] font-semibold">

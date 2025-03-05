@@ -108,7 +108,7 @@ export function SectionScreen() {
             markedDates={{
               ...markedDates,
             }}
-            markingType="period"
+            markingType={venue.hasOvernightStay ? "period" : "dot"}
             minDate={today.toDateString()}
             theme={{
               backgroundColor: "#313338", // Cor do fundo geral do calendário

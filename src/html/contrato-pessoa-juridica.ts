@@ -1,10 +1,9 @@
-import { format } from "date-fns";
-import { BugdetType } from "type";
-import numeroPorExtenso from "numero-por-extenso";
 import moment from "moment";
+import { format } from "date-fns";
+import { ProposalType } from "type";
 
 export interface gerarContratoPessoaJuridicaHTMLParams {
-    orcamento: BugdetType;
+    proposal: ProposalType;
     infoPessoais: InfoPessoaisJuridicaFormParams;
 }
 
@@ -25,7 +24,7 @@ export interface InfoPessoaisJuridicaFormParams {
 export function gerarContratoPessoaJuridicaHTML(
     dadosContrato: gerarContratoPessoaJuridicaHTMLParams
 ) {
-    const { orcamento, infoPessoais } = dadosContrato;
+    const { proposal, infoPessoais } = dadosContrato;
     const dataHoje = new Date();
     const htmlContrato = `
 <!DOCTYPE html>

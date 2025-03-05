@@ -138,12 +138,6 @@ export default function AppNavigator() {
           }}
         />
         <Stack.Screen
-          name="VenueTabs"
-          component={VenueTabs}
-          options={{ title: "Venue" }}
-        />
-
-        <Stack.Screen
           name={"SelectedOrganization"}
           component={SelectedOrganizationScreen}
           options={{

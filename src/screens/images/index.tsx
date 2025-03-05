@@ -18,7 +18,7 @@ export function ImageScreen() {
   queryParams.append("venueId", venue.id);
 
   return (
-    <StyledView className="bg-gray-dark flex-1 pt-5 flex flex-col h-full w-full">
+    <StyledView className="bg-gray-dark flex-1 flex flex-col h-full w-full">
       <StyledPressable
         onPress={() => setIsModalOpen(true)}
         className="

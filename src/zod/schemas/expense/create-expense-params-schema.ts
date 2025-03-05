@@ -11,9 +11,7 @@ export const createExpenseFormSchema = z.object({
   amount: z.string({
     required_error: 'Estem campo e obrigatorio.',
   }),
-  paymentDate: z.string({
-    required_error: 'Estem campo e obrigatorio.',
-  }),
+  paymentDate: z.string().optional(),
   type: z.string({
     required_error: 'Estem campo e obrigatorio.',
   }),

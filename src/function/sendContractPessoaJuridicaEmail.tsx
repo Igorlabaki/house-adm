@@ -1,7 +1,4 @@
-import {
-  gerarContratoHTMLParams,
-  gerarContratoPessoaFisicaHTML,
-} from "html/generate-natural-person-contract";
+import Toast from "react-native-simple-toast";
 import * as MailComposer from "expo-mail-composer";
 import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
@@ -63,6 +60,10 @@ export async function sendContractJuridicaEmail(
     // Enviar o e-mail com anexo
     const result = await MailComposer.composeAsync(options);
     console.log("Resultado do envio de e-mail:", result);
+    Toast.show("Email enviado com sucesso." as string, 3000, {
+      backgroundColor: "rgb(75,181,67)",
+      textColor: "white",
+    });
   } catch (error) {
     console.error("Erro ao enviar o e-mail com o PDF", error);
   }

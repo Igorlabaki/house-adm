@@ -116,17 +116,17 @@ export function ProposalModal({
                 <Feather name="trash" size={16} color="white" />
               </StyledPressable>
             )}
-            {type === "UPDATE" && venue?.pricingModel === "PER_DAY" ? (
+            {type === "UPDATE" && venue?.hasOvernightStay === true ? (
               <ProposalPerDayForm
                 setIsEditModalOpen={setIsEditModalOpen}
                 proposal={proposal}
               />
-            ) : type === "UPDATE" && venue?.pricingModel === "PER_PERSON" ? (
+            ) : type === "UPDATE" && venue?.hasOvernightStay === false ? (
               <ProposalPerPersonForm
                 setIsEditModalOpen={setIsEditModalOpen}
                 proposal={proposal}
               />
-            ) : type === "CREATE" && venue?.pricingModel === "PER_DAY" ? (
+            ) : type === "CREATE" && venue?.hasOvernightStay === true ? (
               <ProposalPerDayForm setIsEditModalOpen={setIsEditModalOpen} />
             ) : (
               <ProposalPerPersonForm setIsEditModalOpen={setIsEditModalOpen} />

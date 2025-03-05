@@ -40,7 +40,7 @@ export default function AgendamentoScreen() {
         />
       </StyledView>
       <StyledView>
-        {venue.pricingModel === "PER_DAY" ? (
+        {venue.hasOvernightStay === true ? (
           <OverNigthDateEventFormComponent
             dateSelected={dateSelected}
             setDeleteModalIsOpen={setDeleteModalIsOpen}

@@ -246,7 +246,7 @@ export function VenueFormModalComponent({
               </StyledView>
               <StyledView className="flex flex-col gap-y-1">
                 <StyledText className="text-custom-gray text-[14px] font-semibold">
-                  Rua
+                  Logradouro
                 </StyledText>
                 <StyledTextInput
                   onChangeText={handleChange("street")}
