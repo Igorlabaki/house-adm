@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { DateEventModalComponent } from "./components/modal";
 import { Calendar as Calendario } from "react-native-calendars";
 import { fecthDateEvents } from "@store/dateEvent/dateEventSlice";
@@ -15,6 +16,7 @@ import {
   StyledView,
 } from "styledComponents";
 import { Venue } from "@store/venue/venueSlice";
+import { fetchProposalByIdAsync } from "@store/proposal/proposal-slice";
 
 export function SectionScreen() {
   const today = new Date();
@@ -26,6 +28,7 @@ export function SectionScreen() {
   const queryParams = new URLSearchParams();
   queryParams.append("venueId", venue.id);
 
+ const navigation = useNavigation();
   useEffect(() => {
     dispatch(fecthDateEvents(`${queryParams.toString()}`));
   }, []);
@@ -86,22 +89,27 @@ export function SectionScreen() {
     );
   };
 
+  async function handleButton(proposalId:string) {
+    await dispatch(fetchProposalByIdAsync(proposalId));
+    navigation.navigate("ProposaInfoScreen");
+  }
  
-
   return (
     <StyledScrollView className="bg-gray-dark flex-1 flex flex-col h-full w-full">
 
       <StyledView className="bg-gray-dark flex-1 pt-3 flex flex-col h-full w-full">
-        <StyledPressable
-          onPress={() => setIsModalOpen(true)}
-          className="
+      {venue.permissions.includes("EDIT_CALENDAR") && (
+          <StyledPressable
+            onPress={() => setIsModalOpen(true)}
+            className="
                 justify-center items-center bg-green-800 hover:bg-green-600 active:bg-green-700 
                 rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-3 border-[0.6px] border-white border-solid w-[50%]"
-        >
-          <StyledText className="text-white text-sm font-bold text-center">
-            Nova Data
-          </StyledText>
-        </StyledPressable>
+          >
+            <StyledText className="text-white text-sm font-bold text-center">
+              Nova Data
+            </StyledText>
+          </StyledPressable>
+        )}
         <StyledView className="rounded-md overflow-hidden flex justify-start w-full mx-auto h-full   z-40 mt-3">
           <Calendario
             onDayPress={handleDatePress}
@@ -147,7 +155,7 @@ export function SectionScreen() {
             </StyledView>
           </StyledView>
           {selectedEvents && (
-            <StyledView className="my-5">
+            <StyledPressable onPress={() => handleButton(selectedEvents.proposalId)} className="my-5">
               {selectedEvents.map((item: DateEventType) => {
                  const startDate = item?.startDate
                  ? moment(item.startDate)
@@ -214,7 +222,7 @@ export function SectionScreen() {
                   </StyledView>
                 );
               })}
-            </StyledView>
+            </StyledPressable>
           )}
         </StyledView>
       </StyledView>

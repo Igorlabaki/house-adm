@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AuthMiddleware = ({ navigation, children }: { navigation: any; children: React.ReactNode }) => {

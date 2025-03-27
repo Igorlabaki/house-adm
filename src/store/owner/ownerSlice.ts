@@ -43,11 +43,11 @@ const initialState = {
 
 export const fecthOwnersByOrganization: any = createAsyncThunk(
   "owner/list",
-  async (organizationId: string,  { rejectWithValue }) => {
+  async (param: string,  { rejectWithValue }) => {
     try {
       const response = await api
       .get(
-        `/owner/listByOrganization?organizationId=${organizationId}`
+        `/owner/listByOrganization?${param}`
       )
       .then((response) =>  response.data);
       return response;

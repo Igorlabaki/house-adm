@@ -58,7 +58,7 @@ export function DateEventFormComponent({
   );
 
   const formikRef = useRef(null);
-  const user: User = useSelector((state: RootState) => state.user.user);
+  const user: User = useSelector((state: RootState) => state.session.user);
 
   const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
 
@@ -132,7 +132,7 @@ export function DateEventFormComponent({
                   ...values,
                 },
                 userId: user?.id,
-                venueId: venue.id,
+                venueId: venue?.id,
                 proposalId: proposal.id,
                 username: user.username,
                 dateEventId: dateSelected?.id,

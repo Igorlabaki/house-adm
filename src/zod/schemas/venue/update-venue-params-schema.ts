@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const updateVenueSchema = z.object({
+    userId: z.string(),
     venueId: z.string(),
     data: z.object({
         cep: z.string().optional(),
@@ -16,7 +17,9 @@ export const updateVenueSchema = z.object({
         pricePerPerson: z.string().optional(),
         owners: z.array(z.string()).optional(),
         hasOvernightStay: z.boolean().optional(),
-        pricingModel: z.enum(["PER_PERSON", "PER_DAY"]).optional(),
+        pricePerPersonDay: z.string().optional(),
+        pricePerPersonHour: z.string().optional(),
+        pricingModel: z.enum(["PER_PERSON", "PER_DAY", "PER_PERSON_DAY", "PER_PERSON_HOUR"]).optional(),
     }),
 });
 

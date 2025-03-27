@@ -49,7 +49,7 @@ export function UpdatePaymentFormComponent({
     (state: RootState) => state?.proposalList.loading
   );
 
-  const user = useSelector((state: RootState) => state?.user.user);
+  const user = useSelector((state: RootState) => state?.session.user);
 
   const pickImage = async () => {
     const permissionResult =

@@ -384,6 +384,7 @@ export default function ContratoPessoaJuridicaForm() {
                   ? "bg-red-50  border-[2px] border-red-900 text-red-800"
                   : "bg-gray-ligth"
               }`}
+              maxLength={2}
               onChangeText={handleChange("state")}
               onBlur={handleBlur("state")}
               value={values.state}

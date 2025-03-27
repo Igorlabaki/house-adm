@@ -10,21 +10,27 @@ import { optionStateReducer } from "./option/optionSlice";
 import { clauseListReducer } from "./clause/clause-slice";
 import { expenseListReducer } from "./expense/expenseSlice";
 import { serviceListReducer } from "./service/service-slice";
+import { userListReducer } from "./userList/user-list-slice";
 import { contactListReducer } from "./contact/contact-slice";
 import { dateEventReducer } from "./dateEvent/dateEventSlice";
 import { questionListReducer } from "./question/questionSlice";
+import { documentListReducer } from "./document/document-slice";
 import { scheduleListReducer } from "./schedule/schedule-slice";
 import { proposalListReducer } from "./proposal/proposal-slice";
+import { contractListReducer } from "./contract/contract-slice";
 import { organizationListReducer } from "./organization/organizationSlice";
 import { notificationListReducer } from "./notifications/notificationsSlice";
 import { orcamentoAprovadoListReducer } from "./budgetAprovado/bugetAprovadoSlice";
-import { contractListReducer } from "./contract/contract-slice";
-import { documentListReducer } from "./document/document-slice";
+import { userorganizationListReducer } from "./userOrganization/user-organization--slice";
+import { userPermissionStateReducer } from "./user-permission/user-permission-slice";
+import { surchargefeesListReducer } from "./surcharge-fee/surcharge-fee";
+import { discountfeesListReducer } from "./discount-fee/discount-fee";
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     session: sessionReducer,
+    userList: userListReducer,
     textList: textListReducer,
     ownerList: ownerListReducer,
     imageList: imageListReducer,
@@ -43,6 +49,10 @@ export const store = configureStore({
     scheduleList: scheduleListReducer,
     notificationList: notificationListReducer,
     organizationList: organizationListReducer,
+    discountfeesState: discountfeesListReducer,
+    surchargefeesState: surchargefeesListReducer,
+    userPermittionState: userPermissionStateReducer,
+    userOrganizationList: userorganizationListReducer,
     orcamentosAprovadoList: orcamentoAprovadoListReducer,
   },
   middleware: (getDefaultMiddleware) => 

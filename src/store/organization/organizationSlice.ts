@@ -203,7 +203,7 @@ export const createOrganizationAsync = createAsyncThunk(
 
 export const createOrganizationVenueAsync = createAsyncThunk(
   "organization/createVenue",
-  async (params: {organizationId: string, data: CreateVenueFormSchema}, { rejectWithValue }) => {
+  async (params: {organizationId: string,userId: string, data: CreateVenueFormSchema}, { rejectWithValue }) => {
     try {
       const newVenue = await api
       .post(`/venue/create`, params)
@@ -220,10 +220,10 @@ export const createOrganizationVenueAsync = createAsyncThunk(
 
 export const selectOrganizationAsync = createAsyncThunk(
   "organization/select",
-  async ({ url }: { url: string | undefined }, { rejectWithValue }) => {
+  async (params: string, { rejectWithValue }) => {
     try {
       const selectedOrganization = await api
-        .get(`/organization/getById?${url}`)
+        .get(`/organization/getById?${params}`)
         .then((resp) => {
           return resp.data;
         })

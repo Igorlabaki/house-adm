@@ -24,6 +24,8 @@ import {
   StyledTextInput,
   StyledView,
 } from "styledComponents";
+import { Venue } from "@store/venue/venueSlice";
+import { Entypo } from "@expo/vector-icons";
 
 interface ContractFormProps {
   contract?: ContractType;
@@ -38,12 +40,14 @@ export function ContractFormComponent({
 }: ContractFormProps) {
   const dispatch = useDispatch<AppDispatch>();
 
-  const organization: Organization = useSelector<RootState>(
+  const organization: Organization = useSelector(
     (state: RootState) => state.organizationList.organization
   );
   const queryParams = new URLSearchParams();
 
   const [selectedClauses, setSelectedClauses] = useState<ClauseType[]>([]);
+
+  const [venueIdList, setVenueIdList] = useState<string[]>(contract?.venues?.map((item) => item.id) || []);
 
   useEffect(() => {
     if (contract?.clauses && contract.clauses !== selectedClauses) {
@@ -103,6 +107,7 @@ export function ContractFormComponent({
               title: values.title,
               contractId: contract.id,
               clauses: values.clauses,
+              venueIds: values?.venueIds
             })
           );
 
@@ -137,6 +142,10 @@ export function ContractFormComponent({
         useEffect(() => {
           setFieldValue("clauses", selectedClauses);
         }, [selectedClauses, setFieldValue]);
+
+        useEffect(() => {
+          setFieldValue("venueIds", venueIdList);
+        }, [venueIdList]);
 
         return (
           <StyledView className="w-[90%] mx-auto my-5 flex flex-col ">
@@ -178,6 +187,47 @@ export function ContractFormComponent({
                       : "bg-gray-ligth"
                   }`}
                 />
+              </StyledView>
+              <StyledView className="flex flex-col gap-y-2">
+                <StyledText className="text-custom-gray text-[14px] font-semibold">
+                  Selecione as Locacoes:
+                </StyledText>
+                <StyledView className="flex flex-row">
+                  {organization.venues.map((item: Venue) => {
+                    return (
+                      <StyledView
+                        className="flex flex-row gap-x-1"
+                        key={item.id}
+                      >
+                        <StyledView
+                          className="
+                  flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  
+                  text-[12px] md:text-[15px]"
+                        >
+                          <StyledPressable
+                            className="flex flex-row items-center justify-center gap-x-1 cursor-pointer "
+                            onPress={() => {
+                              setVenueIdList((prev: string[]) =>
+                                prev.includes(item.id)
+                                  ? prev.filter((p) => p !== item.id)
+                                  : [...prev, item.id]
+                              );
+                            }}
+                          >
+                            <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                              {venueIdList.includes(item.id) && (
+                                <Entypo name="check" size={12} color="white" />
+                              )}
+                            </StyledView>
+                            <StyledText className="text-custom-gray text-[14px] font-semibold">
+                              {item.name}
+                            </StyledText>
+                          </StyledPressable>
+                        </StyledView>
+                      </StyledView>
+                    );
+                  })}
+                </StyledView>
               </StyledView>
               <ClauseListComponent
                 selectedClauses={selectedClauses}

@@ -2,7 +2,8 @@ import { api } from "../../services/axios";
 import { UpdateVenueSchema } from "@schemas/venue/update-venue-params-schema";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { CreateVenueFormSchema } from "@schemas/venue/create-venue-params-schema";
-import { OwnerType, OwnerVenueType } from "type";
+import { ContractType, OwnerType, OwnerVenueType, UserOrganizationType } from "type";
+import { UserOrganization } from "@store/auth/authSlice";
 
 export interface Venue {
   name: string;
@@ -13,17 +14,23 @@ export interface Venue {
   street: string;
   checkIn: string;
   createdAt: Date;
-  ownerVenue: OwnerVenueType[] | null;
   maxGuest: number;
   checkOut: string;
   streetNumber: string;
-  pricingModel: string;
+  permissions: string[]
   neighborhood: string;
+  seasonalFee?: number;
   organizationId: string;
   complement: string | null;
   hasOvernightStay: boolean;
   pricePerDay: number | null;
   pricePerPerson: number | null;
+  pricePerPersonDay: number | null;
+  pricePerPersonHour: number | null;
+  ownerVenue: OwnerVenueType[] | null;
+  seasonalFeeDates?: {seasonalStartDay: Date, seasonalEndDay: Date}[];
+  contracts?: ContractType[];
+  pricingModel: "PER_PERSON" | "PER_DAY" | "PER_PERSON_DAY" | "PER_PERSON_HOUR";
 }
 
 export interface VenueListDataResponse {
@@ -85,6 +92,7 @@ const initialState: {
   error: string,
   loading: boolean,
   venues: Venue[],
+  userOrganizationVenues: Venue[],
   venue: Venue,
   eventTrafficNumbers: {
     all: number;
@@ -102,6 +110,7 @@ const initialState: {
   }
 } = {
   venues: [],
+  userOrganizationVenues: [],
   analysis: null,
   loading: false,
   eventTrafficNumbers: null,
@@ -121,32 +130,19 @@ const initialState: {
     complement: null,
     streetNumber: "",
     pricePerDay: null,
+    seasonalFee: null,
     organizationId: "",
     pricePerPerson: null,
     createdAt: new Date(),
+    seasonalFeeDates:null, 
     hasOvernightStay: false,
-    pricingModel: "PER_PERSON", // ou "PER_DAY", dependendo da lógica
+    pricePerPersonDay: null,
+    pricePerPersonHour: null,
+    pricingModel: "PER_PERSON",
+    permissions: [""]// ou "PER_DAY", dependendo da lógica
   },
   error: "",
 };
-
-export const fecthVenueByUserEmail: any = createAsyncThunk(
-  "venue/list",
-  async ({ url }: { url: string | undefined }, { rejectWithValue }) => {
-
-    try {
-      const response = await api
-        .get(
-          `/venue/list?${url}`
-        )
-        .then((response) => response.data);
-
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
-    }
-  }
-);
 
 const venueListSlice = createSlice({
   name: "venue",
@@ -158,17 +154,31 @@ const venueListSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Fecth Venue List
-    builder.addCase(fecthVenueByUserEmail.pending, (state) => {
+    builder.addCase(fecthVenues.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(fecthVenueByUserEmail.fulfilled, (state, action: PayloadAction<VenueListDataResponse>) => {
+    builder.addCase(fecthVenues.fulfilled, (state, action: PayloadAction<VenueListDataResponse>) => {
       state.loading = false;
       state.venues = action.payload.data.venueList;
       state.error = "";
     }),
-      builder.addCase(fecthVenueByUserEmail.rejected, (state, action) => {
+      builder.addCase(fecthVenues.rejected, (state, action) => {
         state.loading = false;
-        state.venues = [];
+        state.venues = state.venues;
+        state.error = action.error.message;
+      });
+
+    builder.addCase(fecthUserOrganizationVenues.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fecthUserOrganizationVenues.fulfilled, (state, action: PayloadAction<VenueListDataResponse>) => {
+      state.loading = false;
+      state.userOrganizationVenues = action.payload.data.venueList;
+      state.error = "";
+    }),
+      builder.addCase(fecthUserOrganizationVenues.rejected, (state, action) => {
+        state.loading = false;
+        state.userOrganizationVenues = state.venues;
         state.error = action.error.message;
       });
 
@@ -240,7 +250,7 @@ const venueListSlice = createSlice({
       state.loading = false;
       state.venues = state.venues.map((item: Venue) => {
         if (item.id === action.payload.data.id) {
-          return (item = { ...action.payload.data });
+          return item = { ...action.payload.data };
         } else {
           return item;
         }
@@ -260,7 +270,7 @@ const venueListSlice = createSlice({
     });
     builder.addCase(selectVenueAsync.fulfilled, (state, action: any) => {
       state.loading = false;
-      state.venue = action.payload.data.venue
+      state.venue = action.payload.data
       state.error = "";
     }),
       builder.addCase(selectVenueAsync.rejected, (state, action) => {
@@ -288,9 +298,42 @@ const venueListSlice = createSlice({
   },
 });
 
+export const fecthVenues: any = createAsyncThunk(
+  "venue/list",
+  async (param: string, { rejectWithValue }) => {
+    try {
+      const response = await api
+        .get(
+          `/venue/permittedVenueList?${param}`
+        )
+        .then((response) => response.data);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }
+);
+
+export const fecthUserOrganizationVenues: any = createAsyncThunk(
+  "venue/listuserOrganization",
+  async (param: string, { rejectWithValue }) => {
+    try {
+      const response = await api
+        .get(
+          `/venue/permittedVenueList?${param}`
+        )
+        .then((response) => response.data);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+  }
+);
+
+
 export const createVenueAsync = createAsyncThunk(
   "venue/create",
-  async (params: { organizationId: string, data: CreateVenueFormSchema }, { rejectWithValue }) => {
+  async (params: { organizationId: string, userId: string, data: CreateVenueFormSchema }, { rejectWithValue }) => {
     try {
       const newVenue = await api
         .post(`/venue/create`, params)
@@ -358,10 +401,10 @@ export const analysisByMonthVenueAsync = createAsyncThunk(
 
 export const selectVenueAsync = createAsyncThunk(
   "venue/select",
-  async (venueId: string, { rejectWithValue }) => {
+  async (params: string, { rejectWithValue }) => {
     try {
       const selectedVenue = await api
-        .get(`/venue/getById/${venueId}`)
+        .get(`/venue/getById?${params}`)
         .then((resp) => {
           return resp.data;
         })
@@ -383,7 +426,6 @@ export const updateVenueAsync = createAsyncThunk(
         )
         .then((resp: { data: any }) => resp.data);
       return updatedVenue
-      return updatedVenue;
     } catch (error) {
 
       return rejectWithValue(error.data?.message || "Erro ao deletar locacao.");

@@ -536,7 +536,7 @@ export default function NaturalPersonContractForm() {
                   Contrato:
                 </StyledText>
                 <StyledView className="flex flex-col justify-start items-start  flex-wrap">
-                  {contracts?.length === 0 ? (
+                  {venue?.contracts?.length === 0 ? (
                     <>
                       <StyledText className="text-sm text-center font-light text-gray-400">
                         Nao ha contratos cadastrados nessa organizacao
@@ -550,7 +550,7 @@ export default function NaturalPersonContractForm() {
                         )}
                     </>
                   ) : (
-                    contracts?.map((item: ContractType) => {
+                    venue?.contracts?.map((item: ContractType) => {
                       const isSelected = String(
                         getFieldMeta("contract").value?.id
                       ).includes(item.id); // Verifica se o proprietário já foi selecionado

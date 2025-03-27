@@ -2,6 +2,7 @@ import { api } from 'services/axios';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { UpdateUserRequestParams } from '@schemas/user/update-user-params-schema';
 import { getUserSave, removeUserSave, storageUserSave } from 'storage/storage-user';
+import { storageAccessTokenSave } from 'storage/storage-access-token';
 
 // Ação assíncrona para buscar o usuário do AsyncStorage
 export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
@@ -15,7 +16,7 @@ const userSlice = createSlice({
   initialState: {
     user: null,
     loading: false,
-    loggedIn: false
+    loggedIn: false,
   },
   reducers: {
     logout: (state) => {
@@ -35,26 +36,30 @@ const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
-        state.loggedIn = true
+        if (action.payload) {
+          state.user = action.payload;
+          state.loggedIn = true;
+        } else {
+          state.user = null;
+          state.loggedIn = false;
+        }
       })
       .addCase(fetchUser.rejected, (state) => {
+        state.user = null;
         state.loading = false;
       });
 
-    // Update USER Item
     builder.addCase(updateUserAsync.pending, (state) => {
       state.loading = true;
     });
     builder.addCase(updateUserAsync.fulfilled, (state, action: any) => {
       state.loading = false;
-      state.user = action.payload.data
-      storageUserSave(action.payload.data);
-    }),
-      builder.addCase(updateUserAsync.rejected, (state, action) => {
-        state.loading = false;
-        state.user = state.user;
-      });
+      state.user = action.payload.data || state.user;
+    });
+    builder.addCase(updateUserAsync.rejected, (state, action) => {
+      state.loading = false;
+      state.user = state.user;
+    });
   },
 });
 
@@ -62,14 +67,14 @@ export const updateUserAsync = createAsyncThunk(
   "user/updated",
   async (params: FormData, { rejectWithValue }) => {
     try {
-      const newUSER = await api
+      const response = await api
         .put(`/user/update`, params, {
           headers: {
             "Content-Type": "multipart/form-data", // Importante para envio de arquivos
           },
         })
         .then((response) => response?.data);
-      return newUSER;
+      return response;
     } catch (error) {
       return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
     }

@@ -16,8 +16,14 @@ import {
   deleteOrganizationAsync,
   Organization,
 } from "@store/organization/organizationSlice";
-import { Ionicons, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import {
+  Ionicons,
+  FontAwesome5,
+  FontAwesome6,
+  AntDesign,
+} from "@expo/vector-icons";
 import { OwnerType } from "type";
+import { fecthUserOrganizationByOrganizationId } from "@store/userOrganization/user-organization--slice";
 
 interface OrganizationMenuProps {
   isModalOpen: boolean;
@@ -34,13 +40,16 @@ export default function OrganizationMenu({
     (state: RootState) => state?.organizationList.organization
   );
 
-  const ownersByOrganization : OwnerType[] = useSelector(
+  const ownersByOrganization: OwnerType[] = useSelector(
     (state: RootState) => state?.ownerList.ownersByOrganization
   );
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const [editOrganizationModalIsOpen, setEditOrganizationModalIsOpen] =
+    useState(false);
+
+  const [userOrganizationModalIsOpen, setUserOrganizationModalIsOpen] =
     useState(false);
 
   const navigation = useNavigation();
@@ -60,11 +69,15 @@ export default function OrganizationMenu({
   };
 
   const navigateToOwnerScreen = () => {
-    navigation.navigate("OwnersScreen", { type: "ORGANIZATION"});
+    navigation.navigate("OwnersScreen", { type: "ORGANIZATION" });
   };
 
   const navigateToContractScreen = () => {
     navigation.navigate("ContractScreen");
+  };
+
+  const navigateToUserScreen = async () => {
+    navigation.navigate("UserScreen");
   };
 
   return (
@@ -97,9 +110,21 @@ export default function OrganizationMenu({
           </StyledPressable>
           <StyledPressable
             className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
-            onPress={() =>{ 
-              navigateToOwnerScreen()
-              setMenuModalIsOpen(false)
+            onPress={() => {
+              navigateToUserScreen();
+              setMenuModalIsOpen(false);
+            }}
+          >
+            <StyledText className="text-white font-bold text-start w-[130px]">
+              Permissoes
+            </StyledText>
+            <AntDesign name="warning" size={22} color="white" />
+          </StyledPressable>
+          <StyledPressable
+            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+            onPress={() => {
+              navigateToOwnerScreen();
+              setMenuModalIsOpen(false);
             }}
           >
             <StyledText className="text-white font-bold text-start w-[130px]">
@@ -109,9 +134,9 @@ export default function OrganizationMenu({
           </StyledPressable>
           <StyledPressable
             className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
-            onPress={() =>{ 
-              navigateToContractScreen()
-              setMenuModalIsOpen(false)
+            onPress={() => {
+              navigateToContractScreen();
+              setMenuModalIsOpen(false);
             }}
           >
             <StyledText className="text-white font-bold text-start w-[130px]">

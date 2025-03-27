@@ -5,6 +5,7 @@ import {
   StyledText,
   StyledTextInput,
   StyledTextInputMask,
+  StyledTouchableOpacity,
   StyledView,
 } from "styledComponents";
 import Toast from "react-native-simple-toast";
@@ -16,15 +17,31 @@ import {
 } from "@store/organization/organizationSlice";
 import { createVenueFormSchema } from "@schemas/venue/create-venue-params-schema";
 import { OwnerType } from "type";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { ActivityIndicator } from "react-native";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { updateVenueAsync, Venue } from "@store/venue/venueSlice";
+import {
+  createVenueAsync,
+  fecthVenues,
+  selectVenueAsync,
+  updateVenueAsync,
+  Venue,
+} from "@store/venue/venueSlice";
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import { transformMoneyToNumber } from "function/transform-money-to-number";
+import { User } from "@store/auth/authSlice";
+import { Calendar } from "react-native-calendars";
+import moment from "moment";
+
+type SeasonalFeeInput = {
+  fee: string;
+  startDay: string;
+  endDay: string;
+  title: string;
+};
 
 interface VenueFormModalComponentProps {
   venue?: Venue;
@@ -57,6 +74,7 @@ export function VenueFormModalComponent({
     (state: RootState) => state.organizationList.organization
   );
 
+  const user: User = useSelector((state: RootState) => state.session.user);
   const ownersByVenueList: OwnerType[] = useSelector(
     (state: RootState) => state.ownerList.ownersByVenue
   );
@@ -64,8 +82,6 @@ export function VenueFormModalComponent({
   const ownersByOrganizationList: OwnerType[] = useSelector(
     (state: RootState) => state.ownerList.ownersByOrganization
   );
-
-  const navigation = useNavigation();
 
   const flashMessageRef = useRef(null);
 
@@ -102,8 +118,18 @@ export function VenueFormModalComponent({
             pricePerPerson:
               (venue?.pricePerPerson && venue?.pricePerPerson.toString()) ||
               "0",
+            pricePerPersonDay:
+              (venue?.pricePerPersonDay &&
+                venue?.pricePerPersonDay.toString()) ||
+              "0",
+            pricePerPersonHour:
+              (venue?.pricePerPersonHour &&
+                venue?.pricePerPersonHour.toString()) ||
+              "0",
             pricePerDay:
               (venue?.pricePerDay && venue?.pricePerDay.toString()) || "0",
+            seasonalFee:
+              (venue?.seasonalFee && venue?.seasonalFee.toString()) || "0",
             owners:
               ownersByVenueList?.length > 0
                 ? ownersByVenueList?.map((item) => item.id)
@@ -134,12 +160,20 @@ export function VenueFormModalComponent({
                     pricePerPerson: transformMoneyToNumber(
                       values.pricePerPerson
                     ),
+                    pricePerPersonDay: transformMoneyToNumber(
+                      values.pricePerPersonDay
+                    ),
+                    pricePerPersonHour: transformMoneyToNumber(
+                      values.pricePerPersonHour
+                    ),
                   },
                   venueId: venue.id,
+                  userId: user?.id,
                 })
               );
 
               if (response.meta.requestStatus == "fulfilled") {
+                await dispatch(selectVenueAsync(response?.payload?.data?.id))
                 Toast.show("Locacao atualizada com sucesso." as string, 3000, {
                   backgroundColor: "rgb(75,181,67)",
                   textColor: "white",
@@ -158,13 +192,20 @@ export function VenueFormModalComponent({
             }
 
             const response = await dispatch(
-              createOrganizationVenueAsync({
-                organizationId: organization.id,
+              createVenueAsync({
+                userId: user.id,
+                organizationId: organization?.id,
                 data: {
                   ...values,
                   maxGuest: String(values.maxGuest),
                   pricePerDay: transformMoneyToNumber(values.pricePerDay),
                   pricePerPerson: transformMoneyToNumber(values.pricePerPerson),
+                  pricePerPersonDay: transformMoneyToNumber(
+                    values.pricePerPersonDay
+                  ),
+                  pricePerPersonHour: transformMoneyToNumber(
+                    values.pricePerPersonHour
+                  ),
                 },
               })
             );
@@ -392,6 +433,7 @@ export function VenueFormModalComponent({
                   onChangeText={handleChange("state")}
                   onBlur={handleBlur("state")}
                   value={String(values?.state)}
+                  maxLength={2}
                   placeholder={
                     errors.state ? String(errors.state) : "Digite o nome"
                   }
@@ -527,7 +569,7 @@ export function VenueFormModalComponent({
               <StyledText className="font-semibold text-custom-gray text-[14px]">
                 Metodo de cobranca
               </StyledText>
-              <StyledView className="flex flex-row gap-x-1">
+              <StyledView className="flex flex-row gap-x-1 flex-wrap gap-y-1">
                 <StyledView
                   className="
                   flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  
@@ -566,8 +608,44 @@ export function VenueFormModalComponent({
                     </StyledText>
                   </StyledPressable>
                 </StyledView>
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-1 cursor-pointer "
+                    onPress={() => {
+                      setFieldValue("pricingModel", "PER_PERSON_DAY");
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("pricingModel").value ===
+                        "PER_PERSON_DAY" && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Por Pessoa/Dia
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
+                <StyledView className="flex flex-wrap gap-1 text-sm font-light text-veryDarkGraishCyan  text-[12px] md:text-[15px]">
+                  <StyledPressable
+                    className="flex flex-row items-center justify-center gap-x-1 cursor-pointer "
+                    onPress={() => {
+                      setFieldValue("pricingModel", "PER_PERSON_HOUR");
+                    }}
+                  >
+                    <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
+                      {getFieldMeta("pricingModel").value ===
+                        "PER_PERSON_HOUR" && (
+                        <Entypo name="check" size={12} color="white" />
+                      )}
+                    </StyledView>
+                    <StyledText className="text-custom-gray text-[14px] font-semibold">
+                      Por Pessoa/Hora
+                    </StyledText>
+                  </StyledPressable>
+                </StyledView>
               </StyledView>
-              {getFieldMeta("pricingModel").value === "PER_DAY" ? (
+              {getFieldMeta("pricingModel").value === "PER_DAY" && (
                 <StyledView className="flex flex-col gap-y-2">
                   <StyledText className="text-custom-gray text-[14px] font-semibold">
                     Valor por Dia
@@ -594,7 +672,36 @@ export function VenueFormModalComponent({
                       </StyledText>
                     )}
                 </StyledView>
-              ) : (
+              )}
+              {getFieldMeta("pricingModel").value === "PER_PERSON_DAY" && (
+                <StyledView className="flex flex-col gap-y-2">
+                  <StyledText className="text-custom-gray text-[14px] font-semibold">
+                    Valor por Pessoa / Dia
+                  </StyledText>
+                  <StyledTextInputMask
+                    onFocus={(e) => e.stopPropagation()}
+                    className={`bg-gray-ligth rounded-md px-3 py-1 text-white ${
+                      errors.pricePerDay
+                        ? "bg-red-50  border-[2px] border-red-900 text-red-800"
+                        : "bg-gray-ligth"
+                    }`}
+                    type="money"
+                    options={{
+                      maskType: "BRL",
+                    }}
+                    onChangeText={handleChange("pricePerPersonDay")}
+                    onBlur={handleBlur("pricePerPersonDay")}
+                    value={String(Number(values.pricePerPersonDay) * 100)}
+                  />
+                  {errors?.pricePerPersonDay &&
+                    errors?.pricePerPersonDay.toString() != "Required" && (
+                      <StyledText className="text-red-700 font-semibold">
+                        {errors.pricePerDay?.toString()}
+                      </StyledText>
+                    )}
+                </StyledView>
+              )}
+              {getFieldMeta("pricingModel").value === "PER_PERSON" && (
                 <StyledView className="flex flex-col gap-y-2">
                   <StyledText className="text-custom-gray text-[14px] font-semibold">
                     Valor por Pessoa
@@ -622,6 +729,34 @@ export function VenueFormModalComponent({
                     )}
                 </StyledView>
               )}
+              {getFieldMeta("pricingModel").value === "PER_PERSON_HOUR" && (
+                <StyledView className="flex flex-col gap-y-2">
+                  <StyledText className="text-custom-gray text-[14px] font-semibold">
+                    Valor por Pessoa / Hora
+                  </StyledText>
+                  <StyledTextInputMask
+                    onFocus={(e) => e.stopPropagation()}
+                    className={`bg-gray-ligth rounded-md px-3 py-1 text-white ${
+                      errors.pricePerPersonHour
+                        ? "bg-red-50  border-[2px] border-red-900 text-red-800"
+                        : "bg-gray-ligth"
+                    }`}
+                    type="money"
+                    options={{
+                      maskType: "BRL",
+                    }}
+                    onChangeText={handleChange("pricePerPersonHour")}
+                    onBlur={handleBlur("pricePerPersonHour")}
+                    value={String(Number(values.pricePerPersonHour) * 100)}
+                  />
+                  {errors?.pricePerPersonHour &&
+                    errors?.pricePerPersonHour.toString() != "Required" && (
+                      <StyledText className="text-red-700 font-semibold">
+                        {errors.pricePerPersonHour?.toString()}
+                      </StyledText>
+                    )}
+                </StyledView>
+              )}
               <StyledView className="font-semibold text-custom-gray text-[14px] gap-y-3">
                 <StyledText className="font-semibold text-custom-gray text-[14px]">
                   Proprietário
@@ -642,7 +777,7 @@ export function VenueFormModalComponent({
                     </>
                   ) : (
                     ownersByOrganizationList?.map((item: OwnerType) => {
-                      const isSelected = getFieldMeta("owners").value.includes(
+                      const isSelected = getFieldMeta("owners").value?.includes(
                         item.id
                       ); // Verifica se o proprietário já foi selecionado
 

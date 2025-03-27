@@ -47,7 +47,7 @@ export function ProposalPerPersonForm({
   );
   const queryParams = new URLSearchParams();
   const venue = useSelector((state: RootState) => state?.venueList.venue);
-  const user = useSelector((state: RootState) => state?.user.user);
+  const user = useSelector((state: RootState) => state?.session.user);
 
   useEffect(() => {
     queryParams.append("venueId", venue?.id);

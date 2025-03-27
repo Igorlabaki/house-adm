@@ -20,6 +20,8 @@ import { StyledPressable, StyledText, StyledView } from "styledComponents";
 import OwnerScreenComponent from "screens/app-routes/owner/ownerScreen";
 import ContactScreenComponent from "screens/app-routes/contact";
 import ContractScreen from "@components/contract";
+import UsersScreen from "screens/app-routes/users";
+import ValueScreenComponent, { SeasonalFeeScreen } from "@components/venue/values-screen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -30,7 +32,7 @@ export default function AppNavigator() {
     useState<boolean>(false);
   const [venueModalIsOpen, setvenueModalIsOpen] = useState<boolean>(false);
   const [title, setTitle] = useState("");
-  const user: User = useSelector((state: RootState) => state?.user.user);
+  const user: User = useSelector((state: RootState) => state?.session.user);
   const organization: Organization = useSelector(
     (state: RootState) => state?.organizationList.organization
   );
@@ -59,7 +61,7 @@ export default function AppNavigator() {
                   onPress={() => setMenuModalIsOpen(true)}
                 >
                   <Image
-                    source={{ uri: user.avatarUrl }}
+                    source={{ uri: user?.avatarUrl }}
                     style={{ width: "100%", height: "100%" }}
                     resizeMode="cover"
                   />
@@ -105,7 +107,6 @@ export default function AppNavigator() {
               );
             },
           }}
-
         />
 
         <Stack.Screen
@@ -121,8 +122,23 @@ export default function AppNavigator() {
               );
             },
           }}
-
         />
+
+        <Stack.Screen
+          name="UserScreen"
+          component={UsersScreen}
+          options={{
+            title: "",
+            headerLeft: () => {
+              return (
+                <StyledText className="text-white font-semibold text-lg">
+                  Usuarios
+                </StyledText>
+              );
+            },
+          }}
+        />
+
         <Stack.Screen
           name="ContactScreen"
           component={ContactScreenComponent}
@@ -137,6 +153,22 @@ export default function AppNavigator() {
             },
           }}
         />
+
+        <Stack.Screen
+          name="SeasonalFeeScreen"
+          component={SeasonalFeeScreen}
+          options={{
+            title: "",
+            headerLeft: () => {
+              return (
+                <StyledText className="text-white font-semibold text-lg">
+                  Precos especiais
+                </StyledText>
+              );
+            },
+          }}
+        />
+
         <Stack.Screen
           name={"SelectedOrganization"}
           component={SelectedOrganizationScreen}
@@ -146,8 +178,9 @@ export default function AppNavigator() {
               return (
                 <StyledView className="flex flex-row gap-x-4 justify-center items-center">
                   <StyledText className="text-white font-semibold text-lg">
-                    {organization.name}
+                    {organization?.name}
                   </StyledText>
+
                   <StyledPressable
                     onPress={() => setorganizationModalIsOpen(true)}
                   >
@@ -167,11 +200,13 @@ export default function AppNavigator() {
               return (
                 <StyledView className="flex flex-row gap-x-4 justify-center items-center">
                   <StyledText className="text-white font-semibold text-lg">
-                    {venue.name}
+                    {venue?.name}
                   </StyledText>
-                  <StyledPressable onPress={() => setvenueModalIsOpen(true)}>
-                    <Ionicons name="menu" size={20} color="white" />
-                  </StyledPressable>
+                  {venue?.permissions?.includes("EDIT_VENUES") && (
+                    <StyledPressable onPress={() => setvenueModalIsOpen(true)}>
+                      <Ionicons name="menu" size={20} color="white" />
+                    </StyledPressable>
+                  )}
                 </StyledView>
               );
             },

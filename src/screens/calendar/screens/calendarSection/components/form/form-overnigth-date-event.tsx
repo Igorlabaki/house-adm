@@ -68,7 +68,7 @@ export function OverNigthDateEventFormComponent({
   );
 
   const formikRef = useRef(null);
-  const user: User = useSelector((state: RootState) => state.user.user);
+  const user: User = useSelector((state: RootState) => state.session.user);
 
   const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
 

@@ -47,7 +47,7 @@ export function ClauseFormComponent({
     "Locacao" | "Proposta" | "Cliente" | "Proprietario" | "Pagamento"
   >("Locacao");
 
-  const organization: Organization = useSelector<RootState>(
+  const organization: Organization = useSelector(
     (state: RootState) => state.organizationList.organization
   );
 

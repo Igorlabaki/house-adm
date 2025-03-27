@@ -28,14 +28,44 @@ import {
 import { AnalisisScreen } from "screens/analisy";
 import DocumentScreen from "screens/budgets/screens/proposal/components/modal/document";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { User } from "@store/auth/authSlice";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+const screens = [
+  { name: "Home", component: HomeScreen, permission: "VIEW_NOTIFICATIONS"},
+  { name: "Imagens", component: ImageScreen, permission: "VIEW_IMAGES"},
+  { name: "Info", component: InfoScreen, permission: "VIEW_INFO"},
+  { name: "Orcam", component: BudgetScreen, permission: "VIEW_PROPOSALS"},
+  { name: "Analise", component: AnalisisScreen, permission: "VIEW_ANALYSIS"},
+  { name: "Agenda", component: CalendarioMainScreen, permission: "VIEW_CALENDAR"},
+];
+
 function TabNavigator() {
+
+  const venue = useSelector(
+    (state: RootState) => state.venueList.venue
+  );
+
+  const authorizedScreens = screens.filter(screen => 
+    venue?.permissions?.includes(screen.permission)
+  );
+
+  // Define a rota inicial dinamicamente
+  const initialRoute = authorizedScreens?.find(s => s.name === "Home")?.name || authorizedScreens[0]?.name;
+
+  if (!venue || !venue.permissions) {
+    return null; // Retorna null se não houver permissões, evitando erro
+  }
+
+  if (authorizedScreens.length === 0) {
+    return null; // Evita erro se nenhuma tela for autorizada
+  }
+
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName={initialRoute}
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
@@ -47,64 +77,28 @@ function TabNavigator() {
         tabBarInactiveTintColor: "rgb(156 163 175)",
       }}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="home-outline"
-              size={25}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Imagens"
-        component={ImageScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Octicons name="image" size={18} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Info"
-        component={InfoScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="information-sharp" size={25} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Orcam"
-        component={BudgetScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="attach-money" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Analise"
-        component={AnalisisScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="bar-chart-o" size={20} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Agenda"
-        component={CalendarioMainScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <AntDesign name="calendar" size={20} color={color} />
-          ),
-        }}
-      />
+     {authorizedScreens
+        .filter(screen => venue.permissions?.includes(screen.permission))
+        .map(({ name, component }) => (
+          <Tab.Screen
+            key={name}
+            name={name}
+            component={component}
+            options={{
+              tabBarIcon: ({ color }) => {
+                const icons: Record<string, JSX.Element> = {
+                  Imagens: <Octicons name="image" size={18} color={color} />,
+                  Info: <Ionicons name="information-sharp" size={25} color={color} />,
+                  Orcam: <MaterialIcons name="attach-money" size={22} color={color} />,
+                  Analise: <FontAwesome name="bar-chart-o" size={20} color={color} />,
+                  Home: <MaterialCommunityIcons name="home-outline" size={25} color={color} />,
+                  Agenda: <AntDesign name="calendar" size={20} color={color} />,
+                };
+                return icons[name] || null;
+              },
+            }}
+          />
+        ))}
     </Tab.Navigator>
   );
 }
@@ -116,6 +110,7 @@ export default function SelectedVenueScreen() {
   const organization: Organization = useSelector(
     (state: RootState) => state.organizationList.organization
   );
+
   const dispatch = useDispatch<AppDispatch>();
   const queryParams = new URLSearchParams();
 

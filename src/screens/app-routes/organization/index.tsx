@@ -11,21 +11,18 @@ import { fecthOrganizations } from "@store/organization/organizationSlice";
 import { OrganizationFlatList } from "../../../components/organization/list";
 import OrganizationFormModalComponent from "../../../components/organization/form";
 import { SearchFilterListByQueryComponent } from "@components/list/searchFilterListByQuery";
+import { fecthUserOrganization } from "@store/userOrganization/user-organization--slice";
+import { SearchFilterListByQueriesComponent } from "@components/list/searchFilterListByQueries";
 
 export default function OrganizationListScreen() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const dispatch = useDispatch<AppDispatch>();
-  const user: User = useSelector((state: RootState) => state?.user.user);
+
+  const user: User = useSelector((state: RootState) => state?.session.user);
   const { loading, organizations } = useSelector(
     (state: RootState) => state.organizationList
   );
 
   const queryParams = new URLSearchParams();
-  queryParams.append("userId", user?.id);
-
-  useEffect(() => {
-    dispatch(fecthOrganizations(`${queryParams.toString()}`));
-  }, []);
 
   return (
     <StyledView className="w-full bg-gray-dark  py-5 h-screen">
@@ -41,8 +38,8 @@ export default function OrganizationListScreen() {
           </StyledText>
         </StyledPressable>
         <SearchFilterListByQueryComponent
-          entityId=""
-          entityName=""
+          entityId={user?.id}
+          entityName="userId"
           queryName="name"
           fectData={fecthOrganizations}
           queryParams={queryParams}

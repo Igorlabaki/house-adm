@@ -139,6 +139,7 @@ export function QuestionFormComponent({
                 placeholder={
                   errors.response ? errors.response : "Digite a resposta"
                 }
+                numberOfLines={10}
                 placeholderTextColor={
                   errors.response ? "rgb(127 29 29)" : "rgb(156 163 175)"
                 }

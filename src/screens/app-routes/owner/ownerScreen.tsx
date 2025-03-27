@@ -4,6 +4,7 @@ import { OwnerListComponent } from "@components/owners/list";
 import { useRoute } from "@react-navigation/native";
 import { RootState } from "@store/index";
 import { Organization } from "@store/organization/organizationSlice";
+import { fecthOwnersByOrganization } from "@store/owner/ownerSlice";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { StyledPressable, StyledText, StyledView } from "styledComponents";
@@ -28,7 +29,7 @@ export default function OwnerScreenComponent() {
 
   const route = useRoute();
   const params: { type: "ORGANIZATION" | "VENUE" } = route.params || {};
-
+  const queryParams = new URLSearchParams();
   return (
     <StyledView className="h-full w-full bg-gray-dark">
       <StyledPressable
@@ -41,6 +42,15 @@ export default function OwnerScreenComponent() {
           Novo Proprietario
         </StyledText>
       </StyledPressable>
+      {params?.type === "ORGANIZATION" && (
+        <SearchFilterListByQueryComponent
+          entityId={organization.id}
+          queryName="completeName"
+          entityName="organizationId"
+          fectData={fecthOwnersByOrganization}
+          queryParams={queryParams}
+        />
+      )}
       <OwnerListComponent
         owners={
           params?.type === "ORGANIZATION"

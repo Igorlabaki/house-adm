@@ -1,0 +1,118 @@
+import { RootState } from "@store/index";
+import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { UserOrganizationFlatList } from "./components/user-organization-list";
+import { Organization } from "@store/organization/organizationSlice";
+import { StyledPressable, StyledText, StyledView } from "styledComponents";
+import { fecthUserOrganizationByOrganizationId } from "@store/userOrganization/user-organization--slice";
+import { SearchFilterListByQueryComponent } from "@components/list/searchFilterListByQuery";
+import { VenuePermissionFlatList } from "./components/venues-permission-list";
+import { fecthUserPermission } from "@store/user-permission/user-permission-slice";
+import { UserOrganizationType } from "type";
+import { UserFlatList } from "./components/users-list";
+import { fecthUsers } from "@store/userList/user-list-slice";
+import { VenueListFlatList } from "./components/venues-list-list";
+import { User } from "@store/auth/authSlice";
+import { Venue } from "@store/venue/venueSlice";
+
+
+
+export default function UsersScreen() {
+  const queryParams = new URLSearchParams();
+
+  const organization: Organization = useSelector(
+    (state: RootState) => state.organizationList.organization
+  );
+
+  const userOrganization: UserOrganizationType = useSelector(
+    (state: RootState) => state.userOrganizationList.userOrganization
+  );
+
+  const [formSection, setFormSection] = useState<"USER" | "VENUE" | "NEW_USER" | "NEW_VENUE">(
+    "USER"
+  );
+
+  const [user, setUser] = useState<User>(null)
+
+  return (
+    <StyledView className="bg-gray-dark flex-1 pt-5 flex flex-col h-full w-full">
+      {formSection === "USER" && (
+        <>
+          <StyledPressable
+            onPress={() => setFormSection("NEW_USER")}
+            className="
+                justify-center items-center bg-green-800 active:scale-95
+                rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-2 w-[50%] border-[0.6px] border-white border-solid"
+          >
+            <StyledText className="text-white text-sm font-bold text-center">
+              Adicionar novo usuario
+            </StyledText>
+          </StyledPressable>
+          <SearchFilterListByQueryComponent
+            entityId={organization.id}
+            queryName="username"
+            entityName="organizationId"
+            fectData={fecthUserOrganizationByOrganizationId}
+            queryParams={queryParams}
+          />
+          <UserOrganizationFlatList setFormSection={setFormSection} />
+        </>
+      )}
+
+      {formSection === "NEW_USER" && (
+        <StyledView className="h-[90vh]">
+         <StyledText className="text-custom-gray text-[14px] font-semibold mb-4">
+            Selecione um Usuario:
+          </StyledText>
+          <SearchFilterListByQueryComponent
+            entityId={""}
+            queryName="email"
+            entityName=""
+            fectData={fecthUsers}
+            queryParams={queryParams}
+          />
+          <UserFlatList setFormSection={setFormSection} setUser={setUser}/>
+        </StyledView>
+      )}
+      {formSection === "VENUE" && userOrganization && (
+        <StyledView className="flex flex-col gap-y-1 h-screen relative">
+          <StyledText className="text-custom-gray text-[14px] font-semibold mb-4">
+            Selecione a Propriedade:
+          </StyledText>
+          <SearchFilterListByQueryComponent
+            queryName="name"
+            queryParams={queryParams}
+            fectData={fecthUserPermission}
+            entityId={userOrganization?.id}
+            entityName="userOrganizationId"
+          />
+          <StyledView className="flex-1 max-h-64">
+            <VenuePermissionFlatList setFormSection={setFormSection} />
+          </StyledView>
+          <StyledView />
+        </StyledView>
+      )}
+
+      {formSection === "NEW_VENUE" && userOrganization && (
+        <StyledView className="flex flex-col gap-y-1 h-screen relative">
+          <StyledText className="text-custom-gray text-[14px] font-semibold mb-4">
+            Selecione a Propriedade:
+          </StyledText>
+          <SearchFilterListByQueryComponent
+            queryName="name"
+            queryParams={queryParams}
+            fectData={fecthUserPermission}
+            entityId={userOrganization?.id}
+            entityName="userOrganizationId"
+          />
+          <StyledView className="flex-1 max-h-64">
+            <VenueListFlatList setFormSection={setFormSection} user={user}/>
+          </StyledView>
+          <StyledView />
+        </StyledView>
+      )}
+
+
+    </StyledView>
+  );
+}

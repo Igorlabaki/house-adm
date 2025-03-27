@@ -13,22 +13,22 @@ export default function ContactScreenComponent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
-  const venue: Venue = useSelector<RootState>(
-    (state: RootState) => state.venueList.venue
-  );
-
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
+  const editVenuePermission = venue.permissions.includes("EDIT_VENUE");
   return (
     <StyledView className="h-full w-full bg-gray-dark">
-      <StyledPressable
-        onPress={() => setIsModalOpen(true)}
-        className="
+      {editVenuePermission && (
+        <StyledPressable
+          onPress={() => setIsModalOpen(true)}
+          className="
                 justify-center items-center bg-green-800 hover:bg-green-600 active:bg-green-700 
                 rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-5 border-[0.6px] border-white border-solid w-[50%]"
-      >
-        <StyledText className="text-white text-sm font-bold text-center">
-          Novo Contato
-        </StyledText>
-      </StyledPressable>
+        >
+          <StyledText className="text-white text-sm font-bold text-center">
+            Novo Contato
+          </StyledText>
+        </StyledPressable>
+      )}
       <SearchFilterListByQueryComponent
         entityId={venue.id}
         queryName="name"

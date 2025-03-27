@@ -1,10 +1,20 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { PendingScreen } from "../screens/proposal";
 import { Concludedcreen } from "../screens/event";
+import { useSelector } from "react-redux";
+import { RootState } from "@store/index";
 
 const BudgetTabNavigator = createMaterialTopTabNavigator();
 
+const screens = [
+  { name: "Orcamentos", component: PendingScreen, permission: "VIEW_EVENTS"},
+  { name: "Eventos", component: Concludedcreen, permission: "VIEW_PROPOSALS"},
+];
+
 export function BudgetNavigator() {
+   const venue = useSelector(
+      (state: RootState) => state.venueList.venue
+    );
   return (
     <BudgetTabNavigator.Navigator
       screenOptions={{
@@ -23,8 +33,13 @@ export function BudgetNavigator() {
         },
       }}
     >
-      <BudgetTabNavigator.Screen name="Orcamentos" component={PendingScreen} />
-      <BudgetTabNavigator.Screen name="Eventos" component={Concludedcreen} />
+      {
+        screens.filter(screen => venue?.permissions?.includes(screen.permission)).map(({ name, component }) => {
+          return (
+            <BudgetTabNavigator.Screen name={name} component={component} key={name}/>
+          )
+        })
+      }
     </BudgetTabNavigator.Navigator>
   );
 }

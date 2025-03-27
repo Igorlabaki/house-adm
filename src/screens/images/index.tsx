@@ -19,16 +19,18 @@ export function ImageScreen() {
 
   return (
     <StyledView className="bg-gray-dark flex-1 flex flex-col h-full w-full">
-      <StyledPressable
-        onPress={() => setIsModalOpen(true)}
-        className="
+      {venue.permissions.includes("EDIT_IMAGES") && (
+        <StyledPressable
+          onPress={() => setIsModalOpen(true)}
+          className="
                 justify-center items-center bg-green-800 hover:bg-green-600 active:bg-green-700 
                 rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-3 border-[0.6px] border-white border-solid w-[50%]"
-      >
-        <StyledText className="text-white text-sm font-bold text-center">
-          Nova Imagem
-        </StyledText>
-      </StyledPressable>
+        >
+          <StyledText className="text-white text-sm font-bold text-center">
+            Nova Imagem
+          </StyledText>
+        </StyledPressable>
+      )}
       <ImageModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}

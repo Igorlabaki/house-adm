@@ -29,10 +29,10 @@ export const OrganizationFlatList = React.memo(({isLoading,organizationList}:Org
     <StyledView className="w-full h-screen">
       <StyledFlatList
         className="flex-1 w-full  mb-20"
-        keyExtractor={(item: Organization) => item.id}
+        keyExtractor={(item: Organization) => item?.id}
         data={organizationList}
         renderItem={({ item }: { item: Organization }) => {
-          return <OrganizationItemList organization={item} key={item.id} />;
+          return <OrganizationItemList organization={item} key={item?.id} />;
         }}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
         ListEmptyComponent={() => <ListEmpty dataType="organizacao" />}

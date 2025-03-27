@@ -13,35 +13,30 @@ import {
   StyledView,
 } from "styledComponents";
 import { useFocusEffect } from "@react-navigation/native";
+import { Venue } from "@store/venue/venueSlice";
 
-export  function ProposalFilter() {
+export function ProposalFilter() {
   const [query, setQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [year, setYear] = useState<any>(new Date().getFullYear());
   const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
 
   const dispatch = useDispatch();
-  const proposalsList = useSelector(
-    (state: RootState) => state.proposalList
-  );
+  const proposalsList = useSelector((state: RootState) => state.proposalList);
 
-  const venue = useSelector(
-    (state: RootState) => state.venueList
-  );
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
 
   const [debouncedQuery] = useDebounce(query, 500);
 
   const queryParams = new URLSearchParams();
 
   useEffect(() => {
-    queryParams.append("venueId",venue.venue.id);
+    queryParams.append("venueId", venue.id);
     if (debouncedQuery) queryParams.append("name", debouncedQuery);
     queryParams.append("year", year || new Date().getFullYear());
     if (month) queryParams.append("month", month.toString());
 
-    dispatch(
-      fecthProposals(`${queryParams.toString()}`)
-    );
+    dispatch(fecthProposals(`${queryParams.toString()}`));
   }, [debouncedQuery, month, year]);
 
   const months = [
@@ -61,19 +56,21 @@ export  function ProposalFilter() {
 
   return (
     <StyledView className="pb-4">
-      <StyledView className="w-full flex-row justify-between items-center">
-        <StyledPressable
-          onPress={() => setIsModalOpen(true)}
-          className="
+      <StyledView className="w-full flex-row justify-between items-center py-2">
+        {venue.permissions.includes("EDIT_PROPOSALS") && (
+          <StyledPressable
+            onPress={() => setIsModalOpen(true)}
+            className="
                 justify-center items-center bg-green-800 hover:bg-green-600 active:bg-green-700 
                 rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-3 border-[0.6px] border-white border-solid w-[50%]"
-        >
-          <StyledText className="text-white text-sm font-bold text-center">
-            Novo Orcamento
-          </StyledText>
-        </StyledPressable>
+          >
+            <StyledText className="text-white text-sm font-bold text-center">
+              Novo Orcamento
+            </StyledText>
+          </StyledPressable>
+        )}
         <StyledPressable
-          className="cursor-pointer flex"
+          className="cursor-pointer flex absolute right-2"
           onPress={() =>
             dispatch(fecthProposals({ url: `${queryParams.toString()}` }))
           }
@@ -96,8 +93,11 @@ export  function ProposalFilter() {
         />
       </StyledView>
       <StyledView className="py-4 flex flex-row justify-center items-center gap-x-4">
-        <StyledPressable onPress={() => setYear((year) => year - 1)} className="mt-1">
-          <AntDesign name="left" size={10} color="white"  />
+        <StyledPressable
+          onPress={() => setYear((year) => year - 1)}
+          className="mt-1"
+        >
+          <AntDesign name="left" size={10} color="white" />
         </StyledPressable>
         <StyledText className="text-lg text-white  text-center">
           {year}

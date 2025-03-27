@@ -1,18 +1,17 @@
 import { useState } from "react";
+import { Feather } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
 import { Venue } from "@store/venue/venueSlice";
 import { ProposalType, DateEventType } from "type";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { fetchOrcamentoById } from "@store/orcamento/orcamentoSlice";
 import { DateEventFormComponent } from "../form/form-same-day-date-event";
 import { deleteDateEventByIdAsync } from "@store/dateEvent/dateEventSlice";
 import { StyledModal, StyledPressable, StyledView } from "styledComponents";
-import { fetchNotificationsList } from "@store/notifications/notificationsSlice";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 import { OverNigthDateEventFormComponent } from "../form/form-overnigth-date-event";
 import { fecthApprovedProposals, fecthProposals, fetchProposalByIdAsync } from "@store/proposal/proposal-slice";
+import { ScheduleEventFormComponent } from "../form/form-schedule-date-event";
 interface DateEventModalProps {
   isModalOpen: boolean;
   type: "CREATE" | "UPDATE";
@@ -86,15 +85,7 @@ export function DateEventModalComponent({
             <Feather name="trash" size={16} color="white" />
           </StyledPressable>
         )}
-        {dateEvent ? (
-          <DateEventFormComponent />
-        ) : proposal && venue.pricingModel === "PER_DAY" ? (
-          <OverNigthDateEventFormComponent />
-        ) : proposal && venue.pricingModel === "PER_PERSON" ? (
-          <DateEventFormComponent />
-        ) : (
-          <DateEventFormComponent />
-        )}
+       <ScheduleEventFormComponent  dateSelected={dateEvent} setDeleteModalIsOpen={setModalVisible} setIsModalOpen={setIsModalOpen}/>
       </StyledView>
       <DeleteConfirmationModal
         entity="data"

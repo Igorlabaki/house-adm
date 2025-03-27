@@ -1,4 +1,3 @@
-
 import {
   StyledModal,
   StyledPressable,
@@ -13,6 +12,7 @@ import {
   FontAwesome6,
   Foundation,
   Ionicons,
+  MaterialIcons,
 } from "@expo/vector-icons";
 
 import React, { useState } from "react";
@@ -33,17 +33,16 @@ export default function VenueMenu({
 }: VenueMenuProps) {
   const dispatch = useDispatch<AppDispatch>();
 
-  const venue : Venue = useSelector(
+  const venue: Venue = useSelector(
     (state: RootState) => state?.venueList.venue
   );
 
-  const ownersByVenue : OwnerType[] = useSelector(
+  const ownersByVenue: OwnerType[] = useSelector(
     (state: RootState) => state?.ownerList.ownersByVenue
   );
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [editVenueIsOpen, setEditVenueIsOpen] =
-    useState(false);
+  const [editVenueIsOpen, setEditVenueIsOpen] = useState(false);
   const navigation = useNavigation();
 
   const handleDelete = () => {
@@ -60,15 +59,19 @@ export default function VenueMenu({
     navigation.navigate("OrganizationList");
   };
 
-
   const navigateToOwnerScreen = () => {
-    navigation.navigate("OwnersScreen", { type: "VENUE"});
+    navigation.navigate("OwnersScreen", { type: "VENUE" });
   };
 
   const navigateToContactScreen = () => {
     navigation.navigate("ContactScreen");
   };
 
+  const navigateToValueScreen = () => {
+    navigation.navigate("SeasonalFeeScreen");
+  };
+
+  const editVenuePermission = venue.permissions?.includes("EDIT_VENUES");
 
   return (
     <StyledModal
@@ -89,32 +92,51 @@ export default function VenueMenu({
           >
             <Ionicons name="close" size={16} color="white" />
           </StyledPressable>
+
+          {editVenuePermission && (
+            <StyledPressable
+              className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+              onPress={() => setEditVenueIsOpen(true)}
+            >
+              <StyledText className="text-white font-bold text-start w-[130px]">
+                Editar Locacao
+              </StyledText>
+              <FontAwesome6 name="edit" size={18} color="white" />
+            </StyledPressable>
+          )}
+          {editVenuePermission && (
+            <StyledPressable
+              className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+              onPress={() => {
+                navigateToOwnerScreen();
+                setMenuModalIsOpen(false);
+              }}
+            >
+              <StyledText className="text-white font-bold text-start w-[130px]">
+                Proprietarios
+              </StyledText>
+              <Feather name="users" size={20} color="white" />
+            </StyledPressable>
+          )}
+          {editVenuePermission && (
+            <StyledPressable
+              className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+              onPress={() => {
+                navigateToValueScreen();
+                setMenuModalIsOpen(false);
+              }}
+            >
+              <StyledText className="text-white font-bold text-start w-[130px]">
+                Precos Especias
+              </StyledText>
+              <MaterialIcons name="attach-money" size={24} color="white" />
+            </StyledPressable>
+          )}
           <StyledPressable
             className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
-            onPress={() => setEditVenueIsOpen(true)}
-          >
-            <StyledText className="text-white font-bold text-start w-[130px]">
-              Editar Locacao
-            </StyledText>
-            <FontAwesome6 name="edit" size={18} color="white" />
-          </StyledPressable>
-          <StyledPressable
-            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
-            onPress={() =>{ 
-              navigateToOwnerScreen()
-              setMenuModalIsOpen(false)
-            }}
-          >
-            <StyledText className="text-white font-bold text-start w-[130px]">
-              Proprietarios
-            </StyledText>
-            <Feather name="users" size={20} color="white" />
-          </StyledPressable>
-          <StyledPressable
-            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
-            onPress={() =>{ 
-              navigateToContactScreen()
-              setMenuModalIsOpen(false)
+            onPress={() => {
+              navigateToContactScreen();
+              setMenuModalIsOpen(false);
             }}
           >
             <StyledText className="text-white font-bold text-start w-[130px]">
@@ -122,15 +144,18 @@ export default function VenueMenu({
             </StyledText>
             <Foundation name="telephone" size={20} color="white" />
           </StyledPressable>
-          <StyledPressable
-            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
-            onPress={() => handleDelete()}
-          >
-            <StyledText className="text-white font-bold text-start w-[130px]">
-              Deletar Locacao
-            </StyledText>
-            <Feather name="trash" size={16} color="white" />
-          </StyledPressable>
+
+          {editVenuePermission && (
+            <StyledPressable
+              className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+              onPress={() => handleDelete()}
+            >
+              <StyledText className="text-white font-bold text-start w-[130px]">
+                Deletar Locacao
+              </StyledText>
+              <Feather name="trash" size={16} color="white" />
+            </StyledPressable>
+          )}
         </StyledView>
       </StyledView>
       <DeleteConfirmationModal

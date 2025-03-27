@@ -12,16 +12,15 @@ export function InfoEventos() {
     (state: RootState) => state.proposalList.proposal
   );
 
-  const venue : Venue = useSelector(
-    (state: RootState) => state.venueList.venue
-  );
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
 
   const startDate = proposal?.startDate ? moment(proposal.startDate) : null;
   const endDate = proposal?.endDate ? moment(proposal.endDate) : null;
-  
-  // Check if both dates are valid and if they fall on the same day
-  const sameDay = startDate && endDate ? startDate.isSame(endDate, 'day') : false;
 
+  // Check if both dates are valid and if they fall on the same day
+  const sameDay =
+    startDate && endDate ? startDate.isSame(endDate, "day") : false;
+  const valuePermission = venue.permissions.includes("VIEW_AMOUNTS");
   return (
     <StyledView className="flex justify-center items-center w-full mt-5">
       <StyledText className="md:text-[21px] w-full text-[18px] text-center py-5 text-white font-semibold">
@@ -60,69 +59,77 @@ export function InfoEventos() {
           </StyledView>
         </StyledView>
       </StyledView>
-      <StyledView className="w-[70%] mx-auto mt-10">
-        <StyledView className="flex-row justify-between items-center">
-          <StyledText className="text-[13px] text-white font-semibold">
-            Valor Base
-          </StyledText>
-          <StyledText className="text-[13px] text-white font-semibold">
-            {proposal &&
-              formatCurrency({
-                amount: Number(proposal?.basePrice?.toFixed(2)),
-                code: "BRL",
-              })[0]}
-          </StyledText>
-        </StyledView>
-        <StyledView>
-          {proposal?.extraHoursQty > 0 && sameDay && (
-            <StyledView className="flex-row justify-between items-center mt-1">
+      {valuePermission && (
+        <>
+          <StyledView className="w-[70%] mx-auto mt-10">
+            <StyledView className="flex-row justify-between items-center">
               <StyledText className="text-[13px] text-white font-semibold">
-                Hora Extra
+                Valor Base
               </StyledText>
               <StyledText className="text-[13px] text-white font-semibold">
-                {formatCurrency({
-                  amount: Number(
-                    (proposal?.extraHoursQty * proposal?.extraHourPrice)?.toFixed(2)
-                  ),
-                  code: "BRL",
-                })[0]}
+                {proposal &&
+                  formatCurrency({
+                    amount: Number(proposal?.basePrice?.toFixed(2)),
+                    code: "BRL",
+                  })[0]}
               </StyledText>
             </StyledView>
-          )}
-        </StyledView>
-        {proposal?.proposalServices?.length > 0 &&
-          proposal.proposalServices?.map((item: ProposalService) => {
-            return (
-              <StyledView
-                className="flex-row justify-between items-center mt-1"
-                key={item.id}
-              >
-                <StyledText className="text-[13px] text-white font-semibold">
-                  {item.service.name}
-                </StyledText>
-                <StyledText className="text-[13px] text-white font-semibold">
-                  {proposal &&
-                    formatCurrency({
-                      amount: Number(item.service.price?.toFixed(2)),
-                      code: "BRL",
-                    })[0]}
-                </StyledText>
-              </StyledView>
-            );
-          })}
-      </StyledView>
-      <StyledView className="flex-row justify-center items-center gap-x-3 mt-5">
-        <StyledText className="text-[13px] text-white font-semibold">
-          Total:
-        </StyledText>
-        <StyledText className="text-[13px] text-white font-semibold">
-          {proposal &&
-            formatCurrency({
-              amount: Number(proposal?.totalAmount?.toFixed(2)),
-              code: "BRL",
-            })[0]}
-        </StyledText>
-      </StyledView>
+            <StyledView>
+              {proposal?.extraHoursQty > 0 && sameDay && (
+                <StyledView className="flex-row justify-between items-center mt-1">
+                  <StyledText className="text-[13px] text-white font-semibold">
+                    Hora Extra
+                  </StyledText>
+                  <StyledText className="text-[13px] text-white font-semibold">
+                    {
+                      formatCurrency({
+                        amount: Number(
+                          (
+                            proposal?.extraHoursQty * proposal?.extraHourPrice
+                          )?.toFixed(2)
+                        ),
+                        code: "BRL",
+                      })[0]
+                    }
+                  </StyledText>
+                </StyledView>
+              )}
+            </StyledView>
+            {proposal?.proposalServices?.length > 0 &&
+              proposal.proposalServices?.map((item: ProposalService) => {
+                return (
+                  <StyledView
+                    className="flex-row justify-between items-center mt-1"
+                    key={item.id}
+                  >
+                    <StyledText className="text-[13px] text-white font-semibold">
+                      {item.service.name}
+                    </StyledText>
+                    <StyledText className="text-[13px] text-white font-semibold">
+                      {proposal &&
+                        formatCurrency({
+                          amount: Number(item.service.price?.toFixed(2)),
+                          code: "BRL",
+                        })[0]}
+                    </StyledText>
+                  </StyledView>
+                );
+              })}
+          </StyledView>
+          <StyledView className="flex-row justify-center items-center gap-x-3 mt-5">
+            <StyledText className="text-[13px] text-white font-semibold">
+              Total:
+            </StyledText>
+            <StyledText className="text-[13px] text-white font-semibold">
+              {proposal &&
+                formatCurrency({
+                  amount: Number(proposal?.totalAmount?.toFixed(2)),
+                  code: "BRL",
+                })[0]}
+            </StyledText>
+          </StyledView>
+        </>
+      )}
       <StyledView className="flex gap-y-2 mt-5 w-[70%]">
         <StyledText className="text-white font-semibold">
           Descricao :
@@ -133,7 +140,7 @@ export function InfoEventos() {
           </StyledText>
         </StyledView>
       </StyledView>
-      {sameDay ? (
+      {sameDay && valuePermission ? (
         <StyledView className="mt-5 flex flex-col justify-center items-center w-[70%] mx-auto overflow-hidden">
           <StyledView className="flex-row justify-between w-full items-center">
             <StyledText className="text-[13px] text-white font-semibold">
@@ -165,21 +172,23 @@ export function InfoEventos() {
             </StyledText>
           </StyledView>
         </StyledView>
-      ) : (
+      ) : valuePermission ? (
         <StyledView className="mt-5 flex flex-col justify-center items-center w-[70%] mx-auto overflow-hidden">
           <StyledView className="flex-row justify-between w-full items-center">
             <StyledText className="text-[13px] text-white font-semibold">
               * Valor por dia{" "}
             </StyledText>
             <StyledText className="text-[13px] text-white font-semibold">
-              {formatCurrency({
-                amount: Number(venue?.pricePerDay?.toFixed(2)),
-                code: "BRL",
-              })[0]}
+              {
+                formatCurrency({
+                  amount: Number(venue?.pricePerDay?.toFixed(2)),
+                  code: "BRL",
+                })[0]
+              }
             </StyledText>
           </StyledView>
         </StyledView>
-      )}
+      ): null}
     </StyledView>
   );
 }

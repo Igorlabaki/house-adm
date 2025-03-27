@@ -16,7 +16,6 @@ import { AppDispatch, RootState } from "@store/index";
 import { createOrganizationFormSchema } from "@schemas/organization/createOrganizationZodSchema";
 import {
   createOrganizationAsync,
-  fecthOrganizations,
   Organization,
   updateOrganizationAsync,
 } from "@store/organization/organizationSlice";
@@ -35,12 +34,12 @@ export default function OrganizationFormModalComponent({
   const dispatch = useDispatch<AppDispatch>();
 
   const loading = useSelector(
-    (state: RootState) => state.organizationList.loading
+    (state: RootState) => state.userOrganizationList.loading
   );
 
   const error = useSelector((state: RootState) => state.organizationList.error);
 
-  const user = useSelector((state: RootState) => state.user.user);
+  const user = useSelector((state: RootState) => state.session.user);
   const queryParams = new URLSearchParams();
 
   useEffect(() => {

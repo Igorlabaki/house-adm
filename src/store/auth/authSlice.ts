@@ -2,9 +2,9 @@ import { AppDispatch } from "..";
 import { api } from "../../services/axios";
 import { fetchUser } from "@store/user/userSlice";
 import { Organization } from "@store/organization/organizationSlice";
-import { removeUserSave, storageUserSave } from "storage/storage-user";
+import { getUserSave, removeUserSave, storageUserSave } from "storage/storage-user";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { getAccessTokenSave, storageAccessTokenSave } from "storage/storage-access-token";
+import { getAccessTokenSave, removeAccessTokenSave, storageAccessTokenSave } from "storage/storage-access-token";
 
 
 export interface AuthenticateDataResponse {
@@ -36,6 +36,7 @@ export interface UserOrganization {
 
 const initialState = {
   error: "",
+  user: null,
   session: null,
   loading: false,
   accessToken: null,
@@ -80,9 +81,12 @@ const sessionSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      removeUserSave()
+      removeUserSave(); // Remove o usuário do armazenamento
+      removeAccessTokenSave(); // Remove o token de acesso do armazenamento
       state.error = null;
       state.loading = false;
+      state.accessToken = null; // Limpa o token do estado
+      state.session = null; // Limpa a sessão do estado
     },
   },
   extraReducers: (builder) => {
@@ -94,6 +98,7 @@ const sessionSlice = createSlice({
         state.loading = false;
         state.accessToken = action.payload?.accessToken;
         state.session = action.payload.session;
+        state.user = action.payload.session.user;
         state.error = "";
         (dispatch: AppDispatch) => dispatch(fetchUser());
       }),

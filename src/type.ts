@@ -1,3 +1,5 @@
+import { User } from "@store/auth/authSlice";
+import { Organization } from "@store/organization/organizationSlice";
 import { Person } from "@store/person/person-slice";
 import { Schedule } from "@store/schedule/schedule-slice";
 import { Venue } from "@store/venue/venueSlice";
@@ -142,13 +144,16 @@ export interface ContractType {
   contractId?: string;
   organizationId?: string;
   clauses?: ClauseType[];
+  venues: {
+    id: string
+  }[]
 }
 export interface OwnerVenueType {
   id?: string;
   owner: OwnerType;
 }
 
-export interface ClientType{
+export interface ClientType {
   cep?: string;
   cpf?: string;
   rg?: string;
@@ -203,4 +208,39 @@ export interface ProposalType {
   proposalServices: ProposalService[]
   type: "EVENT" | "OTHER" | "BARTER" | "PRODUCTION"
   trafficSource: "AIRBNB" | "GOOGLE" | "INSTAGRAM" | "TIKTOK" | "OTHER" | "FRIEND" | "FACEBOOK"
+}
+
+export interface VenuePermission {
+  id: string;
+  venue: Venue;
+  venueId?: string;
+  permissions: string;
+  userOrganizationId: string;
+  userOrganization: UserOrganizationType;
+}
+export interface SeasonalFeeType {
+  id?: string;
+  venue?: Venue;
+  venueId: string;
+  fee: string;
+  title: string;
+  endDay: string;
+  startDay: string;
+  affectedDays: string
+}
+
+export interface UserPermissionType {
+  id: string;
+  organizationId: string,
+  permissions: string,
+  venue: Venue
+  venueId: string
+  role: string;
+}
+
+export interface UserOrganizationType {
+  id: string;
+  user: User;
+  organization: Organization;
+  userPermissions: UserPermissionType[]
 }

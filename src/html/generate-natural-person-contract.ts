@@ -46,7 +46,7 @@ export function generateNaturalPersonContractHTML(
 
         return roman;
     }
-    console.log(data.paymentInfo.signalAmount)
+
     function createVariablesMap(data: GenerateNaturalPersonContract) {
         const allVariables = [...venueVariables, ...ownerVariables, ...clientVariables, ...proposalVariables, ...paymentInfoVariables];
 

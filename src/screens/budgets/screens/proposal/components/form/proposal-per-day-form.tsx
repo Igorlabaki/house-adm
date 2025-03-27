@@ -43,7 +43,7 @@ export function ProposalPerDayForm({
   const [isLoading, setIsLoding] = useState(false);
   const [isStartDayModalOpen, setIsStartDayModalOpen] = useState(false);
   const [isEndDayModalOpen, setIsEndDayModalOpen] = useState(false);
-  const user = useSelector((state: RootState) => state?.user.user);
+  const user = useSelector((state: RootState) => state?.session.user);
   const serviceByVenueList: ServiceType[] = useSelector(
     (state: RootState) => state?.serviceList.services
   );
@@ -332,7 +332,7 @@ export function ProposalPerDayForm({
                   </StyledTouchableOpacity>
                 </StyledModal>
                 {errors.startDay &&
-                  errors.startDay.includes(
+                  errors.startDay?.includes(
                     "A data de início não pode ser depois da data de término!"
                   ) && (
                     <StyledText className="text-red-700 font-bold flex justify-start items-start">

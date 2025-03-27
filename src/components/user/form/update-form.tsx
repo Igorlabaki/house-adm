@@ -85,7 +85,7 @@ export function UpdateUserFormComponent({
         userId: user.id || "",
         email: user.email || "",
         username: user.username || "",
-        avatarUrl: user.avatarUrl || "",
+        avatarUrl: user?.avatarUrl || "",
       }}
       validate={(values) => {
         try {
@@ -102,7 +102,6 @@ export function UpdateUserFormComponent({
         }
       }}
       onSubmit={async (values: UpdateUserRequestParams) => {
-
         const uriParts = values.avatarUrl.split(".");
         const fileType = uriParts[uriParts.length - 1];
 
@@ -152,22 +151,23 @@ export function UpdateUserFormComponent({
           <StyledView className=" w-full mx-auto my-5 flex flex-col px-3">
             <StyledView className="flex flex-col gap-2 ">
               <StyledView className="relative flex-col gap-y-2 flex justify-center items-center w-full ">
-                <StyledView className="h-[320px] flex justify-center items-center w-full border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
-                  {user?.avatarUrl || getFieldMeta("avatarUrl").value ? (
-                    <Image
-                      source={{
-                        uri: user?.avatarUrl
-                          ? user?.avatarUrl
-                          : (getFieldMeta("avatarUrl").value as string),
-                      }}
-                      style={{ width: "100%", height: "100%" }}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <StyledText className="text-md text-white font-bold">
-                      Selecione a foto de perfil
-                    </StyledText>
-                  )}
+                <StyledView className="relative flex-col gap-y-2 flex justify-center items-center w-full">
+                  <StyledView className="h-52 w-52 flex justify-center items-center rounded-full border-gray-400 overflow-hidden border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
+                    {getFieldMeta("avatarUrl").value || user?.avatarUrl ? (
+                      <Image
+                        source={{
+                          uri:
+                            getFieldMeta("avatarUrl").value as string || user?.avatarUrl,
+                        }}
+                        style={{ width: "100%", height: "100%" }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <StyledText className="text-md text-white font-bold">
+                        Selecione a foto de perfil
+                      </StyledText>
+                    )}
+                  </StyledView>
                 </StyledView>
                 <StyledView className=" flex justify-center flex-row items-center gap-x-10 py-3 w-full">
                   <StyledPressable

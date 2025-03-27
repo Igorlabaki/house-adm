@@ -16,7 +16,7 @@ import { ClauseFlatList } from "./list/flat-list";
 export default function ClauseScreen() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const queryParams = new URLSearchParams();
-  const organization: Organization = useSelector<RootState>(
+  const organization: Organization = useSelector(
     (state: RootState) => state.organizationList.organization
   );
   return (

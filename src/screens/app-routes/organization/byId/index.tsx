@@ -6,20 +6,30 @@ import { fecthOwnersByOrganization } from "@store/owner/ownerSlice";
 import { Organization } from "@store/organization/organizationSlice";
 import { StyledPressable, StyledText, StyledView } from "styledComponents";
 import { VenueFormModalComponent } from "../../../../components/venue/form";
-import { OwnerType } from "type";
+import { SearchFilterListByQueriesComponent } from "@components/list/searchFilterListByQueries";
+import { fecthVenues, Venue } from "@store/venue/venueSlice";
+import { User } from "@store/auth/authSlice";
+import { VenueFlatList } from "@components/venue/venuesList";
 
-export  function SelectedOrganizationScreen() {
+export function SelectedOrganizationScreen() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
 
   const organization: Organization = useSelector(
     (state: RootState) => state.organizationList.organization
   );
+  const user: User = useSelector((state: RootState) => state.session.user);
+  const { venues, loading }: { venues: Venue[]; loading: boolean } =
+    useSelector((state: RootState) => state.venueList);
 
+  const queryParams = new URLSearchParams();
+  
   useEffect(() => {
-    dispatch(fecthOwnersByOrganization(organization?.id))
-  }, [organization.id]);
-    
+    const query = new URLSearchParams();
+    query.append("organizationId", organization?.id);
+    dispatch(fecthOwnersByOrganization(`${queryParams.toString()}`));
+  }, [organization?.id]);
+
   return (
     <StyledView className="h-full w-full bg-gray-dark py-5 relative">
       <StyledPressable
@@ -32,7 +42,16 @@ export  function SelectedOrganizationScreen() {
           Nova Locacao
         </StyledText>
       </StyledPressable>
-      <VenueListScreen />
+      <SearchFilterListByQueriesComponent
+        queryName="name"
+        fectData={fecthVenues}
+        queryParams={queryParams}
+        entityQueries={[
+          { name: "organizationId", value: organization?.id },
+          { name: "userId", value: user.id },
+        ]}
+      />
+      <VenueFlatList isLoading={loading} venueList={venues} />
       {isModalOpen && (
         <VenueFormModalComponent
           isModalOpen={isModalOpen}

@@ -28,6 +28,7 @@ import {
   createImageRequestParams,
   CreateImageRequestParams,
 } from "@schemas/image/create-image-params-schema";
+import * as FileSystem from "expo-file-system";
 
 interface ImageFormProps {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -45,18 +46,44 @@ export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert("Permissão para acessar as fotos é necessária!");
+  
+    if (!permissionResult.granted) {
+      Toast.show("Permissão para acessar as fotos é necessária!", 3000, {
+        backgroundColor: "rgb(75,181,67)",
+        textColor: "white",
+      });
       return;
     }
-
+  
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
-
-    return result.assets[0].uri;
+  
+    if (!result.canceled) {
+      const imageUri = result.assets[0].uri;
+  
+      // Obtém informações do arquivo
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+  
+      if (!fileInfo.exists) {
+        console.error("Não foi possível obter informações do arquivo.");
+        return;
+      }
+  
+      const fileSizeInMB = fileInfo.size / (1024 * 1024); // Converte para MB
+  
+  
+      if (fileSizeInMB > 2.5) {
+        Toast.show("Imagem maior que 2.5 MB.", 3000, {
+          backgroundColor: "rgb(75,181,67)",
+          textColor: "white",
+        });
+        return;
+      }
+  
+      return imageUri;
+    }
   };
 
   return (
@@ -93,6 +120,14 @@ export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
             textColor: "white",
           });
         }
+
+        if (!values.imageUrl) {
+          Toast.show("Imagem maior que 2.5 MB.", 3000, {
+            backgroundColor: "rgb(75,181,67)",
+            textColor: "white",
+          });
+        }
+
         const uriParts = values.imageUrl.split(".");
         const fileType = uriParts[uriParts.length - 1];
 
@@ -102,7 +137,7 @@ export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
           name: `photo.${fileType}`,
           type: `image/${fileType}`,
         } as any);
-
+        
         formData.append("tag", values.tag);
         formData.append("position", values.position);
         formData.append("venueId", venue?.id); // Convertendo para string

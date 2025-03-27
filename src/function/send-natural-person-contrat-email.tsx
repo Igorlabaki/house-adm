@@ -11,7 +11,7 @@ export async function sendContractPessoFisicaEmail(
   values: GenerateNaturalPersonContract
 ) {
   const { contractInformation,client,owner,proposal,venue,paymentInfo } = values;
-  console.log(paymentInfo)
+
   try {
     const nomeArquivo = `Contrato_AR756_${client.completeName}.pdf`;
     // Gerar o PDF

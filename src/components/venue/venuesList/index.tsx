@@ -24,7 +24,6 @@ export const VenueFlatList = React.memo(
         </StyledView>
       );
     }
-
     return (
       <StyledView className="w-full h-[100%]">
         <StyledFlatList
