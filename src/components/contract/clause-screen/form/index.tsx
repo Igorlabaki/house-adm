@@ -117,6 +117,7 @@ export function ClauseFormComponent({
               backgroundColor: "rgb(75,181,67)",
               textColor: "white",
             });
+
             setIsModalOpen(false);
           }
 
@@ -137,7 +138,7 @@ export function ClauseFormComponent({
         values,
         errors,
       }) => (
-        <StyledView className="w-[90%] mx-auto my-5 flex flex-col">
+        <StyledView className="w-[90%] max-h-[90vh] mx-auto my-5 flex flex-col">
           <StyledView className="flex flex-col gap-y-3">
             <StyledView className="flex flex-col gap-y-1">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
@@ -179,7 +180,7 @@ export function ClauseFormComponent({
                 placeholderTextColor={
                   errors.text ? "rgb(127 29 29)" : "rgb(156 163 175)"
                 }
-                className={`rounded-md px-3 py-1 text-white ${
+                className={`rounded-md px-3 py-1 text-white h-[300px] ${
                   errors.text
                     ? "bg-red-50 border-[2px] border-red-900 "
                     : "bg-gray-ligth"

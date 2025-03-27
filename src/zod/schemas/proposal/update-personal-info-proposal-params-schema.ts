@@ -8,7 +8,7 @@ export const updatePersonalInfoProposalSchema = z.object({
         city: z.string(),
         state: z.string(),
         street: z.string(),
-        completeName: z.string(),
+        completeClientName: z.string(),
         streetNumber: z.string(),
         neighborhood: z.string(),
         rg: z.string().optional(),

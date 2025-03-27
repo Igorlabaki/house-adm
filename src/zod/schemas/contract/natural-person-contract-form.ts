@@ -6,7 +6,7 @@ export const updatePersonalInfoRequestParamSchema = z.object({
         required_error: "Este campo é obrigatório!",
     }),
     rg: z.string().optional(),
-    name: z
+    completeClientName: z
         .string({
             required_error: "Este campo é obrigatório!",
         })

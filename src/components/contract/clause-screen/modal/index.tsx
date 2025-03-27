@@ -69,7 +69,7 @@ export function ClauseModalComponent({
       animationType="fade"
     >
       <StyledScrollView>
-        <StyledView className="flex-1 bg-gray-dark pt-5 pb-10 relative h-screen">
+        <StyledView className="flex-1 bg-gray-dark pt-5 pb-10 h-screen relative">
           {clause && (
             <StyledPressable
               onPress={async () => handleDelete()}

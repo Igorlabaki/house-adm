@@ -7,6 +7,7 @@ import { UserOrganization } from "@store/auth/authSlice";
 
 export interface Venue {
   name: string;
+  email: string;
   id: string;
   city: string;
   cep: string;
@@ -117,6 +118,7 @@ const initialState: {
   proposalTrafficNumbers: null,
   venue: {
     name: "",
+    email: "",
     id: "",
     cep: "",
     city: "",

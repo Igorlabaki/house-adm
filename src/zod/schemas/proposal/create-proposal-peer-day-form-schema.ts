@@ -3,7 +3,7 @@ import moment from "moment";
 import Toast from "react-native-simple-toast";
 
 export const createProposaPerDaylRequestchema = z.object({
-    name: z.string({
+    completeClientName: z.string({
         required_error: 'Este campo é obrigatório!',
     }),
     userId: z.string({

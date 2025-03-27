@@ -103,6 +103,7 @@ export function VenueFormModalComponent({
             cep: (venue?.cep && venue?.cep) || "",
             city: (venue?.city && venue?.city) || "",
             name: (venue?.name && venue?.name) || "",
+            email: (venue?.email && venue?.email) || "",
             state: (venue?.state && venue?.state) || "",
             street: (venue?.street && venue?.street) || "",
             maxGuest: (venue?.maxGuest && String(venue?.maxGuest)) || "",
@@ -128,8 +129,6 @@ export function VenueFormModalComponent({
               "0",
             pricePerDay:
               (venue?.pricePerDay && venue?.pricePerDay.toString()) || "0",
-            seasonalFee:
-              (venue?.seasonalFee && venue?.seasonalFee.toString()) || "0",
             owners:
               ownersByVenueList?.length > 0
                 ? ownersByVenueList?.map((item) => item.id)
@@ -253,6 +252,27 @@ export function VenueFormModalComponent({
                   }
                   className={`rounded-md px-3 py-1 text-white focus:border-[1.5px] focus:border-blue-400  ${
                     errors.name
+                      ? "bg-red-50  border-[2px] border-red-900 text-red-800"
+                      : "bg-gray-ligth"
+                  }`}
+                />
+              </StyledView>
+              <StyledView className="flex flex-col gap-y-1">
+                <StyledText className="text-custom-gray text-[14px] font-semibold">
+                  Email
+                </StyledText>
+                <StyledTextInput
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  value={String(values?.email)}
+                  placeholder={
+                    errors.email ? String(errors.email) : "Digite o nome"
+                  }
+                  placeholderTextColor={
+                    errors.email ? "rgb(127 29 29)" : "rgb(156 163 175)"
+                  }
+                  className={`rounded-md px-3 py-1 text-white focus:border-[1.5px] focus:border-blue-400  ${
+                    errors.email
                       ? "bg-red-50  border-[2px] border-red-900 text-red-800"
                       : "bg-gray-ligth"
                   }`}

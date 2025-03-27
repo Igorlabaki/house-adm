@@ -91,6 +91,7 @@ export default function UserOrganizationFormCreateModalComponent({
     );
   };
   const queryParams = new URLSearchParams();
+
   return (
     <StyledModal
       visible={isModalOpen}
@@ -171,22 +172,13 @@ export default function UserOrganizationFormCreateModalComponent({
             resetForm,
           }) => {
             useEffect(() => {
-              if (getFieldMeta("role").value === "ADMIN") {
-                // Adiciona todas as permissões de visualização e edição
-                const allPermissions = [
+              if (values.role === "ADMIN") {
+                setPermissions([
                   ...userViewPermissions.map((p) => p.enum),
                   ...userEditPermissions.map((p) => p.enum),
-                ];
-                setFieldValue("permissions", (prev) => {
-                  if (!prev) return null; // Evita erro se for nulo
-
-                  return {
-                    ...prev,
-                    permissions: allPermissions,
-                  };
-                });
+                ]);
               }
-            }, [getFieldMeta("role").value]); // Executa sempre que o role dentro de venuePermission mudar
+            }, [values.role]);
 
             return (
               <StyledView className="max-h-[90vh] w-full mx-auto my-5 flex flex-col gap-4 mt-10">

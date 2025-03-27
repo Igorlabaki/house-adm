@@ -43,8 +43,8 @@ export const clientVariables = [
     { key: "client.rg", label: "Rg" },
     { key: "client.cpf", label: "Cpf" },
     { key: "client.cnpj", label: "Cnpj" },
-    { key: "client.completeName", label: "Nome da Empresa Completo" },
-    { key: "client.name", label: "Nome Completo" },
+    { key: "client.completeCompanyName", label: "Nome da Empresa Completo" },
+    { key: "client.completeClientName", label: "Nome Completo" },
 ];
 
 export const proposalVariables = [

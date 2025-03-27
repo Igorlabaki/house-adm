@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createProposalFormSchema = z.object({
-    name: z.string({
+  completeClientName: z.string({
     required_error: 'Este campo é obrigatório!',
   }),
     date: z.string({

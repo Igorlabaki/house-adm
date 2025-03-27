@@ -35,7 +35,7 @@ export function ApprovedProposalFilter() {
 
   useEffect(() => {
     queryParams.append("venueId", venue.venue.id);
-    if (debouncedQuery) queryParams.append("name", debouncedQuery);
+    if (debouncedQuery) queryParams.append("fecthApprovedProposals", debouncedQuery);
     queryParams.append("year", year || new Date().getFullYear());
     if (month) queryParams.append("month", month.toString());
     queryParams.append("approved", "true");

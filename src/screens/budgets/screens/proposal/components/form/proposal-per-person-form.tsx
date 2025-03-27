@@ -74,7 +74,7 @@ export function ProposalPerPersonForm({
         initialValues={{
           venueId: venue.id,
           type: (proposal?.type && proposal?.type) || "EVENT",
-          name: proposal?.name && proposal?.name,
+          completeClientName: proposal?.completeClientName && proposal?.completeClientName,
           email: proposal?.email && proposal?.email,
           whatsapp: proposal?.whatsapp && proposal?.whatsapp,
           knowsVenue: proposal?.knowsVenue && proposal?.knowsVenue,
@@ -189,16 +189,16 @@ export function ProposalPerPersonForm({
                     errors.description ? "rgb(127 29 29)" : "rgb(156 163 175)"
                   }
                   className={`rounded-md px-3 py-1 text-white ${
-                    errors.name
+                    errors.completeClientName
                       ? "bg-red-50 border-[2px] border-red-900 text-red-800 "
                       : "bg-gray-ligth"
                   }`}
-                  onChangeText={handleChange("name")}
-                  onBlur={handleBlur("name")}
-                  value={values.name}
+                  onChangeText={handleChange("completeClientName")}
+                  onBlur={handleBlur("completeClientName")}
+                  value={values.completeClientName}
                   placeholder={
-                    errors.name
-                      ? String(errors.name)
+                    errors.completeClientName
+                      ? String(errors.completeClientName)
                       : "Digite o horário de início"
                   }
                 />

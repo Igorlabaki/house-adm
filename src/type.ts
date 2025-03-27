@@ -172,7 +172,9 @@ export interface ProposalType {
   cep?: string;
   cpf?: string;
   rg?: string;
-  name: string;
+  cnpj?: string;
+  completeClientName: string;
+  completeCompanyName: string;
   venue: Venue;
   city?: string;
   endDate: Date;

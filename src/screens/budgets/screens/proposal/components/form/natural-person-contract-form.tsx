@@ -40,7 +40,7 @@ export default function NaturalPersonContractForm() {
     "vista"
   );
   const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
-
+  console.log(proposal.completeClientName)
   return (
     <>
       <Formik
@@ -64,7 +64,7 @@ export default function NaturalPersonContractForm() {
           city: proposal?.city || "São Paulo",
           streetNumber: proposal?.streetNumber || "",
           neighborhood: proposal?.neighborhood || "",
-          completeName: proposal?.completeName || proposal?.name || "",
+          completeClientName: proposal?.completeClientName || proposal?.completeClientName || "",
         }}
         validate={(values) => {
           try {
@@ -126,18 +126,18 @@ export default function NaturalPersonContractForm() {
               <StyledTextInput
                 onFocus={(e) => e.stopPropagation()}
                 className={`bg-gray-ligth rounded-md px-3 py-1 text-white z-50 ${
-                  errors.name
+                  errors.completeClientName
                     ? "bg-red-50  border-[2px] border-red-900 text-red-800"
                     : "bg-gray-ligth"
                 }`}
-                onChangeText={handleChange("name")}
-                onBlur={handleBlur("name")}
-                value={values.name}
+                onChangeText={handleChange("completeClientName")}
+                onBlur={handleBlur("completeClientName")}
+                value={values.completeClientName}
               />
-              {errors?.name &&
-                errors?.name.toString() != "Required" && (
+              {errors?.completeClientName &&
+                errors?.completeClientName.toString() != "Required" && (
                   <StyledText className="text-red-700 font-semibold">
-                    {errors.name?.toString()}
+                    {errors.completeClientName?.toString()}
                   </StyledText>
                 )}
             </StyledView>
@@ -536,7 +536,7 @@ export default function NaturalPersonContractForm() {
                   Contrato:
                 </StyledText>
                 <StyledView className="flex flex-col justify-start items-start  flex-wrap">
-                  {venue?.contracts?.length === 0 ? (
+                  {contracts?.length === 0 ? (
                     <>
                       <StyledText className="text-sm text-center font-light text-gray-400">
                         Nao ha contratos cadastrados nessa organizacao
@@ -550,7 +550,7 @@ export default function NaturalPersonContractForm() {
                         )}
                     </>
                   ) : (
-                    venue?.contracts?.map((item: ContractType) => {
+                    contracts?.map((item: ContractType) => {
                       const isSelected = String(
                         getFieldMeta("contract").value?.id
                       ).includes(item.id); // Verifica se o proprietário já foi selecionado

@@ -2,12 +2,12 @@ import { ProposalType } from "type";
 import { api } from "../../services/axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { CreateProposalRequestParamsSchema } from "@schemas/proposal/create-proposal-params-schema";
-import {  CreateProposaPerDaylRequestchema } from "@schemas/proposal/create-proposal-peer-day-form-schema";
+import { CreateProposaPerDaylRequestchema } from "@schemas/proposal/create-proposal-peer-day-form-schema";
 import { UpdateProposalPerDayRequestParamsSchema } from "@schemas/proposal/update-proposal-per-day-params-schema";
 import { UpdateProposalPerPersonRequestParamsSchema } from "@schemas/proposal/update-proposal-per-person-params-schema";
 import { UpdatePersonalInfoProposalSchema } from "@schemas/proposal/update-personal-info-proposal-params-schema";
 
-const initialState : {
+const initialState: {
   error: string;
   loading: boolean;
   isModalOpen: boolean;
@@ -20,8 +20,16 @@ const initialState : {
   approvedproposals: [],
   proposal: {
     id: "",
-    name: "",
+    completeClientName: "",
+    completeCompanyName: "",
     venue: {
+      email: "",
+      seasonalFeeDates: [],
+      permissions: [],
+      pricePerPersonDay: 0,
+      pricePerPersonHour: 0,
+      contracts: [],
+      seasonalFee: null,
       name: "",
       id: "",
       organizationId: "",
@@ -46,6 +54,7 @@ const initialState : {
     email: "",
     cep: "",
     cpf: "",
+    cnpj: "",
     street: "",
     streetnumber: "",
     completeName: "",

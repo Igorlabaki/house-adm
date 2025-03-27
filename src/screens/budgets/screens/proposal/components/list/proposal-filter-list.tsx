@@ -32,7 +32,7 @@ export function ProposalFilter() {
 
   useEffect(() => {
     queryParams.append("venueId", venue.id);
-    if (debouncedQuery) queryParams.append("name", debouncedQuery);
+    if (debouncedQuery) queryParams.append("completeClientName", debouncedQuery);
     queryParams.append("year", year || new Date().getFullYear());
     if (month) queryParams.append("month", month.toString());
 

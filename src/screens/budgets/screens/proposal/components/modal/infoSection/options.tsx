@@ -75,7 +75,7 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
           </StyledPressable>
         </>
       ),
-      permission: "EDIT_EVENT",
+      permission: "EDIT_EVENTS",
     },
     {
       component: () => (
@@ -175,7 +175,7 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
           </StyledPressable>
         </>
       ),
-      permission: "EDIT_ATTENDENCE_LIST",
+      permission: "EDIT_ATTENDANCE_LIST",
     },
     {
       component: () => (
@@ -237,7 +237,7 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
               userId: user.id,
               username: user.username,
               proposalId: proposal.id,
-              clientName: proposal.name,
+              clientName: proposal.clientCompleteName,
               clientEmail: proposal.email,
             })
           }

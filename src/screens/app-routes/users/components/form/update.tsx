@@ -96,7 +96,7 @@ export default function UserOrganizationFormUpdateModalComponent({
     );
 
     if (deleteItem.meta.requestStatus === "fulfilled") {
-      Toast.show("Clausula deletada com sucesso." as string, 3000, {
+      Toast.show("Permissao deletada com sucesso." as string, 3000, {
         backgroundColor: "rgb(75,181,67)",
         textColor: "white",
       });

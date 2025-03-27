@@ -3,7 +3,7 @@ import { z } from "zod";
 export const updateProposalPerPersonRequestParamsSchema = z.object({
     proposalId: z.string(),
     data: z.object({
-        name: z.string().optional(),
+        completeClientName: z.string().optional(),
         venueId: z.string().optional(),
         endHour: z.string().optional(),
         endDay: z.string().optional(),

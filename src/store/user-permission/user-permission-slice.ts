@@ -85,12 +85,13 @@ const userPermissionListState = createSlice({
     });
     builder.addCase(createUserPermissionAsync.fulfilled, (state, action: any) => {
       state.loading = false;
-      state.userPermissions = action.payload.data;
+      state.userPermissions = [...state.userPermissions, action.payload.data ];
+      state.userPermission = action.payload.data;
       state.error = "";
     }),
       builder.addCase(createUserPermissionAsync.rejected, (state, action) => {
         state.loading = false;
-        state.userPermissions = state.userPermissions;
+        state.userPermission = state.userPermission;
         state.error = action.error.message;
       });
 

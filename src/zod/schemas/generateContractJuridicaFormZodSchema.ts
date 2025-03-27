@@ -9,14 +9,14 @@ export const generateContractJuridicaFormSchema = z
     cnpj: z.string({
       required_error: 'Este campo é obrigatório!',
     }),
-    completeName: z
+    completeCompanyName: z
     .string({
       required_error: 'Este campo é obrigatório!',
     })
     .nonempty('Este campo é obrigatório!'),
    rg: z
       .string().optional(), 
-    name: z
+      completeClientName: z
       .string({
         required_error: 'Este campo é obrigatório!',
       })

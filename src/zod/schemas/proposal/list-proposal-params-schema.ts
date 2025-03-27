@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const listProposalRequestQuerySchema = z.object({
     venueId:z.string(),
-    name: z.string().optional(),
+    completeClientName: z.string().optional(),
     email: z.string().optional(),
 })
 

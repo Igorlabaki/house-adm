@@ -14,9 +14,11 @@ import { fecthContracts } from "@store/contract/contract-slice";
 export default function ContractScreen() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const queryParams = new URLSearchParams();
-  const organization: Organization = useSelector<RootState>(
+
+  const organization: Organization = useSelector(
     (state: RootState) => state.organizationList.organization
   );
+  
   return (
     <StyledView className="bg-gray-dark flex-1 flex flex-col h-full w-full pt-5">
       <StyledPressable

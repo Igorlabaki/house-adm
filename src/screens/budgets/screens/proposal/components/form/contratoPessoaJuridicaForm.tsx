@@ -42,6 +42,7 @@ export default function ContratoPessoaJuridicaForm() {
   const [paymentMethod, setPaymentMethod] = useState<"vista" | "parcelado">(
     "vista"
   );
+  console.log(proposal)
   return (
     <Formik
       validationSchema={toFormikValidationSchema<any>(
@@ -64,9 +65,9 @@ export default function ContratoPessoaJuridicaForm() {
         city: proposal?.city || "São Paulo",
         streetNumber: proposal?.streetNumber || "",
         neighborhood: proposal?.neighborhood || "",
-        completeName: proposal?.completeName || proposal?.completeName || "",
-        cnpj: "",
-        name: proposal?.name || proposal?.name || "",
+        completeClientName: proposal?.completeClientName || proposal?.completeClientName || "",
+        cnpj: proposal?.cnpj || proposal?.cnpj || "",
+        completeCompanyName: proposal?.completeCompanyName || proposal?.completeCompanyName || "",
       }}
       validate={(values) => {
         try {
@@ -126,18 +127,18 @@ export default function ContratoPessoaJuridicaForm() {
             <StyledTextInput
               onFocus={(e) => e.stopPropagation()}
               className={`bg-gray-ligth rounded-md px-3 py-1 text-white z-50 ${
-                errors.completeName
+                errors.completeCompanyName
                   ? "bg-red-50  border-[2px] border-red-900 text-red-800"
                   : "bg-gray-ligth"
               }`}
-              onChangeText={handleChange("completeName")}
-              onBlur={handleBlur("nomeCompleto")}
-              value={values.completeName}
+              onChangeText={handleChange("completeCompanyName")}
+              onBlur={handleBlur("completeCompanyName")}
+              value={values.completeCompanyName}
             />
-            {errors?.completeName &&
-              errors?.completeName.toString() != "Required" && (
+            {errors?.completeCompanyName &&
+              errors?.completeCompanyName.toString() != "Required" && (
                 <StyledText className="text-red-700 font-semibold">
-                  {errors.completeName?.toString()}
+                  {errors.completeCompanyName?.toString()}
                 </StyledText>
               )}
           </StyledView>
@@ -179,17 +180,17 @@ export default function ContratoPessoaJuridicaForm() {
             <StyledTextInput
               onFocus={(e) => e.stopPropagation()}
               className={`bg-gray-ligth rounded-md px-3 py-1 text-white z-50 ${
-                errors.name
+                errors.completeClientName
                   ? "bg-red-50  border-[2px] border-red-900 text-red-800"
                   : "bg-gray-ligth"
               }`}
-              onChangeText={handleChange("name")}
-              onBlur={handleBlur("name")}
-              value={values.name}
+              onChangeText={handleChange("completeClientName")}
+              onBlur={handleBlur("completeClientName")}
+              value={values.completeClientName}
             />
-            {errors?.name && errors?.name.toString() != "Required" && (
+            {errors?.completeClientName && errors?.completeClientName.toString() != "Required" && (
               <StyledText className="text-red-700 font-semibold">
-                {errors.name?.toString()}
+                {errors.completeClientName?.toString()}
               </StyledText>
             )}
           </StyledView>

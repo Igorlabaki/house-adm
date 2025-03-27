@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createProposalRequestParamsSchema = z.object({
-    name: z.string(),
+    completeClientName: z.string(),
     date: z.string(),
     userId: z.string(),
     venueId: z.string(),
