@@ -47,7 +47,7 @@ export function DateEventModalComponent({
         backgroundColor: "rgb(75,181,67)",
         textColor: "white",
       });
-      dispatch(fetchProposalByIdAsync(proposal?.id));
+      await dispatch(fetchProposalByIdAsync(proposal?.id));
       if (response.payload.data.type === "EVENT" || response.payload.data.type === "OVERNIGHT") {
         queryProposalsParams.append("venueId", venue.id);
         queryApprovedParams.append("venueId", venue.id);

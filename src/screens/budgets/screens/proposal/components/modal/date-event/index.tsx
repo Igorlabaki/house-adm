@@ -62,7 +62,7 @@ export default function AgendamentoScreen() {
               deleteDateEventByIdAsync(dateSelected?.id)
             );
             if (response.meta.requestStatus == "fulfilled") {
-              dispatch(fetchProposalByIdAsync(proposal?.id));
+              await dispatch(fetchProposalByIdAsync(proposal?.id));
               if (response.payload.data.type === "EVENT" || response.payload.data.type === "OVERNIGHT") {
                 queryProposalsParams.append("venueId", venue.id);
                 queryApprovedParams.append("venueId", venue.id);

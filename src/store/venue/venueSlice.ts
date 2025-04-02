@@ -427,7 +427,6 @@ export const updateVenueAsync = createAsyncThunk(
           data
         )
         .then((response) => response.data);
-      console.log("resp", "\n", updateVenue)
       return updatedVenue
     } catch (error) {
 

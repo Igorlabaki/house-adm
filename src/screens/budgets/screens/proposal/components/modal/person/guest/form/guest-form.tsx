@@ -7,11 +7,11 @@ import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import {
-  createPersonAsync,
-  deletePersonAsync,
-  Person,
-  updatePersonAsync,
-} from "@store/person/person-slice";
+  createGuestAsync,
+  deleteGuestAsync,
+  GuestType,
+  updateGuestAsync,
+} from "@store/guest/guest-slice";
 import {
   StyledPressable,
   StyledText,
@@ -20,41 +20,36 @@ import {
   StyledView,
 } from "styledComponents";
 import {
-  CreatePersonRequestParams,
-  createPersonSchema,
-} from "@schemas/person/create-person-params-schema";
+  CreateGuestRequestParams,
+  createGuestSchema,
+} from "@schemas/guest/create-guest-params-schema";
 import { fetchProposalByIdAsync } from "@store/proposal/proposal-slice";
 import { ProposalType } from "type";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 
-interface PersonFormProps {
-  person?: Person;
-  personType: "WORKER" | "GUEST";
+interface GuestFormProps {
+  guest?: GuestType;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function PersonForm({ person, setIsModalOpen,personType }: PersonFormProps) {
+export function GuestForm({ guest, setIsModalOpen }: GuestFormProps) {
   const dispatch = useDispatch<AppDispatch>();
 
-  const error = useSelector<RootState>(
-    (state: RootState) => state.personList.error
-  );
-
-  const proposal: ProposalType = useSelector<RootState>(
+  const proposal: ProposalType = useSelector(
     (state: RootState) => state.proposalList.proposal
   );
 
-  const user: User = useSelector<RootState>(
-    (state: RootState) => state.user.user
-  );
+  const user: User = useSelector((state: RootState) => state.user.user);
+
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const flashMessageRef = useRef(null);
 
   async function onConfirmDelete() {
-    const response = await dispatch(deletePersonAsync(person?.id));
+    const response = await dispatch(deleteGuestAsync(guest?.id));
 
     if (response.meta.requestStatus == "fulfilled") {
       await dispatch(fetchProposalByIdAsync(proposal?.id));
@@ -78,28 +73,37 @@ export function PersonForm({ person, setIsModalOpen,personType }: PersonFormProp
   }
 
   return (
-    <StyledView className="py-5">
-      {person && (
+    <StyledView className="pt-10">
+      {guest && (
         <StyledPressable
-          className="absolute top-3 right-1"
+          className="absolute top-6 right-1"
           onPress={() => setModalVisible(true)}
         >
-          <MaterialCommunityIcons name="delete" size={20} color="white" />
+          <Feather name="trash" size={16} color="white" />
         </StyledPressable>
       )}
       <Formik
-        validationSchema={toFormikValidationSchema(createPersonSchema)}
+        validationSchema={toFormikValidationSchema(createGuestSchema)}
         initialValues={{
           proposalId: proposal?.id,
-          rg: person?.rg ? person.rg : "",
-          attendance: person?.attendance,
-          name: person?.name ? person.name : "",
-          email: person?.email ? person.email : "",
-          type: person?.type ? person.type : personType,
+          rg: guest?.rg ? guest.rg : "",
+          attendance: guest?.attendance,
+          name: guest?.name ? guest.name : "",
+          email: guest?.email ? guest.email : "",
+          type: "GUEST",
+          venueInfo: {
+            city: venue.city,
+            email: venue.email,
+            name: venue.name,
+            neighborhood: venue.neighborhood,
+            state: venue.state,
+            street: venue.street,
+            streetNumber: venue.streetNumber,
+          },
         }}
         validate={(values) => {
           try {
-            createPersonSchema.parse(values);
+            createGuestSchema.parse(values);
             return {}; // Retorna um objeto vazio se os dados estiverem válidos
           } catch (error) {
             return error.errors.reduce((acc, curr) => {
@@ -111,10 +115,10 @@ export function PersonForm({ person, setIsModalOpen,personType }: PersonFormProp
             }, {});
           }
         }}
-        onSubmit={async (values: CreatePersonRequestParams) => {
-          if (!person) {
+        onSubmit={async (values: CreateGuestRequestParams) => {
+          if (!guest) {
             const response = await dispatch(
-              createPersonAsync({
+              createGuestAsync({
                 rg: values.rg,
                 userId: user?.id,
                 name: values.name,
@@ -122,10 +126,12 @@ export function PersonForm({ person, setIsModalOpen,personType }: PersonFormProp
                 email: values.email,
                 username: user?.username,
                 proposalId: proposal?.id,
+                venueInfo: values.venueInfo,
               })
             );
 
             if (response.meta.requestStatus == "fulfilled") {
+             
               await dispatch(fetchProposalByIdAsync(proposal?.id));
               Toast.show(response.payload.message, 3000, {
                 backgroundColor: "rgb(75,181,67)",
@@ -135,6 +141,7 @@ export function PersonForm({ person, setIsModalOpen,personType }: PersonFormProp
             }
 
             if (response.meta.requestStatus == "rejected") {
+             
               Toast.show(response.payload as string, 3000, {
                 backgroundColor: "#FF9494",
                 textColor: "white",
@@ -142,8 +149,8 @@ export function PersonForm({ person, setIsModalOpen,personType }: PersonFormProp
             }
           } else {
             const response = await dispatch(
-              updatePersonAsync({
-                personId: person?.id,
+              updateGuestAsync({
+                personId: guest?.id,
                 data: {
                   rg: values?.rg,
                   name: values?.name,
@@ -260,7 +267,7 @@ export function PersonForm({ person, setIsModalOpen,personType }: PersonFormProp
               className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
             >
               <StyledText className="font-bold text-custom-white">
-                {person ? "Atualizar" : "Criar"}
+                {guest ? "Atualizar" : "Criar"}
               </StyledText>
             </StyledPressable>
           </StyledView>

@@ -31,13 +31,18 @@ export function ProposalFilter() {
   const queryParams = new URLSearchParams();
 
   useEffect(() => {
-    queryParams.append("venueId", venue.id);
-    if (debouncedQuery) queryParams.append("completeClientName", debouncedQuery);
-    queryParams.append("year", year || new Date().getFullYear());
-    if (month) queryParams.append("month", month.toString());
-
-    dispatch(fecthProposals(`${queryParams.toString()}`));
-  }, [debouncedQuery, month, year]);
+    const fetchData = async () => {
+      const queryParams = new URLSearchParams();
+      queryParams.append("venueId", venue.id);
+      if (debouncedQuery) queryParams.append("completeClientName", debouncedQuery);
+      queryParams.append("year", (year || new Date().getFullYear()).toString());
+      if (month) queryParams.append("month", month.toString());
+  
+      await dispatch(fecthProposals(queryParams.toString()));
+    };
+  
+    fetchData();
+  }, [debouncedQuery, month, year, venue.id]);
 
   const months = [
     "Jan",

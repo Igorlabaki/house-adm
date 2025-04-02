@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const updatePersonSchema = z.object({
+export const updateGuestSchema = z.object({
     personId: z.string(),
     data: z.object({
         rg: z.string().optional(),
@@ -10,4 +10,4 @@ export const updatePersonSchema = z.object({
     }),
 });
 
-export type UpdatePersonRequestParams = z.infer<typeof updatePersonSchema>;
+export type UpdateGuestRequestParams = z.infer<typeof updateGuestSchema>;

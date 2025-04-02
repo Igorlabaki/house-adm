@@ -1,6 +1,5 @@
 import { User } from "@store/auth/authSlice";
 import { Organization } from "@store/organization/organizationSlice";
-import { Person } from "@store/person/person-slice";
 import { Schedule } from "@store/schedule/schedule-slice";
 import { Venue } from "@store/venue/venueSlice";
 export interface TextType {
@@ -109,7 +108,18 @@ export interface GuestType {
   name: string;
   rg: string | null;
   proposalId: string;
+  attendance: boolean;
   email: string | null;
+  type: "GUEST"
+}
+export interface PersonType {
+  id: string;
+  name: string;
+  rg: string | null;
+  proposalId: string;
+  attendance: boolean;
+  email: string | null;
+  type: "GUEST" | "WORKER"
 }
 
 export interface PaymentType {
@@ -202,7 +212,7 @@ export interface ProposalType {
   extraHoursQty: number;
   extraHourPrice: number;
   termsAccepted: boolean;
-  personList: Person[]
+  personList: PersonType[]
   histories: History[];
   payments: PaymentType[]
   scheduleList: Schedule[]

@@ -14,10 +14,6 @@ import {
 
 export function ProposaInfoScreen() {
   const [optionModal, setOptionModal] = useState(false);
-  const dispatch: AppDispatch = useDispatch();
-  const modalIsOpen = useSelector(
-    (state: RootState) => state.proposalList.isModalOpen
-  );
 
   return (
     <StyledView

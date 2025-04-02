@@ -8,32 +8,30 @@ import {
   StyledText,
   StyledView,
 } from "styledComponents";
-
 import { fetchProposalByIdAsync } from "@store/proposal/proposal-slice";
 import { ProposalType } from "type";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
-import { Person, updatePersonAsync } from "@store/person/person-slice";
-import { PersonForm } from "./person-form";
 
-interface TextModalProps {
-  person?: Person;
+import { GuestType, updateGuestAsync } from "@store/guest/guest-slice";
+import { GuestForm } from "../form/guest-form";
+
+interface GuestModalProps {
+  guest?: GuestType;
   isModalOpen: boolean;
   type: "CREATE" | "UPDATE";
-  personType: "GUEST" | "WORKER";
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function PersonModal({
-  person,
-  personType,
+export function GuestModal({
+  guest,
   isModalOpen,
   setIsModalOpen,
-}: TextModalProps) {
+}: GuestModalProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const proposal: ProposalType = useSelector<RootState>(
+  const proposal: ProposalType = useSelector(
     (state: RootState) => state.proposalList.proposal
   );
 
@@ -43,8 +41,8 @@ export function PersonModal({
 
   const confirmDelete = async () => {
     const response = await dispatch(
-      updatePersonAsync({
-        personId: person?.id,
+      updateGuestAsync({
+        personId: guest?.id,
         data: {
           attendance: false,
         },
@@ -79,17 +77,17 @@ export function PersonModal({
       animationType="fade"
     >
       <StyledView className="bg-gray-dark h-full px-3">
-        <PersonForm setIsModalOpen={setIsModalOpen} person={person} personType={personType} />
-        {person?.id && (
+        <GuestForm setIsModalOpen={setIsModalOpen} guest={guest} />
+        {guest?.id && (
           <>
             <StyledPressable
               onPress={async () => {
-                if (person?.attendance) {
+                if (guest?.attendance) {
                   handleDelete();
                 } else {
                   const response = await dispatch(
-                    updatePersonAsync({
-                      personId: person?.id,
+                    updateGuestAsync({
+                      personId: guest?.id,
                       data: {
                         attendance: true,
                       },
@@ -114,11 +112,11 @@ export function PersonModal({
                 }
               }}
               className={`${
-                person?.attendance ? "bg-red-700" : "bg-green-700"
-              } flex justify-center items-center py-3 mt-2 rounded-md`}
+                guest?.attendance ? "bg-red-700" : "bg-green-700"
+              } flex justify-center items-center py-3 rounded-md`}
             >
               <StyledText className="font-bold text-custom-white">
-                {person?.attendance ? "Cancelar Presenca" : "Confirmar Presenca"}
+                {guest?.attendance ? "Cancelar Presenca" : "Confirmar Presenca"}
               </StyledText>
             </StyledPressable>
             <DeleteConfirmationModal

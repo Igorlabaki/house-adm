@@ -5,7 +5,7 @@ import { textListReducer } from "./text/textSlice";
 import { venueListReducer } from "./venue/venueSlice";
 import { ownerListReducer } from "./owner/ownerSlice";
 import { imageListReducer } from "./image/imagesSlice";
-import { personListReducer } from "./person/person-slice";
+import { guestListReducer } from "./guest/guest-slice";
 import { optionStateReducer } from "./option/optionSlice";
 import { clauseListReducer } from "./clause/clause-slice";
 import { expenseListReducer } from "./expense/expenseSlice";
@@ -25,6 +25,7 @@ import { userorganizationListReducer } from "./userOrganization/user-organizatio
 import { userPermissionStateReducer } from "./user-permission/user-permission-slice";
 import { surchargefeesListReducer } from "./surcharge-fee/surcharge-fee";
 import { discountfeesListReducer } from "./discount-fee/discount-fee";
+import { workerListReducer } from "./worker/worker-slice";
 
 export const store = configureStore({
   reducer: {
@@ -35,8 +36,9 @@ export const store = configureStore({
     ownerList: ownerListReducer,
     imageList: imageListReducer,
     venueList: venueListReducer,
-    personList: personListReducer,
+    guestState: guestListReducer,
     clauseList: clauseListReducer,
+    workerState: workerListReducer,
     optionState: optionStateReducer,
     daveEventList: dateEventReducer,
     expenseList: expenseListReducer,

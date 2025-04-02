@@ -165,7 +165,8 @@ export function DateEventFormComponent({
             );
 
             if (response.meta.requestStatus == "fulfilled") {
-              await dispatch(fetchProposalByIdAsync(values?.proposalId));
+              const e = await dispatch(fetchProposalByIdAsync(proposal.id));
+
               if(response.payload.data.type === "EVENT"){
                 queryProposalsParams.append("venueId", venue.id)
                 queryApprovedParams.append("venueId", venue.id)
