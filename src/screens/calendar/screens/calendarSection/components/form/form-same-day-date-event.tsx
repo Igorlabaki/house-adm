@@ -74,7 +74,7 @@ export function DateEventFormComponent({
     date:
       proposal?.startDate &&
       moment.utc(proposal?.startDate).format("DD/MM/yyyy"),
-    title: `Evento - ${proposal?.name}`,
+    title: `Evento - ${proposal?.completeClientName}`,
     endHour: proposal?.endDate
       ? moment.utc(proposal?.endDate).format("HH:mm")
       : "",
@@ -165,14 +165,15 @@ export function DateEventFormComponent({
             );
 
             if (response.meta.requestStatus == "fulfilled") {
-              dispatch(fetchProposalByIdAsync(values?.proposalId));
+              await dispatch(fetchProposalByIdAsync(values?.proposalId));
               if(response.payload.data.type === "EVENT"){
                 queryProposalsParams.append("venueId", venue.id)
                 queryApprovedParams.append("venueId", venue.id)
                 queryApprovedParams.append("approved", "true")
-
-                dispatch(fecthProposals(`${queryProposalsParams.toString()}`));
-                dispatch(fecthApprovedProposals(`${queryApprovedParams.toString()}`));
+                await Promise.all([
+                  dispatch(fecthProposals(`${queryProposalsParams.toString()}`)),
+                  dispatch(fecthApprovedProposals(`${queryApprovedParams.toString()}`))
+                ]);
               }
               Toast.show(response?.payload?.message, 3000, {
                 backgroundColor: "rgb(75,181,67)",
@@ -234,7 +235,7 @@ export function DateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "EVENT");
-                          setFieldValue("title", `Evento - ${proposal?.name}`);
+                          setFieldValue("title", `Evento - ${proposal?.completeClientName}`);
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -252,7 +253,7 @@ export function DateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "VISIT");
-                          setFieldValue("title", `Visita - ${proposal?.name}`);
+                          setFieldValue("title", `Visita - ${proposal?.completeClientName}`);
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -270,7 +271,7 @@ export function DateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "OTHER");
-                          setFieldValue("title", `Outro - ${proposal?.name}`);
+                          setFieldValue("title", `Outro - ${proposal?.completeClientName}`);
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">

@@ -29,7 +29,7 @@ export interface Venue {
   pricePerPersonDay: number | null;
   pricePerPersonHour: number | null;
   ownerVenue: OwnerVenueType[] | null;
-  seasonalFeeDates?: {seasonalStartDay: Date, seasonalEndDay: Date}[];
+  seasonalFeeDates?: { seasonalStartDay: Date, seasonalEndDay: Date }[];
   contracts?: ContractType[];
   pricingModel: "PER_PERSON" | "PER_DAY" | "PER_PERSON_DAY" | "PER_PERSON_HOUR";
 }
@@ -59,9 +59,9 @@ export interface AnalysisTotal {
 export interface CreateVenueDataResponse {
   success: boolean,
   message: string,
-  data: {
-    venue: Venue
-  },
+  data:
+  Venue
+  ,
   count: number,
   type: string
 }
@@ -136,7 +136,7 @@ const initialState: {
     organizationId: "",
     pricePerPerson: null,
     createdAt: new Date(),
-    seasonalFeeDates:null, 
+    seasonalFeeDates: null,
     hasOvernightStay: false,
     pricePerPersonDay: null,
     pricePerPersonHour: null,
@@ -235,7 +235,7 @@ const venueListSlice = createSlice({
     });
     builder.addCase(createVenueAsync.fulfilled, (state, action: PayloadAction<CreateVenueDataResponse>) => {
       state.loading = false;
-      state.venues = [...state.venues, action.payload.data.venue];
+      state.venues = [...state.venues, action.payload.data];
       state.error = "";
     }),
       builder.addCase(createVenueAsync.rejected, (state, action) => {
@@ -426,7 +426,8 @@ export const updateVenueAsync = createAsyncThunk(
           `/venue/update`,
           data
         )
-        .then((resp: { data: any }) => resp.data);
+        .then((response) => response.data);
+      console.log("resp", "\n", updateVenue)
       return updatedVenue
     } catch (error) {
 

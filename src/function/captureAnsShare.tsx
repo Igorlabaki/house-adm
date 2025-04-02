@@ -3,7 +3,7 @@ import { Linking } from "react-native";
 
 export const captureAndShare = async (proposal: ProposalType) => {
     const message = `
-    Olá ${proposal?.name},
+    Olá ${proposal?.completeClientName},
 
     Vimos que você fez um orçamento conosco para sua festa e estamos muito felizes em saber que a nossa casa de eventos te chamou a atenção. ✨
 

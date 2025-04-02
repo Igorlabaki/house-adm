@@ -36,7 +36,7 @@ export  function InfoPessoais() {
           Nome :
         </StyledText>
         <StyledText className="text-[13px] text-white  font-semibold">
-          {proposal?.name}
+          {proposal?.completeClientName}
         </StyledText>
       </StyledView>
       <StyledView className="w-[70%] flex-row justify-between items-center mx-auto mt-1">

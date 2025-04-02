@@ -40,7 +40,7 @@ export default function NaturalPersonContractForm() {
     "vista"
   );
   const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
-  console.log(proposal.completeClientName)
+
   return (
     <>
       <Formik

@@ -96,7 +96,7 @@ export function OverNigthDateEventFormComponent({
       moment.utc(proposal?.startDate).format("DD/MM/yyyy"),
     endDay:
       proposal?.endDate && moment.utc(proposal?.endDate).format("DD/MM/yyyy"),
-    title: `Estadia - ${proposal?.name}`,
+    title: `Estadia - ${proposal?.completeClientName}`,
     endHour: proposal?.endDate
       ? moment.utc(proposal?.endDate).format("HH:mm")
       : venue?.checkOut
@@ -178,7 +178,7 @@ export function OverNigthDateEventFormComponent({
             );
 
             if (response.meta.requestStatus == "fulfilled") {
-              dispatch(fetchProposalByIdAsync(proposal.id));
+              await dispatch(fetchProposalByIdAsync(proposal.id));
               if (response.payload.data.type === "OVERNIGHT") {
                 queryProposalsParams.append("venueId", venue.id);
                 queryApprovedParams.append("venueId", venue.id);
@@ -255,7 +255,7 @@ export function OverNigthDateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "OVERNIGHT");
-                          setFieldValue("title", `Estadia - ${proposal?.name}`);
+                          setFieldValue("title", `Estadia - ${proposal?.completeClientName}`);
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -273,7 +273,7 @@ export function OverNigthDateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "VISIT");
-                          setFieldValue("title", `Visita - ${proposal?.name}`);
+                          setFieldValue("title", `Visita - ${proposal?.completeClientName}`);
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -291,7 +291,7 @@ export function OverNigthDateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "OTHER");
-                          setFieldValue("title", `Outro - ${proposal?.name}`);
+                          setFieldValue("title", `Outro - ${proposal?.completeClientName}`);
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">

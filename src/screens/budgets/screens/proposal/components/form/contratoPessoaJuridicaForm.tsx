@@ -42,7 +42,7 @@ export default function ContratoPessoaJuridicaForm() {
   const [paymentMethod, setPaymentMethod] = useState<"vista" | "parcelado">(
     "vista"
   );
-  console.log(proposal)
+
   return (
     <Formik
       validationSchema={toFormikValidationSchema<any>(

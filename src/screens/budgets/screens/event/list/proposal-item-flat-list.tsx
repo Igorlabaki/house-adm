@@ -44,7 +44,7 @@ export function ProposalItemFlatList({ proposal }: ItemFlatListProps) {
         <StyledView className="flex-row justify-between font-semibold items-center overflow-hidden w-full">
           <StyledView className="flex-row justify-start items-start min-w-[30%] max-w-[30%]">
             <StyledText className="text-[13px] text-white font-semibold">
-              {proposal?.name || "Nome indisponível"}
+              {proposal?.completeClientName || "Nome indisponível"}
             </StyledText>
           </StyledView>
           <StyledView className="flex-row justify-start items-start">

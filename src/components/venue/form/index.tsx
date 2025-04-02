@@ -136,7 +136,7 @@ export function VenueFormModalComponent({
           }}
           validate={(values) => {
             try {
-              createVenueFormSchema.parse(values);
+             createVenueFormSchema.parse(values);
               return {};
             } catch (error) {
               return error.errors.reduce((acc, curr) => {

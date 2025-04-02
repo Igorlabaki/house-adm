@@ -4,7 +4,7 @@ import { Linking } from "react-native";
 
 export const proposalViaWhatsapp = async (proposal: ProposalType) => {
     const message = `
-    Olá ${proposal?.name},
+    Olá ${proposal?.completeClientName},
 
     Aqui está o link para o seu orçamento:
 

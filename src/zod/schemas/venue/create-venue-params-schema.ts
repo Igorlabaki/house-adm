@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const createVenueFormSchema = z
   .object({
-    clientCompleteName: z.string({
+    name: z.string({
       required_error: 'Este campo é obrigatório!',
     }),
     street: z.string({
