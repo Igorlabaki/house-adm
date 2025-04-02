@@ -12,7 +12,7 @@ import { ProposalType } from "type";
 export default function DocumentScreen() {
   const queryParams = new URLSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
-   const proposal: ProposalType = useSelector<RootState>(
+   const proposal: ProposalType = useSelector(
       (state: RootState) => state.proposalList.proposal
     );
   return (
