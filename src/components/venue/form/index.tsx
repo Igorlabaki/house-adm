@@ -14,6 +14,7 @@ import { toFormikValidationSchema } from "zod-formik-adapter";
 import {
   Organization,
   createOrganizationVenueAsync,
+  selectOrganizationAsync,
 } from "@store/organization/organizationSlice";
 import { createVenueFormSchema } from "@schemas/venue/create-venue-params-schema";
 import { OwnerType } from "type";
@@ -35,6 +36,8 @@ import { transformMoneyToNumber } from "function/transform-money-to-number";
 import { User } from "@store/auth/authSlice";
 import { Calendar } from "react-native-calendars";
 import moment from "moment";
+import { fecthUserOrganizationByOrganizationId } from "@store/userOrganization/user-organization--slice";
+import { fecthUserPermission } from "@store/user-permission/user-permission-slice";
 
 type SeasonalFeeInput = {
   fee: string;
@@ -65,7 +68,7 @@ export function VenueFormModalComponent({
   setMenuModalIsOpen,
 }: VenueFormModalComponentProps) {
   const dispatch = useDispatch<AppDispatch>();
-
+  const queryParams = new URLSearchParams();
   const loading = useSelector(
     (state: RootState) => state.organizationList.loading
   );
@@ -84,6 +87,11 @@ export function VenueFormModalComponent({
   );
 
   const flashMessageRef = useRef(null);
+  useEffect(() => {
+    if (!queryParams.has("organizationId")) {
+      queryParams.append("organizationId", organization?.id);
+    }
+  }, [organization]);
 
   return (
     <StyledModal
@@ -95,7 +103,7 @@ export function VenueFormModalComponent({
       animationType="slide"
       pointerEvents="box-none"
     >
-      <StyledScrollView className="h-full w-full bg-gray-dark  px-3">
+      <StyledScrollView className="h-full w-full bg-gray-dark mx-auto  px-3">
         <Formik
           validateOnBlur={false}
           validationSchema={toFormikValidationSchema(createVenueFormSchema)}
@@ -136,7 +144,7 @@ export function VenueFormModalComponent({
           }}
           validate={(values) => {
             try {
-             createVenueFormSchema.parse(values);
+              createVenueFormSchema.parse(values);
               return {};
             } catch (error) {
               return error.errors.reduce((acc, curr) => {
@@ -172,7 +180,7 @@ export function VenueFormModalComponent({
               );
 
               if (response.meta.requestStatus == "fulfilled") {
-                await dispatch(selectVenueAsync(response?.payload?.data?.id))
+                await dispatch(selectVenueAsync(response?.payload?.data?.id));
                 Toast.show("Locacao atualizada com sucesso." as string, 3000, {
                   backgroundColor: "rgb(75,181,67)",
                   textColor: "white",
@@ -210,6 +218,9 @@ export function VenueFormModalComponent({
             );
 
             if (response.meta.requestStatus == "fulfilled") {
+              await dispatch(
+                selectOrganizationAsync(`${queryParams.toString()}`)
+              );
               Toast.show("Locacao criada com sucesso." as string, 3000, {
                 backgroundColor: "rgb(75,181,67)",
                 textColor: "white",
@@ -235,7 +246,7 @@ export function VenueFormModalComponent({
             setFieldValue,
             resetForm,
           }) => (
-            <StyledView className=" w-full mx-auto my-5 flex flex-col gap-4 mt-10">
+            <StyledView className=" w-full mx-auto my-5 flex flex-col gap-y-4 mt-10">
               <StyledView className="flex flex-col gap-y-1">
                 <StyledText className="text-custom-gray text-[14px] font-semibold">
                   Name
@@ -853,14 +864,14 @@ export function VenueFormModalComponent({
                 onPress={() => {
                   handleSubmit();
                 }}
-                className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+                className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
                 disabled={loading}
               >
                 {loading ? (
                   <ActivityIndicator size="small" color="#FFFFFF" />
                 ) : (
                   <StyledText className="font-bold text-custom-white">
-                    {venue ? "Atualizar" : "Salvar"}
+                    {venue ? "Atualizar" : "Cadastrar"}
                   </StyledText>
                 )}
               </StyledPressable>

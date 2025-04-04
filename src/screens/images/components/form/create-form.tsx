@@ -29,6 +29,7 @@ import {
   CreateImageRequestParams,
 } from "@schemas/image/create-image-params-schema";
 import * as FileSystem from "expo-file-system";
+import { ActivityIndicator } from "react-native";
 
 interface ImageFormProps {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -46,7 +47,7 @@ export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
-  
+
     if (!permissionResult.granted) {
       Toast.show("Permissão para acessar as fotos é necessária!", 3000, {
         backgroundColor: "rgb(75,181,67)",
@@ -54,26 +55,25 @@ export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
       });
       return;
     }
-  
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
-  
+
     if (!result.canceled) {
       const imageUri = result.assets[0].uri;
-  
+
       // Obtém informações do arquivo
       const fileInfo = await FileSystem.getInfoAsync(imageUri);
-  
+
       if (!fileInfo.exists) {
         console.error("Não foi possível obter informações do arquivo.");
         return;
       }
-  
+
       const fileSizeInMB = fileInfo.size / (1024 * 1024); // Converte para MB
-  
-  
+
       if (fileSizeInMB > 2.5) {
         Toast.show("Imagem maior que 2.5 MB.", 3000, {
           backgroundColor: "rgb(75,181,67)",
@@ -81,7 +81,7 @@ export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
         });
         return;
       }
-  
+
       return imageUri;
     }
   };
@@ -137,11 +137,12 @@ export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
           name: `photo.${fileType}`,
           type: `image/${fileType}`,
         } as any);
-        
+
         formData.append("tag", values.tag);
         formData.append("position", values.position);
         formData.append("venueId", venue?.id); // Convertendo para string
         formData.append("description", values.description);
+        formData.append("imageUrl", values.imageUrl);
         formData.append("responsiveMode", values.responsiveMode); // Convertendo boolean para string
 
         const response = await dispatch(createImageAsync(formData));
@@ -298,10 +299,14 @@ export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
             onPress={() => {
               handleSubmit();
             }}
-            className={`bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md`}
+            className={`bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md`}
           >
             <StyledText className="font-bold text-custom-white">
-              {isLoading ? "Enviando" : "Cadastrar"}
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#faebd7" />
+              ) : (
+                "Cadastrar"
+              )}
             </StyledText>
           </StyledPressable>
         </StyledScrollView>

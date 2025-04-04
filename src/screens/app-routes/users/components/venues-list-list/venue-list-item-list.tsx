@@ -11,7 +11,6 @@ import UserOrganizationFormCreateModalComponent from "../form/create";
 import { User } from "@store/auth/authSlice";
 
 interface VenueItemListProps {
-  user: User;
   item: Venue;
   userorganization?: UserOrganizationType;
   setFormSection: React.Dispatch<
@@ -21,7 +20,6 @@ interface VenueItemListProps {
 
 export function VenueListItemList({
   item,
-  user,
   setFormSection,
 }: VenueItemListProps) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -43,7 +41,6 @@ export function VenueListItemList({
       {isModalOpen && (
         <UserOrganizationFormCreateModalComponent
         setFormSection={setFormSection}
-          user={user}
           venueId={item.id}
           isModalOpen={isModalOpen}
           setMenuModalIsOpen={setIsModalOpen}

@@ -1,7 +1,7 @@
 import moment from "moment";
 import { Formik } from "formik";
 import { styled } from "nativewind";
-import { FlatList } from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 import { useDebounce } from "use-debounce";
 import { Entypo } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
@@ -255,7 +255,10 @@ export function OverNigthDateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "OVERNIGHT");
-                          setFieldValue("title", `Estadia - ${proposal?.completeClientName}`);
+                          setFieldValue(
+                            "title",
+                            `Estadia - ${proposal?.completeClientName}`
+                          );
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -273,7 +276,10 @@ export function OverNigthDateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "VISIT");
-                          setFieldValue("title", `Visita - ${proposal?.completeClientName}`);
+                          setFieldValue(
+                            "title",
+                            `Visita - ${proposal?.completeClientName}`
+                          );
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -291,7 +297,10 @@ export function OverNigthDateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "OTHER");
-                          setFieldValue("title", `Outro - ${proposal?.completeClientName}`);
+                          setFieldValue(
+                            "title",
+                            `Outro - ${proposal?.completeClientName}`
+                          );
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -631,15 +640,15 @@ export function OverNigthDateEventFormComponent({
                   onPress={() => {
                     handleSubmit();
                   }}
-                  className="bg-gray-ligth flex justify-center items-center py-3  rounded-md w-full"
+                  className="bg-green-800 flex justify-center items-center py-3  rounded-md w-full"
                 >
-                  <StyledText className="font-bold text-custom-white">
-                    {isLoading
-                      ? "Enviando"
-                      : dateSelected
-                      ? "Atualizar"
-                      : "Criar"}
-                  </StyledText>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color="#faebd7" />
+                  ) : (
+                    <StyledText className="font-bold text-custom-white">
+                      {dateSelected ? "Atualizar" : "Cadastrar"}
+                    </StyledText>
+                  )}
                 </StyledPressable>
                 {dateSelected && (
                   <StyledPressable

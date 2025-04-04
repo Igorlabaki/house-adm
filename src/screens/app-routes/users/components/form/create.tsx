@@ -51,7 +51,6 @@ import {
 } from "const/permissions";
 
 interface UserOrganizationFormModalComponentProps {
-  user: User;
   venueId?: string;
   isModalOpen: boolean;
   setMenuModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -61,7 +60,6 @@ interface UserOrganizationFormModalComponentProps {
 }
 
 export default function UserOrganizationFormCreateModalComponent({
-  user,
   venueId,
   isModalOpen,
   setFormSection,
@@ -79,6 +77,10 @@ export default function UserOrganizationFormCreateModalComponent({
 
   const organization: Organization = useSelector(
     (state: RootState) => state.organizationList.organization
+  );
+
+  const user : User = useSelector(
+    (state: RootState) => state?.userList.selectedUser
   );
 
   const [permissions, setPermissions] = useState<string[]>([]);
@@ -113,13 +115,12 @@ export default function UserOrganizationFormCreateModalComponent({
             venueId: venueId || "",
             role: "",
             organizationId: organization.id,
-            userorganizationId: userOrganization.id,
-            userId: user?.id,
+            userId: user?.id || userOrganization.user.id,
             permissions: [],
           }}
           validate={(values) => {
             try {
-              createUserPermissionSchema.parse(values);
+              createUserPermissionSchema.safeParse(values);
               return {};
             } catch (error) {
               return error.errors.reduce((acc, curr) => {
@@ -176,6 +177,7 @@ export default function UserOrganizationFormCreateModalComponent({
                 setPermissions([
                   ...userViewPermissions.map((p) => p.enum),
                   ...userEditPermissions.map((p) => p.enum),
+                  ...userProposalPermissions.map((p) => p.enum),
                 ]);
               }
             }, [values.role]);
@@ -339,14 +341,14 @@ export default function UserOrganizationFormCreateModalComponent({
                       await setFieldValue("permissions", permissions);
                       handleSubmit();
                     }}
-                    className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+                    className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
                     disabled={loading}
                   >
                     {loading ? (
                       <ActivityIndicator size="small" color="#FFFFFF" />
                     ) : (
                       <StyledText className="font-bold text-custom-white">
-                        Salvar
+                        Cadastrar
                       </StyledText>
                     )}
                   </StyledPressable>

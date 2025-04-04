@@ -56,7 +56,7 @@ export default function OrganizationFormModalComponent({
       animationType="slide"
       pointerEvents="box-none"
     >
-      <StyledView className="h-full w-full bg-gray-dark  px-3">
+      <StyledView className="h-full w-full bg-gray-dark mx-auto px-3">
         <Formik
           validateOnChange={false}
           validateOnBlur={false}
@@ -141,7 +141,7 @@ export default function OrganizationFormModalComponent({
             setFieldValue,
             resetForm,
           }) => (
-            <StyledView className=" w-full mx-auto my-5 flex flex-col gap-4 mt-10">
+            <StyledView className=" w-full mx-auto my-5 flex flex-col gap-y-4 mt-10">
               <StyledView className="flex flex-col gap-y-1">
                 <StyledText className="text-custom-gray text-[14px] font-semibold">
                   Name
@@ -167,14 +167,14 @@ export default function OrganizationFormModalComponent({
                 onPress={() => {
                   handleSubmit();
                 }}
-                className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+                className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
                 disabled={loading}
               >
                 {loading ? (
                   <ActivityIndicator size="small" color="#FFFFFF" />
                 ) : (
                   <StyledText className="font-bold text-custom-white">
-                    {organization ? "Atualizar" : "Salvar"}
+                    {organization ? "Atualizar" : "Cadastrar"}
                   </StyledText>
                 )}
               </StyledPressable>

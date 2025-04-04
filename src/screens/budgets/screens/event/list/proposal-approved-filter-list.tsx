@@ -34,14 +34,19 @@ export function ApprovedProposalFilter() {
   const queryParams = new URLSearchParams();
 
   useEffect(() => {
-    queryParams.append("venueId", venue.venue.id);
-    if (debouncedQuery) queryParams.append("fecthApprovedProposals", debouncedQuery);
-    queryParams.append("year", year || new Date().getFullYear());
-    if (month) queryParams.append("month", month.toString());
-    queryParams.append("approved", "true");
-    dispatch(fecthApprovedProposals(`${queryParams.toString()}`));
-    
-  }, [debouncedQuery, month, year]);
+    const fetchData = async () => {
+      const queryParams = new URLSearchParams();
+      queryParams.append("venueId", venue.venue.id);
+      if (debouncedQuery) queryParams.append("completeClientName", debouncedQuery);
+      queryParams.append("year", year || new Date().getFullYear());
+      if (month) queryParams.append("month", month.toString());
+      queryParams.append("approved", "true");
+      
+      await dispatch(fecthApprovedProposals(queryParams.toString()));
+    };
+  
+    fetchData();
+  }, [debouncedQuery, month, year, dispatch, venue.venue.id]);
 
   const months = [
     "Jan",
@@ -60,7 +65,7 @@ export function ApprovedProposalFilter() {
 
   return (
     <StyledView className="pb-4">
-      <StyledView className="w-full py-3 px-2 flex justify-start items-center  rounded-md bg-white flex-row my-3">
+      <StyledView className="w-full py-3 px-2 flex justify-start items-center  rounded-md bg-white flex-row">
         <EvilIcons
           name="search"
           size={24}

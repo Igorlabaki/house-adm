@@ -13,7 +13,6 @@ import { VenueListItemList } from "./venue-list-item-list";
 import { User } from "@store/auth/authSlice";
 
 interface VenueListParams {
-  user: User;
   userOrganization?: UserOrganizationType;
   setFormSection: React.Dispatch<
     React.SetStateAction<"USER" | "VENUE" | "NEW_USER">
@@ -29,7 +28,7 @@ type VenueListItem = {
 export const StyledFlatList = styled(FlatList<Venue>);
 
 export const VenueListFlatList = React.memo(
-  ({ userOrganization, setFormSection, user }: VenueListParams) => {
+  ({ userOrganization, setFormSection }: VenueListParams) => {
    
     const organization: Organization = useSelector(
       (state: RootState) => state.organizationList.organization
@@ -56,7 +55,6 @@ export const VenueListFlatList = React.memo(
         renderItem={({ item }: { item: Venue }) => (
           <VenueListItemList
             item={item}
-            user={user}
             setFormSection={setFormSection}
             userorganization={userOrganization}
           />

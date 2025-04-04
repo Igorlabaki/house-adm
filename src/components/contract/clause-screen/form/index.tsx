@@ -28,6 +28,7 @@ import {
   proposalVariables,
   venueVariables,
 } from "const/contract-variables";
+import { ActivityIndicator } from "react-native";
 
 interface ClauseFormProps {
   clause?: ClauseType;
@@ -49,6 +50,10 @@ export function ClauseFormComponent({
 
   const organization: Organization = useSelector(
     (state: RootState) => state.organizationList.organization
+  );
+
+  const loading: boolean = useSelector(
+    (state: RootState) => state.clauseList.loading
   );
 
   const [selection, setSelection] = useState({ start: 0, end: 0 });
@@ -247,9 +252,14 @@ export function ClauseFormComponent({
                     onPress={() => {
                       const { start } = selection;
                       const newText =
-                        values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
+                        values?.text?.slice(0, start) +
+                        `{{${key}}}` +
+                        values?.text?.slice(start);
                       setFieldValue("text", newText);
-                      setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
+                      setSelection({
+                        start: start + `{{${key}}}`.length,
+                        end: start + `{{${key}}}`.length,
+                      });
                     }}
                     className="bg-gray-300 px-3 py-1 rounded-md"
                   >
@@ -266,9 +276,14 @@ export function ClauseFormComponent({
                     onPress={() => {
                       const { start } = selection;
                       const newText =
-                      values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
+                        values?.text?.slice(0, start) +
+                        `{{${key}}}` +
+                        values?.text?.slice(start);
                       setFieldValue("text", newText);
-                      setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
+                      setSelection({
+                        start: start + `{{${key}}}`.length,
+                        end: start + `{{${key}}}`.length,
+                      });
                     }}
                     className="bg-gray-300 px-3 py-1 rounded-md"
                   >
@@ -285,9 +300,14 @@ export function ClauseFormComponent({
                     onPress={() => {
                       const { start } = selection;
                       const newText =
-                      values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
+                        values?.text?.slice(0, start) +
+                        `{{${key}}}` +
+                        values?.text?.slice(start);
                       setFieldValue("text", newText);
-                      setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
+                      setSelection({
+                        start: start + `{{${key}}}`.length,
+                        end: start + `{{${key}}}`.length,
+                      });
                     }}
                     className="bg-gray-300 px-3 py-1 rounded-md"
                   >
@@ -304,9 +324,14 @@ export function ClauseFormComponent({
                     onPress={() => {
                       const { start } = selection;
                       const newText =
-                      values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
+                        values?.text?.slice(0, start) +
+                        `{{${key}}}` +
+                        values?.text?.slice(start);
                       setFieldValue("text", newText);
-                      setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
+                      setSelection({
+                        start: start + `{{${key}}}`.length,
+                        end: start + `{{${key}}}`.length,
+                      });
                     }}
                     className="bg-gray-300 px-3 py-1 rounded-md"
                   >
@@ -323,9 +348,14 @@ export function ClauseFormComponent({
                     onPress={() => {
                       const { start } = selection;
                       const newText =
-                      values?.text?.slice(0, start) + `{{${key}}}` + values?.text?.slice(start); 
+                        values?.text?.slice(0, start) +
+                        `{{${key}}}` +
+                        values?.text?.slice(start);
                       setFieldValue("text", newText);
-                      setSelection({ start: start + `{{${key}}}`.length, end: start + `{{${key}}}`.length }); 
+                      setSelection({
+                        start: start + `{{${key}}}`.length,
+                        end: start + `{{${key}}}`.length,
+                      });
                     }}
                     className="bg-gray-300 px-3 py-1 rounded-md"
                   >
@@ -339,11 +369,15 @@ export function ClauseFormComponent({
             onPress={() => {
               handleSubmit();
             }}
-            className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+            className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
           >
-            <StyledText className="font-bold text-custom-white">
-              {clause ? "Atualizar" : "Cadastrar"}
-            </StyledText>
+            {loading ? (
+              <ActivityIndicator size="small" color="#faebd7" />
+            ) : (
+              <StyledText className="font-bold text-custom-white">
+                {clause ? "Atualizar" : "Cadastrar"}
+              </StyledText>
+            )}
           </StyledPressable>
         </StyledView>
       )}

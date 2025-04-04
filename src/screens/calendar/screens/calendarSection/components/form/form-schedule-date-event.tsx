@@ -1,7 +1,7 @@
 import moment from "moment";
 import { Formik } from "formik";
 import { styled } from "nativewind";
-import { FlatList } from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 import { useDebounce } from "use-debounce";
 import { Entypo } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
@@ -69,9 +69,9 @@ export function ScheduleEventFormComponent({
   useEffect(() => {
     queryParams.append("venueId", venue.id);
   }, []);
- const navigation = useNavigation();
+  const navigation = useNavigation();
 
-  async function handleButton(proposalId:string) {
+  async function handleButton(proposalId: string) {
     await dispatch(fetchProposalByIdAsync(proposalId));
     navigation.navigate("ProposaInfoScreen");
   }
@@ -463,21 +463,21 @@ export function ScheduleEventFormComponent({
                   onPress={() => {
                     handleSubmit();
                   }}
-                  className="bg-gray-ligth flex justify-center items-center py-3  rounded-md w-full"
+                  className="bg-green-800 flex justify-center items-center py-3  rounded-md w-full"
                 >
-                  <StyledText className="font-bold text-custom-white">
-                    {isLoading
-                      ? "Enviando"
-                      : dateSelected
-                      ? "Atualizar"
-                      : "Criar"}
-                  </StyledText>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color="#faebd7" />
+                  ) : (
+                    <StyledText className="font-bold text-custom-white">
+                      {dateSelected ? "Atualizar" : "Cadastrar"}
+                    </StyledText>
+                  )}
                 </StyledPressable>
                 {dateSelected && (
                   <StyledPressable
                     onPress={async () => {
-                      await handleButton(dateSelected.proposalId)
-                      setIsModalOpen(false)
+                      await handleButton(dateSelected.proposalId);
+                      setIsModalOpen(false);
                     }}
                     className="bg-green-900 flex justify-center items-center py-3 rounded-md w-full"
                   >

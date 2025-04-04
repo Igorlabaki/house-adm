@@ -65,16 +65,6 @@ export function QuenstionModalComponent({
       animationType="fade"
     >
       <StyledView className="flex-1 bg-gray-dark pt-10 relative">
-        <StyledPressable
-          className="absolute top-4 left-5"
-          onPress={() => setIsModalOpen(false)}
-        >
-          <MaterialCommunityIcons
-            name="arrow-left-thin"
-            size={24}
-            color="white"
-          />
-        </StyledPressable>
         {question && (
           <StyledPressable
             onPress={async () => handleDelete()}

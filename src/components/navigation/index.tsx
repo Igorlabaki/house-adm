@@ -21,7 +21,7 @@ import OwnerScreenComponent from "screens/app-routes/owner/ownerScreen";
 import ContactScreenComponent from "screens/app-routes/contact";
 import ContractScreen from "@components/contract";
 import UsersScreen from "screens/app-routes/users";
-import ValueScreenComponent, { SeasonalFeeScreen } from "@components/venue/values-screen";
+import { SeasonalFeeScreen } from "@components/venue/values-screen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -132,7 +132,7 @@ export default function AppNavigator() {
             headerLeft: () => {
               return (
                 <StyledText className="text-white font-semibold text-lg">
-                  Usuarios
+                  Permissoes
                 </StyledText>
               );
             },

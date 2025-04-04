@@ -30,8 +30,8 @@ export function ProposalItemFlatList({ proposal }: ItemFlatListProps) {
       : "R$ 0,00";
   }, [proposal?.totalAmount]);
 
-  function handleButton() {
-    dispatch(fetchProposalByIdAsync(proposal.id));
+  async function handleButton() {
+    await dispatch(fetchProposalByIdAsync(proposal.id));
     navigation.navigate("ProposaInfoScreen");
   }
 

@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import SafeAreaViewComponent from "@components/safeAreaView";
 
 export default function Routes() {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,23 +33,23 @@ export default function Routes() {
 
   if (isLoading) {
     return (
-      <SafeAreaProvider>
+      <SafeAreaViewComponent>
         <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaProvider>
+      </SafeAreaViewComponent>
     );
   }
 
   if (session) {
     return (
-      <SafeAreaProvider>
+      <SafeAreaViewComponent>
         <AppRoutes />
-      </SafeAreaProvider>
+      </SafeAreaViewComponent>
     );
   }
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaViewComponent>
       <AuthRoutes />
-    </SafeAreaProvider>
+    </SafeAreaViewComponent>
   );
 }

@@ -28,6 +28,7 @@ import { Feather } from "@expo/vector-icons";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 import { Venue } from "@store/venue/venueSlice";
 import Toast from "react-native-simple-toast";
+import { ActivityIndicator } from "react-native";
 
 interface OwnerFormProps {
   owner?: OwnerType;
@@ -53,6 +54,8 @@ export function OwnerFormComponent({
   };
 
   const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
+
+  const loading: boolean = useSelector((state: RootState) => state.ownerList.loading);
 
   const confirmDelete = async () => {
     const response = await dispatch(deleteOwnerAsync(owner.id));
@@ -209,7 +212,7 @@ export function OwnerFormComponent({
           }}
         >
           {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-            <StyledView className="w-[90%] mx-auto my-5 flex flex-col pt-10">
+            <StyledView className="w-full mx-auto my-5 flex flex-col pt-10">
               <StyledView className="flex flex-col gap-y-3">
                 <StyledView className="flex flex-col gap-y-1">
                   <StyledText className="text-custom-gray text-[14px] font-semibold">
@@ -574,11 +577,15 @@ export function OwnerFormComponent({
                 onPress={() => {
                   handleSubmit();
                 }}
-                className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+                className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
               >
-                <StyledText className="font-bold text-custom-white">
-                  {owner ? "Atualizar" : "Criar"}
-                </StyledText>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#faebd7" />
+                ) : (
+                  <StyledText className="font-bold text-custom-white">
+                    {owner ? "Atualizar" : "Cadastrar"}
+                  </StyledText>
+                )}
               </StyledPressable>
             </StyledView>
           )}

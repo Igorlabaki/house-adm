@@ -140,10 +140,11 @@ export function QuestionFormComponent({
                   errors.response ? errors.response : "Digite a resposta"
                 }
                 numberOfLines={10}
+                textAlignVertical="top"
                 placeholderTextColor={
                   errors.response ? "rgb(127 29 29)" : "rgb(156 163 175)"
                 }
-                className={`rounded-md px-3 py-1 text-white ${
+                className={`rounded-md px-3 py-3 text-white flex justify-start items-start ${
                   errors.response
                     ? "bg-red-50 border-[2px] border-red-900 "
                     : "bg-gray-ligth"
@@ -155,10 +156,10 @@ export function QuestionFormComponent({
             onPress={() => {
               handleSubmit();
             }}
-            className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+            className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
           >
             <StyledText className="font-bold text-custom-white">
-              {question ? "Atualizar" : "Criar"}
+              {question ? "Atualizar" : "Cadastrar"}
             </StyledText>
           </StyledPressable>
         </StyledView>

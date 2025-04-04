@@ -27,6 +27,7 @@ import { fetchProposalByIdAsync } from "@store/proposal/proposal-slice";
 import { ProposalType } from "type";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { ActivityIndicator } from "react-native";
 
 interface WorkerFormProps {
   worker?: WorkerType;
@@ -43,6 +44,10 @@ export function WorkerForm({ worker, setIsModalOpen }: WorkerFormProps) {
   const user: User = useSelector((state: RootState) => state.user.user);
 
   const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
+
+  const loading: boolean = useSelector(
+    (state: RootState) => state.workerState.loading
+  );
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
@@ -139,7 +144,6 @@ export function WorkerForm({ worker, setIsModalOpen }: WorkerFormProps) {
             }
 
             if (response.meta.requestStatus == "rejected") {
-
               Toast.show(response.payload as string, 3000, {
                 backgroundColor: "#FF9494",
                 textColor: "white",
@@ -262,11 +266,15 @@ export function WorkerForm({ worker, setIsModalOpen }: WorkerFormProps) {
               onPress={() => {
                 handleSubmit();
               }}
-              className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+              className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
             >
-              <StyledText className="font-bold text-custom-white">
-                {worker ? "Atualizar" : "Criar"}
-              </StyledText>
+              {loading ? (
+                <ActivityIndicator size="small" color="#faebd7" />
+              ) : (
+                <StyledText className="font-bold text-custom-white">
+                  {worker ? "Atualizar" : "Cadastrar"}
+                </StyledText>
+              )}
             </StyledPressable>
           </StyledView>
         )}

@@ -25,6 +25,7 @@ import {
   FormServiceSchema,
 } from "@schemas/service/form-service-schema";
 import { transformMoneyToNumber } from "function/transform-money-to-number";
+import { ActivityIndicator } from "react-native";
 
 interface ServiceFormProps {
   service?: ServiceType;
@@ -34,8 +35,10 @@ interface ServiceFormProps {
 export function ServiceForm({ service, setIsModalOpen }: ServiceFormProps) {
   const dispatch = useDispatch<AppDispatch>();
 
-  const venue: Venue = useSelector<RootState>(
-    (state: RootState) => state.venueList.venue
+  const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
+
+  const loading: boolean = useSelector(
+    (state: RootState) => state.serviceList.loading
   );
 
   return (
@@ -62,7 +65,7 @@ export function ServiceForm({ service, setIsModalOpen }: ServiceFormProps) {
       }}
       onSubmit={async (values: FormServiceSchema) => {
         const { price, ...rest } = values;
-        const formatedPrice = transformMoneyToNumber(values?.price)
+        const formatedPrice = transformMoneyToNumber(values?.price);
 
         if (!service) {
           const response = await dispatch(
@@ -168,11 +171,15 @@ export function ServiceForm({ service, setIsModalOpen }: ServiceFormProps) {
             onPress={() => {
               handleSubmit();
             }}
-            className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+            className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
           >
-            <StyledText className="font-bold text-custom-white">
-              {service ? "Atualizar" : "Criar"}
-            </StyledText>
+            {loading ? (
+              <ActivityIndicator size="small" color="#faebd7" />
+            ) : (
+              <StyledText className="font-bold text-custom-white">
+                {service ? "Atualizar" : "Cadastrar"}
+              </StyledText>
+            )}
           </StyledPressable>
         </StyledView>
       )}

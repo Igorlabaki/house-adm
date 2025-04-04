@@ -29,6 +29,7 @@ import { AnalisisScreen } from "screens/analisy";
 import DocumentScreen from "screens/budgets/screens/proposal/components/modal/document";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { User } from "@store/auth/authSlice";
+import { StyledView } from "styledComponents";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -70,7 +71,7 @@ function TabNavigator() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: "#1E1F22",
-          height: 130
+          height: 70
         },
         tabBarLabelStyle: { fontSize: 13, fontWeight: "500" },
         tabBarActiveTintColor: "rgb(250, 235, 215)",
@@ -126,7 +127,7 @@ export default function SelectedVenueScreen() {
   }, [venue]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#1E1F22" }}>
+    <StyledView className="h-full w-full">
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MainTabs" component={TabNavigator} />
         <Stack.Screen name="PagamentoScreen" component={PagamentoScreen} />
@@ -139,6 +140,6 @@ export default function SelectedVenueScreen() {
         />
         <Stack.Screen name="DocumentScreen" component={DocumentScreen} />
       </Stack.Navigator>
-    </SafeAreaView>
+    </StyledView>
   );
 }

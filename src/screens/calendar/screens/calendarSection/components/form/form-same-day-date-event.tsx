@@ -1,7 +1,7 @@
 import moment from "moment";
 import { Formik } from "formik";
 import { styled } from "nativewind";
-import { FlatList } from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 import { useDebounce } from "use-debounce";
 import { Entypo } from "@expo/vector-icons";
 import { User } from "@store/auth/authSlice";
@@ -13,7 +13,11 @@ import { useState, useEffect, useRef } from "react";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { fecthApprovedProposals, fecthProposals, fetchProposalByIdAsync } from "@store/proposal/proposal-slice";
+import {
+  fecthApprovedProposals,
+  fecthProposals,
+  fetchProposalByIdAsync,
+} from "@store/proposal/proposal-slice";
 import { fetchNotificationsList } from "@store/notifications/notificationsSlice";
 import {
   createSameDayDateEventAsync,
@@ -167,13 +171,17 @@ export function DateEventFormComponent({
             if (response.meta.requestStatus == "fulfilled") {
               const e = await dispatch(fetchProposalByIdAsync(proposal.id));
 
-              if(response.payload.data.type === "EVENT"){
-                queryProposalsParams.append("venueId", venue.id)
-                queryApprovedParams.append("venueId", venue.id)
-                queryApprovedParams.append("approved", "true")
+              if (response.payload.data.type === "EVENT") {
+                queryProposalsParams.append("venueId", venue.id);
+                queryApprovedParams.append("venueId", venue.id);
+                queryApprovedParams.append("approved", "true");
                 await Promise.all([
-                  dispatch(fecthProposals(`${queryProposalsParams.toString()}`)),
-                  dispatch(fecthApprovedProposals(`${queryApprovedParams.toString()}`))
+                  dispatch(
+                    fecthProposals(`${queryProposalsParams.toString()}`)
+                  ),
+                  dispatch(
+                    fecthApprovedProposals(`${queryApprovedParams.toString()}`)
+                  ),
                 ]);
               }
               Toast.show(response?.payload?.message, 3000, {
@@ -236,7 +244,10 @@ export function DateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "EVENT");
-                          setFieldValue("title", `Evento - ${proposal?.completeClientName}`);
+                          setFieldValue(
+                            "title",
+                            `Evento - ${proposal?.completeClientName}`
+                          );
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -254,7 +265,10 @@ export function DateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "VISIT");
-                          setFieldValue("title", `Visita - ${proposal?.completeClientName}`);
+                          setFieldValue(
+                            "title",
+                            `Visita - ${proposal?.completeClientName}`
+                          );
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -272,7 +286,10 @@ export function DateEventFormComponent({
                         className="flex flex-row items-center justify-center gap-x-2 cursor-pointer "
                         onPress={() => {
                           setFieldValue("type", "OTHER");
-                          setFieldValue("title", `Outro - ${proposal?.completeClientName}`);
+                          setFieldValue(
+                            "title",
+                            `Outro - ${proposal?.completeClientName}`
+                          );
                         }}
                       >
                         <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
@@ -446,15 +463,15 @@ export function DateEventFormComponent({
                   onPress={() => {
                     handleSubmit();
                   }}
-                  className="bg-gray-ligth flex justify-center items-center py-3  rounded-md w-full"
+                  className="bg-green-800 flex justify-center items-center py-3  rounded-md w-full"
                 >
-                  <StyledText className="font-bold text-custom-white">
-                    {isLoading
-                      ? "Enviando"
-                      : dateSelected
-                      ? "Atualizar"
-                      : "Criar"}
-                  </StyledText>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color="#faebd7" />
+                  ) : (
+                    <StyledText className="font-bold text-custom-white">
+                      {dateSelected ? "Atualizar" : "Cadastrar"}
+                    </StyledText>
+                  )}
                 </StyledPressable>
                 {dateSelected && (
                   <StyledPressable

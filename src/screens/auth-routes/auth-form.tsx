@@ -77,7 +77,7 @@ export default function AuthForm() {
         setFieldValue,
         resetForm,
       }) => (
-        <StyledView className=" w-full mx-auto my-5 flex flex-col gap-4 mt-10">
+        <StyledView className="w-full mx-auto my-5 flex flex-col gap-y-4 mt-10">
           <StyledView className="flex flex-col gap-y-1">
             <StyledText className="text-custom-gray text-[14px] font-semibold">
               Email

@@ -16,13 +16,12 @@ interface UserParams {
   setFormSection: React.Dispatch<
     React.SetStateAction<"USER" | "VENUE" | "NEW_USER" | "NEW_VENUE">
   >;
- setUser: React.Dispatch<React.SetStateAction<User>>
 }
 
 export const StyledFlatList = styled(FlatList<User>);
 
 export const UserFlatList = React.memo(
-  ({ setFormSection, setUser}: UserParams) => {
+  ({ setFormSection}: UserParams) => {
 
     const isLoading = useSelector(
       (state: RootState) => state.userList.loading
@@ -48,13 +47,12 @@ export const UserFlatList = React.memo(
         data={users}
         renderItem={({ item }: { item: User }) => (
           <UserItemList
-            setUser={setUser}
             item={item}
             setFormSection={setFormSection}
           />
         )}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
-        ListEmptyComponent={() => <ListEmpty dataType="Locacao" />}
+        ListEmptyComponent={() => <ListEmpty dataType="Usuario" />}
         windowSize={5}
         maxToRenderPerBatch={10}
         initialNumToRender={4}

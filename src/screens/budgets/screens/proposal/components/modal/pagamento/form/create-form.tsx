@@ -1,6 +1,6 @@
 import moment from "moment";
 import { Formik } from "formik";
-import { Image } from "react-native";
+import { ActivityIndicator, Image } from "react-native";
 import { useRef, useState } from "react";
 import Toast from "react-native-simple-toast";
 import * as ImagePicker from "expo-image-picker";
@@ -311,11 +311,15 @@ export function CretePaymentFormComponent({
                 onPress={() => {
                   handleSubmit();
                 }}
-                className="bg-gray-ligth flex justify-center items-center py-3  rounded-md w-full"
+                className="bg-green-800 flex justify-center items-center py-3  rounded-md w-full"
               >
-                <StyledText className="font-bold text-custom-white">
-                  {loading ? "Enviando" : "Cadastrar"}
-                </StyledText>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#faebd7" />
+                ) : (
+                  <StyledText className="font-bold text-custom-white">
+                    {proposalId ? "Atualizar" : "Cadastrar"}
+                  </StyledText>
+                )}
               </StyledPressable>
             </StyledView>
           </StyledView>

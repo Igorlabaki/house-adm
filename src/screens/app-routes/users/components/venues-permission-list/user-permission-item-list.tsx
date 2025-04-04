@@ -65,7 +65,6 @@ export function UserPermissionItemList({
       {isModalOpen && !item.userPermission && (
         <UserOrganizationFormCreateModalComponent
           isModalOpen={isModalOpen}
-          user={userOrganization.user}
           venueId={item.id}
           setMenuModalIsOpen={setIsModalOpen}
           setFormSection={setFormSection}

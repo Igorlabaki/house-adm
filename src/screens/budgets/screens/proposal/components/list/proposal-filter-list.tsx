@@ -75,15 +75,15 @@ export function ProposalFilter() {
           </StyledPressable>
         )}
         <StyledPressable
-          className="cursor-pointer flex absolute right-2"
-          onPress={() =>
-            dispatch(fecthProposals({ url: `${queryParams.toString()}` }))
+          className="cursor-pointer flex absolute right-2 top-4"
+          onPress={async () =>
+            await dispatch(fecthProposals({ url: `${queryParams.toString()}` }))
           }
         >
           <FontAwesome name="refresh" size={16} color="white" />
         </StyledPressable>
       </StyledView>
-      <StyledView className="w-full py-3 px-2 flex justify-start items-center  rounded-md bg-white flex-row my-3">
+      <StyledView className="w-full py-3 px-2 flex justify-start items-center  rounded-md bg-white flex-row ">
         <EvilIcons
           name="search"
           size={24}

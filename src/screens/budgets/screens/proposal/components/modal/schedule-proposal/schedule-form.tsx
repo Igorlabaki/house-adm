@@ -7,7 +7,11 @@ import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { fecthApprovedProposals, fecthProposals, fetchProposalByIdAsync } from "@store/proposal/proposal-slice";
+import {
+  fecthApprovedProposals,
+  fecthProposals,
+  fetchProposalByIdAsync,
+} from "@store/proposal/proposal-slice";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 import {
   createScheduleAsync,
@@ -26,8 +30,12 @@ import {
   CreateScheduleRequestParams,
   createScheduleSchema,
 } from "@schemas/schedule/create-schedule-params-schema";
-import { createScheduleFormSchema, CreateScheduleFormSchema } from "@schemas/schedule/create-schedule-form-schema";
+import {
+  createScheduleFormSchema,
+  CreateScheduleFormSchema,
+} from "@schemas/schedule/create-schedule-form-schema";
 import { Venue } from "@store/venue/venueSlice";
+import { ActivityIndicator } from "react-native";
 
 interface scheduleFormProps {
   schedule?: Schedule;
@@ -41,8 +49,12 @@ export function ScheduleForm({ schedule, setIsModalOpen }: scheduleFormProps) {
     (state: RootState) => state.scheduleList.error
   );
 
-  const proposal: ProposalType = useSelector<RootState>(
+  const proposal: ProposalType = useSelector(
     (state: RootState) => state.proposalList.proposal
+  );
+
+  const loading: boolean = useSelector(
+    (state: RootState) => state.scheduleList.loading
   );
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -91,16 +103,18 @@ export function ScheduleForm({ schedule, setIsModalOpen }: scheduleFormProps) {
           proposalId: proposal?.id,
           description: schedule?.description,
           endHour: schedule?.startHour
-          ? moment.utc(schedule?.endHour)?.format("HH:mm")
-          : "",
+            ? moment.utc(schedule?.endHour)?.format("HH:mm")
+            : "",
           startHour: schedule?.startHour
-          ? moment.utc(schedule.startHour)?.format("HH:mm")
-          : "",
-          workerNumber: schedule?.workerNumber ? schedule?.workerNumber.toString() : "0",
+            ? moment.utc(schedule.startHour)?.format("HH:mm")
+            : "",
+          workerNumber: schedule?.workerNumber
+            ? schedule?.workerNumber.toString()
+            : "0",
         }}
         validate={(values) => {
           try {
-            createScheduleFormSchema.parse(values)
+            createScheduleFormSchema.parse(values);
             return {}; // Retorna um objeto vazio se os dados estiverem válidos
           } catch (error) {
             return error.errors.reduce((acc, curr) => {
@@ -149,7 +163,7 @@ export function ScheduleForm({ schedule, setIsModalOpen }: scheduleFormProps) {
                   endHour: values?.endHour,
                   startHour: values.startHour,
                   description: values?.description,
-                  workerNumber: Number(values?.workerNumber)
+                  workerNumber: Number(values?.workerNumber),
                 },
               })
             );
@@ -316,11 +330,15 @@ export function ScheduleForm({ schedule, setIsModalOpen }: scheduleFormProps) {
               onPress={() => {
                 handleSubmit();
               }}
-              className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+              className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
             >
-              <StyledText className="font-bold text-custom-white">
-                {schedule ? "Atualizar" : "Criar"}
-              </StyledText>
+              {loading ? (
+                <ActivityIndicator size="small" color="#faebd7" />
+              ) : (
+                <StyledText className="font-bold text-custom-white">
+                  {schedule ? "Atualizar" : "Cadastrar"}
+                </StyledText>
+              )}
             </StyledPressable>
           </StyledView>
         )}

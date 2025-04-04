@@ -391,10 +391,10 @@ export function ExpenseForm({ expense, setIsModalOpen }: ExpenseFormProps) {
             onPress={() => {
               handleSubmit();
             }}
-            className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+            className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
           >
             <StyledText className="font-bold text-custom-white">
-              {expense ? "Atualizar" : "Criar"}
+              {expense ? "Atualizar" : "Cadastrar"}
             </StyledText>
           </StyledPressable>
         </StyledView>

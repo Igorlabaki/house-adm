@@ -190,25 +190,16 @@ export default function UserOrganizationFormUpdateModalComponent({
             resetForm,
           }) => {
             useEffect(() => {
-              if (userPermission?.role === "ADMIN") {
-                // Adiciona todas as permissões de visualização e edição
-                const allPermissions = [
+              if (values.role === "ADMIN") {
+                setPermissions([
                   ...userViewPermissions.map((p) => p.enum),
                   ...userEditPermissions.map((p) => p.enum),
-                ];
-                setFieldValue("permissions", (prev) => {
-                  if (!prev) return null; // Evita erro se for nulo
-
-                  return {
-                    ...prev,
-                    permissions: allPermissions,
-                  };
-                });
+                  ...userProposalPermissions.map((p) => p.enum),
+                ]);
               }
-            }, [userPermission?.role]); // Executa sempre que o role dentro de venuePermission mudar
-
+            }, [values.role]);
             return (
-              <StyledView className="max-h-[90vh] w-full mx-auto my-5 flex flex-col gap-4 mt-10">
+              <StyledView className="max-h-[90vh] w-full mx-auto my-5 flex flex-col gap-y-4 mt-10">
                 <StyledScrollView className="max-h-[100vh] relative">
                   {userPermission && (
                     <StyledPressable
@@ -383,7 +374,7 @@ export default function UserOrganizationFormUpdateModalComponent({
                       <ActivityIndicator size="small" color="#FFFFFF" />
                     ) : (
                       <StyledText className="font-bold text-custom-white">
-                        {userPermission ? "Atualizar" : "Salvar"}
+                        {userPermission ? "Atualizar" : "Cadastrar"}
                       </StyledText>
                     )}
                   </StyledPressable>

@@ -1,14 +1,17 @@
 import { Formik } from "formik";
 import { useState } from "react";
 import { ImageType } from "type";
-import { Image } from "react-native";
+import { ActivityIndicator, Image } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
 import Toast from "react-native-simple-toast";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { UpdateImageRequestParams, updateImageRequestParams } from "@schemas/image/update-image-in-db-params-schema";
+import {
+  UpdateImageRequestParams,
+  updateImageRequestParams,
+} from "@schemas/image/update-image-in-db-params-schema";
 import {
   updateImageByIdAsync,
   updateImageInfoByIdAsync,
@@ -31,6 +34,9 @@ export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
   const [newImage, setNewImage] = useState(null);
   const dispatch = useDispatch<AppDispatch>();
   const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
+  const loading: boolean = useSelector(
+    (state: RootState) => state.imageList.loading
+  );
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -51,7 +57,7 @@ export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
       setNewImage(result.assets[0].uri);
     }
 
-    return result.assets[0].uri
+    return result.assets[0].uri;
   };
 
   const takePhoto = async () => {
@@ -72,7 +78,7 @@ export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
       setNewImage(result.assets[0].uri);
     }
 
-    return result.assets[0].uri
+    return result.assets[0].uri;
   };
 
   return (
@@ -83,7 +89,7 @@ export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
       initialValues={{
         tag: imageItem?.tag,
         venueId: venue?.id,
-        imageId: imageItem?.id, 
+        imageId: imageItem?.id,
         imageUrl: imageItem?.imageUrl,
         description: imageItem?.description,
         position: String(imageItem?.position),
@@ -121,7 +127,7 @@ export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
           formData.append("venueId", String(values.venueId));
           formData.append("imageUrl", String(values.imageUrl)); // Convertendo para string
           formData.append("responsiveMode", values.responsiveMode); // Convertendo boolean para string
-          
+
           const response = await dispatch(updateImageByIdAsync(formData));
 
           if (response.meta.requestStatus == "fulfilled") {
@@ -141,9 +147,11 @@ export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
           }
         }
         if (!newImage) {
-          const response = await dispatch(updateImageInfoByIdAsync({
-            ...values
-          }));
+          const response = await dispatch(
+            updateImageInfoByIdAsync({
+              ...values,
+            })
+          );
 
           if (response?.meta?.requestStatus == "fulfilled") {
             Toast.show("Imagem atualizada com sucesso.", 3000, {
@@ -301,11 +309,13 @@ export function UpdateImageForm({ imageItem, setIsModalOpen }: ImageFormProps) {
           </StyledView>
           <StyledPressable
             onPress={() => handleSubmit()}
-            className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+            className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
           >
-            <StyledText className="font-bold text-custom-white">
-              {imageItem ? "UPDATE" : "CREATE"}
-            </StyledText>
+            {loading ? (
+              <ActivityIndicator size="small" color="#faebd7" />
+            ) : (
+              <StyledText className="text-custom-white font-semibold">Atualizar</StyledText>
+            )}
           </StyledPressable>
         </StyledScrollView>
       )}

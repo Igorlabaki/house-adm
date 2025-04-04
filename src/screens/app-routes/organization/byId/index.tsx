@@ -25,10 +25,16 @@ export function SelectedOrganizationScreen() {
   const queryParams = new URLSearchParams();
   
   useEffect(() => {
-    const query = new URLSearchParams();
-    query.append("organizationId", organization?.id);
-    dispatch(fecthOwnersByOrganization(`${queryParams.toString()}`));
-  }, [organization?.id]);
+    const fetchData = async () => {
+      if (organization?.id) {
+        const queryParams = new URLSearchParams();
+        queryParams.append("organizationId", organization.id);
+        await dispatch(fecthOwnersByOrganization(queryParams.toString()));
+      }
+    };
+  
+    fetchData();
+  }, [organization?.id, dispatch]);
 
   return (
     <StyledView className="h-full w-full bg-gray-dark py-5 relative">

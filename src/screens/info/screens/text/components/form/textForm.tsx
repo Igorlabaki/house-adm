@@ -208,10 +208,10 @@ export function TextForm({ text, setIsModalOpen }: TextFormProps) {
             onPress={() => {
               handleSubmit();
             }}
-            className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+            className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
           >
             <StyledText className="font-bold text-custom-white">
-              {text ? "Atualizar" : "Criar"}
+              {text ? "Atualizar" : "Cadastar"}
             </StyledText>
           </StyledPressable>
           <FlashMessage ref={flashMessageRef} />

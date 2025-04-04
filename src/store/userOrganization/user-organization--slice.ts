@@ -1,7 +1,7 @@
 
 import { api } from "../../services/axios";
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { UserOrganizationType, UserPermissionsType } from "../../type"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { UserOrganizationType} from "../../type"
 import { CreateUserOrganizationParamsSchema } from "@schemas/userOrganization/create-user-organization-params-schema";
 import { UpdateUserOrganizationRequestParams } from "@schemas/userOrganization/update-user-organization-params-schema";
 import { CreateOrganizationDataResponse, Organization, SelectedOrganizationDataResponse } from "@store/organization/organizationSlice";

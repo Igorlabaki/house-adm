@@ -56,10 +56,10 @@ export const VenuePermissionFlatList = React.memo(
         return { ...venue, userPermission };
       });
     }
- 
+   
     return (
       <StyledFlatList
-        className="flex-1 w-full h-[15rem]"
+        className="flex-1"
         keyExtractor={(item: VenuePermissionItem) => item.id}
         data={mergeVenuesWithPermissions(organization.venues,userPermissions)}
         renderItem={({ item }: { item: VenuePermissionItem }) => (

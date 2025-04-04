@@ -26,6 +26,7 @@ import {
   fetchProposalByIdAsync,
   updateProposalPerDayAsync,
 } from "@store/proposal/proposal-slice";
+import { ActivityIndicator } from "react-native";
 
 interface ProposalFormProps {
   proposal?: ProposalType;
@@ -77,7 +78,8 @@ export function ProposalPerDayForm({
         initialValues={{
           venueId: venue.id,
           type: (proposal?.type && proposal?.type) || "EVENT",
-          completeClientName: proposal?.completeClientName && proposal?.completeClientName,
+          completeClientName:
+            proposal?.completeClientName && proposal?.completeClientName,
           email: proposal?.email && proposal?.email,
           whatsapp: proposal?.whatsapp && proposal?.whatsapp,
           knowsVenue: proposal?.knowsVenue && proposal?.knowsVenue,
@@ -205,7 +207,9 @@ export function ProposalPerDayForm({
                       : "Digite o nome do cliente..."
                   }
                   placeholderTextColor={
-                    errors.completeClientName ? "rgb(127 29 29)" : "rgb(156 163 175)"
+                    errors.completeClientName
+                      ? "rgb(127 29 29)"
+                      : "rgb(156 163 175)"
                   }
                   onChangeText={handleChange("completeClientName")}
                   onBlur={handleBlur("completeClientName")}
@@ -862,11 +866,15 @@ export function ProposalPerDayForm({
               onPress={() => {
                 handleSubmit();
               }}
-              className={`bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md`}
+              className={`bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md`}
             >
-              <StyledText className="font-bold text-custom-white">
-                {isLoading ? "Enviando" : proposal ? "Atualizar" : "Criar"}
-              </StyledText>
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#faebd7" />
+              ) : (
+                <StyledText className="font-bold text-custom-white">
+                  {proposal ? "Atualizar" : "Cadastrar"}
+                </StyledText>
+              )}
             </StyledPressable>
           </StyledView>
         )}

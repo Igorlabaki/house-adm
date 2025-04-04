@@ -1,6 +1,6 @@
 import moment from "moment";
 import { Formik } from "formik";
-import { Image } from "react-native";
+import { ActivityIndicator, Image } from "react-native";
 import Toast from "react-native-simple-toast";
 import * as ImagePicker from "expo-image-picker";
 import { Calendar } from "react-native-calendars";
@@ -157,7 +157,8 @@ export function UpdateUserFormComponent({
                       <Image
                         source={{
                           uri:
-                            getFieldMeta("avatarUrl").value as string || user?.avatarUrl,
+                            (getFieldMeta("avatarUrl").value as string) ||
+                            user?.avatarUrl,
                         }}
                         style={{ width: "100%", height: "100%" }}
                         resizeMode="cover"
@@ -243,11 +244,15 @@ export function UpdateUserFormComponent({
                 onPress={() => {
                   handleSubmit();
                 }}
-                className="bg-gray-ligth flex justify-center items-center py-3  rounded-md w-full"
+                className="bg-green-800 flex justify-center items-center py-3  rounded-md w-full"
               >
-                <StyledText className="font-bold text-custom-white">
-                  {loading ? "Enviando" : "Atualizar"}
-                </StyledText>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#faebd7" />
+                ) : (
+                  <StyledText className="font-bold text-custom-white">
+                    Atualizar
+                  </StyledText>
+                )}
               </StyledPressable>
             </StyledView>
           </StyledView>

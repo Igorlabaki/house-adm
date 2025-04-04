@@ -1,4 +1,5 @@
 
+import { RegisterUserRequestParams } from "@schemas/user/register-user-params-schema";
 import { api } from "../../services/axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -6,6 +7,7 @@ const initialState = {
   loading: false,
   users: [],
   selectedUser: null,
+  newUser: null,
   error: "",
 };
 
@@ -47,6 +49,21 @@ const userListSlice = createSlice({
         state.error = action.error.message;
       });
 
+    builder.addCase(registerUser.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(registerUser.fulfilled, (state, action: any) => {
+      state.loading = false;
+      state.users = [...state.users, action.payload.data];
+      state.selectedUser = action.payload.data
+      state.error = "";
+    }),
+      builder.addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.users = state.users;
+        state.error = action.error.message;
+      });
+
     builder.addCase(selectedUser.pending, (state) => {
       state.loading = true;
     });
@@ -67,6 +84,20 @@ export const selectedUser = createAsyncThunk(
     try {
       const response = await api
         .get(`/user/getById?${params}`)
+        .then((response) => response?.data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+
+  })
+
+export const registerUser = createAsyncThunk(
+  "user/createNewUser",
+  async (params: RegisterUserRequestParams, { rejectWithValue }) => {
+    try {
+      const response = await api
+        .post(`/user/createNewUser`, params)
         .then((response) => response?.data);
       return response;
     } catch (error) {

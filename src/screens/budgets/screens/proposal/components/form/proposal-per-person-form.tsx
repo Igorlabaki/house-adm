@@ -2,7 +2,7 @@ import moment from "moment";
 import { Formik } from "formik";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, Feather } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
 import { Calendar } from "react-native-calendars";
 import { AppDispatch, RootState } from "@store/index";
@@ -25,15 +25,21 @@ import {
   fetchProposalByIdAsync,
   createProposalPerPersonAsync,
   updateProposalPerPersonAsync,
+  deleteProposalByIdAsync,
 } from "@store/proposal/proposal-slice";
+import { ActivityIndicator } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 
 interface ProposalFormProps {
   proposal?: ProposalType;
+  setIsInfoModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsEditModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function ProposalPerPersonForm({
   setIsEditModalOpen,
+  setIsInfoModalOpen,
   proposal,
 }: ProposalFormProps) {
   const dispatch = useDispatch<AppDispatch>();
@@ -49,10 +55,43 @@ export function ProposalPerPersonForm({
   const venue = useSelector((state: RootState) => state?.venueList.venue);
   const user = useSelector((state: RootState) => state?.session.user);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation();
+  const confirmDelete = async () => {
+    const response = await dispatch(deleteProposalByIdAsync(proposal.id));
+    if (response.meta.requestStatus === "fulfilled") {
+      dispatch(fetchNotificationsList(venue.id));
+
+      Toast.show(response.payload.message as string, 3000, {
+        backgroundColor: "rgb(75,181,67)",
+        textColor: "white",
+      });
+      setIsEditModalOpen(false);
+      setIsInfoModalOpen(false);
+      navigation.navigate("MainTabs");
+    }
+
+    if (response.meta.requestStatus == "rejected") {
+      Toast.show(response.payload as string, 3000, {
+        backgroundColor: "#FF9494",
+        textColor: "white",
+      });
+    }
+
+    setModalVisible(false);
+  };
+  const handleDelete = () => {
+    setModalVisible(true);
+  };
+
+  const cancelDelete = () => {
+    setModalVisible(false);
+  };
+
   useEffect(() => {
     queryParams.append("venueId", venue?.id);
   }, [venue]);
-  
+
   return (
     <StyledView className="bg-gray-dark">
       <Formik
@@ -74,7 +113,8 @@ export function ProposalPerPersonForm({
         initialValues={{
           venueId: venue.id,
           type: (proposal?.type && proposal?.type) || "EVENT",
-          completeClientName: proposal?.completeClientName && proposal?.completeClientName,
+          completeClientName:
+            proposal?.completeClientName && proposal?.completeClientName,
           email: proposal?.email && proposal?.email,
           whatsapp: proposal?.whatsapp && proposal?.whatsapp,
           knowsVenue: proposal?.knowsVenue && proposal?.knowsVenue,
@@ -178,6 +218,16 @@ export function ProposalPerPersonForm({
           getFieldMeta,
         }) => (
           <StyledView className="w-[90%] mx-auto my-5 flex flex-col">
+            {proposal && (
+              <StyledPressable
+                onPress={async () => {
+                  handleDelete();
+                }}
+                className="absolute -top-3 right-2"
+              >
+                <Feather name="trash" size={16} color="white" />
+              </StyledPressable>
+            )}
             <StyledView className="flex flex-col gap-y-3">
               <StyledView className="flex flex-col gap-y-2">
                 <StyledText className="text-custom-gray text-[14px] font-semibold">
@@ -776,15 +826,27 @@ export function ProposalPerPersonForm({
               onPress={() => {
                 handleSubmit();
               }}
-              className={`bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md`}
+              className={`bg-green-800 flex justify-center items-center py-3 mt-10 rounded-md`}
             >
               <StyledText className="font-bold text-custom-white">
-                {isLoading ? "Enviando" : proposal ? "Atualizar" : "Criar"}
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="#faebd7" />
+                ) : proposal ? (
+                  "Atualizar"
+                ) : (
+                  "Cadastrar"
+                )}
               </StyledText>
             </StyledPressable>
           </StyledView>
         )}
       </Formik>
+      <DeleteConfirmationModal
+        entity="orcamento"
+        visible={modalVisible}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </StyledView>
   );
 }

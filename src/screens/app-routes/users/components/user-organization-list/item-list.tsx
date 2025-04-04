@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Image } from "react-native";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
-import { UserOrganizationType } from "type";
+import { UserOrganizationType, UserPermissionType } from "type";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 import { Organization, selectOrganizationAsync } from "@store/organization/organizationSlice";
@@ -28,7 +28,7 @@ export function UserOrganizationItemListComponent({
       queryParams.append("userOrganizationId", userorganization?.id);
     }
   }, [])
-  
+    
   return (
     <StyledPressable
       onPress={async () => {

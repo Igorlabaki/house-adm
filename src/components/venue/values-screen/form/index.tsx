@@ -18,7 +18,7 @@ import { Venue } from "@store/venue/venueSlice";
 import {
   createSurchargeFeesAsync,
   deleteSurchargeFeesByIdAsync,
-  updateSurchargeFeesByIdAsync
+  updateSurchargeFeesByIdAsync,
 } from "@store/surcharge-fee/surcharge-fee";
 import { format, parse } from "date-fns";
 import { createSeasonalFeeSchema } from "@schemas/seasonalFee/create-seasonal-fee-params-schema";
@@ -31,6 +31,7 @@ import { Calendar } from "react-native-calendars";
 import moment, { weekdays } from "moment";
 import { Entypo, Feather } from "@expo/vector-icons";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
+import { ActivityIndicator } from "react-native";
 
 interface SeasonalFeeFormProps {
   isModalOpen: boolean;
@@ -49,6 +50,10 @@ export function SeasonalFeeFormComponent({
 
   const venue: Venue = useSelector(
     (state: RootState) => state?.venueList.venue
+  );
+
+  const loading: boolean = useSelector(
+    (state: RootState) => state?.surchargefeesState.loading
   );
 
   const weekDays = [
@@ -498,11 +503,15 @@ export function SeasonalFeeFormComponent({
                 onPress={() => {
                   handleSubmit();
                 }}
-                className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+                className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
               >
-                <StyledText className="font-bold text-custom-white">
-                  {seasonalFee ? "Atualizar" : "Criar"}
-                </StyledText>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#faebd7" />
+                ) : (
+                  <StyledText className="font-bold text-custom-white">
+                    {seasonalFee ? "Atualizar" : "Cadastrar"}
+                  </StyledText>
+                )}
               </StyledPressable>
             </StyledView>
           );

@@ -26,6 +26,7 @@ import {
 } from "styledComponents";
 import { Venue } from "@store/venue/venueSlice";
 import { Entypo } from "@expo/vector-icons";
+import { ActivityIndicator } from "react-native";
 
 interface ContractFormProps {
   contract?: ContractType;
@@ -43,11 +44,18 @@ export function ContractFormComponent({
   const organization: Organization = useSelector(
     (state: RootState) => state.organizationList.organization
   );
+
+  const loading: boolean = useSelector(
+    (state: RootState) => state.contractList.loading
+  );
+
   const queryParams = new URLSearchParams();
 
   const [selectedClauses, setSelectedClauses] = useState<ClauseType[]>([]);
 
-  const [venueIdList, setVenueIdList] = useState<string[]>(contract?.venues?.map((item) => item.id) || []);
+  const [venueIdList, setVenueIdList] = useState<string[]>(
+    contract?.venues?.map((item) => item.id) || []
+  );
 
   useEffect(() => {
     if (contract?.clauses && contract.clauses !== selectedClauses) {
@@ -107,7 +115,7 @@ export function ContractFormComponent({
               title: values.title,
               contractId: contract.id,
               clauses: values.clauses,
-              venueIds: values?.venueIds
+              venueIds: values?.venueIds,
             })
           );
 
@@ -237,11 +245,15 @@ export function ContractFormComponent({
                 onPress={() => {
                   handleSubmit();
                 }}
-                className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+                className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
               >
-                <StyledText className="font-bold text-custom-white">
-                  {contract ? "Atualizar" : "Cadastrar"}
-                </StyledText>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#faebd7" />
+                ) : (
+                  <StyledText className="font-bold text-custom-white">
+                    {contract ? "Atualizar" : "Cadastrar"}
+                  </StyledText>
+                )}
               </StyledPressable>
             </StyledView>
           </StyledView>
