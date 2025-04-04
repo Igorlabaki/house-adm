@@ -71,7 +71,7 @@ function TabNavigator() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: "#1E1F22",
-          height: 70
+          height: 45
         },
         tabBarLabelStyle: { fontSize: 13, fontWeight: "500" },
         tabBarActiveTintColor: "rgb(250, 235, 215)",
@@ -127,7 +127,7 @@ export default function SelectedVenueScreen() {
   }, [venue]);
 
   return (
-    <StyledView className="h-full w-full">
+    <StyledView className="h-full w-full ">
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MainTabs" component={TabNavigator} />
         <Stack.Screen name="PagamentoScreen" component={PagamentoScreen} />
