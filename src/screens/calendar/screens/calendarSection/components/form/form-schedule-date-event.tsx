@@ -64,6 +64,10 @@ export function ScheduleEventFormComponent({
 
   const venue: Venue = useSelector((state: RootState) => state.venueList.venue);
 
+  const loading: boolean = useSelector(
+    (state: RootState) => state.proposalList.loading
+  );
+
   const queryParams = new URLSearchParams();
 
   useEffect(() => {
@@ -479,11 +483,15 @@ export function ScheduleEventFormComponent({
                       await handleButton(dateSelected.proposalId);
                       setIsModalOpen(false);
                     }}
-                    className="bg-green-900 flex justify-center items-center py-3 rounded-md w-full"
+                    className="bg-blue-800 flex justify-center items-center py-3 rounded-md w-full"
                   >
-                    <StyledText className="font-bold text-custom-white">
-                      Ver Orcamento
-                    </StyledText>
+                    {loading ? (
+                      <ActivityIndicator size="small" color="#faebd7" />
+                    ) : (
+                      <StyledText className="font-bold text-custom-white">
+                        Ver Orcamento
+                      </StyledText>
+                    )}
                   </StyledPressable>
                 )}
               </StyledView>
