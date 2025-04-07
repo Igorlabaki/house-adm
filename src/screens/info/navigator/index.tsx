@@ -26,12 +26,10 @@ export function InfoNavigator() {
         },
       }}
     >
-      <StyledView className='bg-gray-dark h-full w-full'>
-        <InfoTabNavigator.Screen name="Textos" component={TextScreen} />
-        <InfoTabNavigator.Screen name="Perguntas" component={QuestionScreen} />
-        <InfoTabNavigator.Screen name="Servicos" component={ServiceScreen} />
-        <InfoTabNavigator.Screen name="Despesas" component={ExpenseScreen} />
-      </StyledView>
+      <InfoTabNavigator.Screen name="Textos" component={TextScreen} />
+      <InfoTabNavigator.Screen name="Perguntas" component={QuestionScreen} />
+      <InfoTabNavigator.Screen name="Servicos" component={ServiceScreen} />
+      <InfoTabNavigator.Screen name="Despesas" component={ExpenseScreen} />
     </InfoTabNavigator.Navigator>
   );
 }

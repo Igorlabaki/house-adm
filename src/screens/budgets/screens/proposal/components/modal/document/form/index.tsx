@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import { ActivityIndicator, Image } from "react-native";
 import { useRef, useState } from "react";
 import Toast from "react-native-simple-toast";
-import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from 'expo-document-picker'; // Mudar de ImagePicker para DocumentPicker
 import * as FileSystem from "expo-file-system";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AppDispatch, RootState } from "@store/index";
@@ -35,7 +35,6 @@ interface DocumentFormProps {
 
 export function DocumentForm({ document, setIsModalOpen }: DocumentFormProps) {
   const dispatch = useDispatch<AppDispatch>();
-
   const formikRef = useRef(null);
 
   const proposal = useSelector(
@@ -45,45 +44,39 @@ export function DocumentForm({ document, setIsModalOpen }: DocumentFormProps) {
     (state: RootState) => state?.proposalList.loading
   );
 
-  const pickImage = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const pickDocument = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['image/*', 'application/pdf'], // Aceita tanto imagens quanto PDFs
+        copyToCacheDirectory: true,
+      });
 
-    if (!permissionResult.granted) {
-      Toast.show("Permissão para acessar as fotos é necessária!", 3000, {
+      if (result.type === 'success') {
+        const fileInfo = await FileSystem.getInfoAsync(result.uri);
+
+        if (!fileInfo.exists) {
+          console.error("Não foi possível obter informações do arquivo.");
+          return;
+        }
+
+        const fileSizeInMB = fileInfo.size / (1024 * 1024); // Converte para MB
+
+        if (fileSizeInMB > 2.5) {
+          Toast.show("Arquivo maior que 2.5 MB.", 3000, {
+            backgroundColor: "rgb(75,181,67)",
+            textColor: "white",
+          });
+          return;
+        }
+
+        return result.uri;
+      }
+    } catch (error) {
+      console.error('Erro ao selecionar documento:', error);
+      Toast.show("Erro ao selecionar o arquivo", 3000, {
         backgroundColor: "rgb(75,181,67)",
         textColor: "white",
       });
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const imageUri = result.assets[0].uri;
-
-      // Obtém informações do arquivo
-      const fileInfo = await FileSystem.getInfoAsync(imageUri);
-
-      if (!fileInfo.exists) {
-        console.error("Não foi possível obter informações do arquivo.");
-        return;
-      }
-
-      const fileSizeInMB = fileInfo.size / (1024 * 1024); // Converte para MB
-
-      if (fileSizeInMB > 2.5) {
-        Toast.show("Imagem maior que 2.5 MB.", 3000, {
-          backgroundColor: "rgb(75,181,67)",
-          textColor: "white",
-        });
-        return;
-      }
-
-      return imageUri;
     }
   };
 
@@ -99,7 +92,7 @@ export function DocumentForm({ document, setIsModalOpen }: DocumentFormProps) {
       validate={(values) => {
         try {
           createDocumentSchema.parse(values);
-          return {}; // Retorna um objeto vazio se os dados estiverem válidos
+          return {};
         } catch (error) {
           return error.errors.reduce((acc, curr) => {
             const [field, message] = curr.message.split(": ");
@@ -111,15 +104,20 @@ export function DocumentForm({ document, setIsModalOpen }: DocumentFormProps) {
         }
       }}
       onSubmit={async (values: CreateDocumentRequestParams) => {
-        const uriParts = values.imageUrl.split(".");
+        const uriParts = values.imageUrl.split('.');
         const fileType = uriParts[uriParts.length - 1];
+        
+        // Determina o tipo MIME correto
+        let mimeType = `image/${fileType}`;
+        if (fileType === 'pdf') {
+          mimeType = 'application/pdf';
+        }
 
         const formData = new FormData();
-
         formData.append("file", {
           uri: values.imageUrl,
-          name: `photo.${fileType}`,
-          type: `image/${fileType}`,
+          name: `document.${fileType}`,
+          type: mimeType,
         } as any);
 
         formData.append("title", values.title);
@@ -152,32 +150,42 @@ export function DocumentForm({ document, setIsModalOpen }: DocumentFormProps) {
         handleChange,
         setFieldValue,
       }) => {
+        const fileUri = getFieldMeta("imageUrl").value as string;
+        const isPdf = fileUri?.endsWith('.pdf');
+        
         return (
           <StyledView className=" w-full mx-auto my-5 flex flex-col px-3">
             <StyledView className="flex flex-col gap-2 ">
               <StyledView className="relative flex-col gap-y-2 flex justify-center items-center w-full ">
                 <StyledView className="h-[300px] flex justify-center items-center w-[100%] border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">
-                  {getFieldMeta("imageUrl").value ? (
-                    <Image
-                      source={{ uri: getFieldMeta("imageUrl").value as string }}
-                      style={{ width: "100%", height: "100%" }}
-                      resizeMode="cover"
-                    />
+                  {fileUri ? (
+                    isPdf ? (
+                      <StyledView className="flex items-center justify-center h-full">
+                        <MaterialIcons name="picture-as-pdf" size={80} color="red" />
+                        <StyledText className="text-white mt-2">PDF selecionado</StyledText>
+                      </StyledView>
+                    ) : (
+                      <Image
+                        source={{ uri: fileUri }}
+                        style={{ width: "100%", height: "100%" }}
+                        resizeMode="cover"
+                      />
+                    )
                   ) : (
                     <StyledText className="text-md text-white font-bold">
-                      Selecione o Arquivo
+                      Selecione o Arquivo (PDF ou Imagem)
                     </StyledText>
                   )}
                 </StyledView>
                 <StyledView className=" flex justify-center flex-row items-center gap-x-10 py-3 w-full">
                   <StyledPressable
                     onPress={async () => {
-                      const url = await pickImage();
-                      setFieldValue("imageUrl", url);
+                      const url = await pickDocument();
+                      if (url) setFieldValue("imageUrl", url);
                     }}
                   >
                     <MaterialIcons
-                      name="add-photo-alternate"
+                      name="attach-file"
                       size={24}
                       color="white"
                     />
@@ -190,14 +198,14 @@ export function DocumentForm({ document, setIsModalOpen }: DocumentFormProps) {
             </StyledView>
             <StyledView className="flex flex-col gap-y-1">
               <StyledText className="text-custom-gray text-[14px] font-semibold">
-                Titulo
+                Título
               </StyledText>
               <StyledTextInput
                 onChangeText={handleChange("title")}
                 onBlur={handleBlur("title")}
                 value={values.title}
                 placeholder={
-                  errors.title ? errors.title : "Digite o titulo do documento"
+                  errors.title ? errors.title : "Digite o título do documento"
                 }
                 placeholderTextColor={
                   errors.title ? "rgb(127 29 29)" : "rgb(156 163 175)"
