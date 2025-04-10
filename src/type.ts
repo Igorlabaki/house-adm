@@ -11,6 +11,19 @@ export interface TextType {
   position: number;
   title: string | null;
 }
+export interface AttachmentType {
+  id?: string;
+  title: string;
+  text: string;
+  venueId: string;
+  venue:{
+    name:string
+  };
+  updatedAt?: Date;
+  created_at?: Date;
+  organizaitonId:string;
+}
+  
 export interface ClauseType {
   id?: string;
   text?: string;
@@ -23,6 +36,10 @@ export interface DocumentType {
   id?: string;
   title?: string;
   imageUrl?: string | null;
+  thumbnailUrl?: string | null;
+  fileType: "IMAGE" | "PDF";
+  paymentId: string;
+  payment: PaymentType
 }
 
 export interface OwnerType {
@@ -170,7 +187,7 @@ export interface ClientType {
   city?: string;
   state?: string;
   street?: string;
-  completeName?: string;
+  completeClientName?: string;
   name?: string;
   streetNumber?: string;
   neighborhood?: string;

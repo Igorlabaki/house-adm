@@ -66,6 +66,17 @@ export const authenticateUser: any = createAsyncThunk(
   }
 );
 
+export const loadSession = createAsyncThunk('auth/loadSession', async () => {
+  const accessToken = await getAccessTokenSave();
+  const user = await getUserSave();
+  
+  if (accessToken && user) {
+    return { accessToken, user };
+  } else {
+    return null;
+  }
+});
+
 
 export const loadAccessTokenFromStorage = createAsyncThunk('auth/accessToken', async () => {
   const accessToken = await getAccessTokenSave();
@@ -107,6 +118,13 @@ const sessionSlice = createSlice({
         state.accessToken = "";
         state.error = action.payload;
       })
+      .addCase(loadSession.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.accessToken = action.payload.accessToken;
+          state.user = action.payload.user;
+          state.error = "";
+        }
+      });
   }
 });
 

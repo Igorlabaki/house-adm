@@ -110,20 +110,25 @@ const documentListSlice = createSlice({
 
 export const createDocumentAsync = createAsyncThunk(
   "document/createDocument",
-  async (createDocumentParams: FormData, { rejectWithValue }) => {
+  async (createDocument: FormData, { rejectWithValue }) => {
+
     try {
-      const response = await api.post(`/document/create`, createDocumentParams, {
+      const response = await api.post(`/document/create`, createDocument, {
+        timeout: 0,
         headers: {
           "Content-Type": "multipart/form-data", // Importante para envio de arquivos
         },
       })
         .then((response) => response?.data);
+
       return response;
     } catch (error: any) {
+      console.log(error)
       return rejectWithValue(error.data?.message || "Erro ao buscar lista de imagens");
     }
   }
 );
+
 
 export const updateDocumentByIdAsync = createAsyncThunk(
   "document/updatedDocumentById",

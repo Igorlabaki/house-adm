@@ -2,6 +2,7 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import ClauseScreen from "./clause-screen";
 import ContractScreen from "./contract-screen";
+import AttachmentScreen from "./attachment-screen";
 
 const ContractTabNavigator = createMaterialTopTabNavigator();
 
@@ -25,6 +26,7 @@ export function ContractNavigator() {
       }}
     >
       <ContractTabNavigator.Screen name="Clausulas" component={ClauseScreen} />
+      <ContractTabNavigator.Screen name="Anexos" component={AttachmentScreen} />
       <ContractTabNavigator.Screen name="Contrato" component={ContractScreen} />
     </ContractTabNavigator.Navigator>
   );

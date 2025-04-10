@@ -1,5 +1,5 @@
 import { format, isValid, parseISO } from "date-fns";
-import { ClauseType, ClientType, OwnerType, ProposalType } from "type";
+import { AttachmentType, ClauseType, ClientType, OwnerType, ProposalType } from "type";
 import { clientVariables, ownerVariables, paymentInfoVariables, proposalVariables, venueVariables } from "const/contract-variables";
 import { Venue } from "@store/venue/venueSlice";
 import extenso from "extenso";
@@ -22,7 +22,7 @@ export interface GenerateNaturalPersonContract {
 }
 
 export function generateNaturalPersonContractHTML(data: GenerateNaturalPersonContract) {
-    const { contractInformation,paymentInfo } = data;
+    const { contractInformation,paymentInfo,venue } = data;
     const today = new Date();
 
     const toRoman = (num: number): string => {
@@ -41,6 +41,15 @@ export function generateNaturalPersonContractHTML(data: GenerateNaturalPersonCon
         }, "");
     };
 
+    function renderAttachments(attachments: AttachmentType[]) {
+        return attachments.map((attachment, index) => `
+          <div style="page-break-before: always;">
+            <h2 style="text-align: center; margin-top: 40px; margin-bottom: 20px; text-transform: uppercase;">${attachment.title}</h2>
+            <p>${attachment.text.replace(/\n/g, "<br>")}</p>
+          </div>
+        `).join('');
+      }
+      const attachmentsHTML = renderAttachments(venue.attachments || []);
     const createVariablesMap = (data: GenerateNaturalPersonContract) => {
         const allVariables = [
             ...venueVariables,
@@ -129,7 +138,7 @@ export function generateNaturalPersonContractHTML(data: GenerateNaturalPersonCon
         body {
             font-family: 'Times New Roman', Times, serif;
             line-height: 1.6;
-            margin: 2.5cm;
+            margin: 1.5cm;
             font-size: 12pt;
             color: #000000;
             text-align: justify;
@@ -177,7 +186,7 @@ export function generateNaturalPersonContractHTML(data: GenerateNaturalPersonCon
         
         @media print {
             body {
-                margin: 3cm;
+                margin: 1.5cm;
             }
             .page-break {
                 page-break-after: always;
@@ -206,6 +215,7 @@ export function generateNaturalPersonContractHTML(data: GenerateNaturalPersonCon
             </div>
         </div>
     </div>
+     ${attachmentsHTML}
 </body>
 </html>
     `;

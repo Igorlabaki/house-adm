@@ -26,6 +26,7 @@ import { userPermissionStateReducer } from "./user-permission/user-permission-sl
 import { surchargefeesListReducer } from "./surcharge-fee/surcharge-fee";
 import { discountfeesListReducer } from "./discount-fee/discount-fee";
 import { workerListReducer } from "./worker/worker-slice";
+import { attachmentStateReducer } from "./attachment/attachment-slice";
 
 export const store = configureStore({
   reducer: {
@@ -49,6 +50,7 @@ export const store = configureStore({
     proposalList: proposalListReducer,
     questionList: questionListReducer,
     scheduleList: scheduleListReducer,
+    attachmentState: attachmentStateReducer,
     notificationList: notificationListReducer,
     organizationList: organizationListReducer,
     discountfeesState: discountfeesListReducer,

@@ -17,6 +17,7 @@ export function getAPIClient(ctx?: any) {
         // O servidor respondeu com um status de erro
         return Promise.reject(error.response);
       } else if (error.request) {
+        console.log(error)
         // A solicitação foi feita, mas não recebeu resposta
         return Promise.reject({ error: "Network Error" });
       } else {

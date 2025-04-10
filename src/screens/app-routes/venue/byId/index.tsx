@@ -71,7 +71,7 @@ function TabNavigator() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: "#1E1F22",
-          height: 45
+          height: 58
         },
         tabBarLabelStyle: { fontSize: 13, fontWeight: "500" },
         tabBarActiveTintColor: "rgb(250, 235, 215)",

@@ -2,7 +2,7 @@ import { api } from "../../services/axios";
 import { UpdateVenueSchema } from "@schemas/venue/update-venue-params-schema";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { CreateVenueFormSchema } from "@schemas/venue/create-venue-params-schema";
-import { ContractType, OwnerType, OwnerVenueType, UserOrganizationType } from "type";
+import { AttachmentType, ContractType, OwnerType, OwnerVenueType, UserOrganizationType } from "type";
 import { UserOrganization } from "@store/auth/authSlice";
 
 export interface Venue {
@@ -29,6 +29,7 @@ export interface Venue {
   pricePerPersonDay: number | null;
   pricePerPersonHour: number | null;
   ownerVenue: OwnerVenueType[] | null;
+  attachments: AttachmentType[] | null;
   seasonalFeeDates?: { seasonalStartDay: Date, seasonalEndDay: Date }[];
   contracts?: ContractType[];
   pricingModel: "PER_PERSON" | "PER_DAY" | "PER_PERSON_DAY" | "PER_PERSON_HOUR";
@@ -133,6 +134,7 @@ const initialState: {
     streetNumber: "",
     pricePerDay: null,
     seasonalFee: null,
+    attachments: null,
     organizationId: "",
     pricePerPerson: null,
     createdAt: new Date(),

@@ -1,7 +1,7 @@
 import AppRoutes from "./app-routes";
 import AuthRoutes from "./auth-routes";
 import React, { useEffect, useState } from "react";
-import { User } from "@store/auth/authSlice";
+import { User, loadSession } from "@store/auth/authSlice"; // IMPORTA O loadSession
 import { fetchUser } from "@store/user/userSlice";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +17,15 @@ export default function Routes() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkSession = async () => {
+    const initializeSession = async () => {
+      // Primeiro tenta carregar sessão salva
+      await dispatch(loadSession())
+        .unwrap()
+        .catch((error) => {
+          console.error("Erro ao carregar sessão:", error);
+        });
+
+      // Depois tenta buscar o usuário se tiver sessão
       if (session?.id && !user) {
         await dispatch(fetchUser())
           .unwrap()
@@ -25,11 +33,12 @@ export default function Routes() {
             console.error("Erro ao carregar usuário:", error);
           });
       }
+
       setIsLoading(false);
     };
 
-    checkSession();
-  }, [session?.id, user, dispatch]);
+    initializeSession();
+  }, [dispatch]);
 
   if (isLoading) {
     return (

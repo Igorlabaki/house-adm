@@ -5,6 +5,7 @@ import { DocumentModal } from "../modal";
 import { formatCurrency } from "react-native-format-currency";
 import { StyledPressable, StyledText, StyledView } from "styledComponents";
 import { Image } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 
 interface ItemFlatListProps {
   document: DocumentType;
@@ -20,17 +21,31 @@ export function DocumentItemFlatList({ document }: ItemFlatListProps) {
       className="flex flex-row gap-x-2 items-start justify-start px-5 py-5 bg-[#313338] rounded-md overflow-hidden shadow-lg relative mt-2"
     >
       <StyledView className="overflow-hidden rounded-md">
-        <Image
-          source={{ uri: document?.imageUrl }} // imagem local
-          style={{ width: 50, height: 80 }}
-          resizeMode="cover"
-        />
+        {document?.fileType === "IMAGE" ? (
+          <Image
+            source={{ uri: document?.imageUrl || document.thumbnailUrl }} // imagem local
+            style={{ width: 50, height: 80 }}
+            resizeMode="cover"
+          />
+        ) : (
+          <AntDesign name="pdffile1" size={50} color="#faebd7" />
+        )}
       </StyledView>
-      <StyledView className=" flex flex-col gap-y-2  items-start justify-between  overflow-hidden overflow-y-auto">
-        <StyledView className="flex-row  items-start gap-x-2 text-center">
-          <StyledText className="text-[12px] text-white font-bold">
+      <StyledView className=" flex flex-col  items-start justify-between  overflow-hidden overflow-y-auto">
+        <StyledView className="flex-col  items-start gap-y-2 text-center">
+          <StyledText className="text-[12px] text-custom-white font-bold">
             {document?.title}
           </StyledText>
+          {document.payment && (
+            <StyledText className="text-[12px] text-custom-white  font-bold">
+              {
+                formatCurrency({
+                  amount: Number(document?.payment.amount.toFixed(2)),
+                  code: "BRL",
+                })[0]
+              }
+            </StyledText>
+          )}
         </StyledView>
       </StyledView>
       {isModalOpen && (

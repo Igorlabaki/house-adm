@@ -28,10 +28,15 @@ export function SectionScreen() {
   const queryParams = new URLSearchParams();
   queryParams.append("venueId", venue.id);
 
- const navigation = useNavigation();
+  const navigation = useNavigation();
+
   useEffect(() => {
-    dispatch(fecthDateEvents(`${queryParams.toString()}`));
-  }, []);
+    const fetchData = async () => {
+      await dispatch(fecthDateEvents(queryParams.toString()));
+    };
+
+    fetchData();
+  }, [venue?.id]);
 
   const generateDateRange = (
     start: string,
@@ -78,7 +83,7 @@ export function SectionScreen() {
 
   const handleDatePress = (day: any) => {
     const selectedDate = day.dateString;
-
+    console.log(selectedDate);
     setSelectedEvents(
       dataEventList.dateEvents.filter((item: DateEventType) => {
         const start = moment(item.startDate).format("YYYY-MM-DD");
@@ -89,20 +94,23 @@ export function SectionScreen() {
     );
   };
 
-  async function handleButton(proposalId:string) {
+  async function handleButton(proposalId: string) {
+    console.log(proposalId);
     await dispatch(fetchProposalByIdAsync(proposalId));
     navigation.navigate("ProposaInfoScreen");
   }
- 
+  useEffect(() => {
+    console.log(selectedEvents);
+  }, [selectedEvents]);
+
   return (
     <StyledScrollView className="bg-gray-dark flex-1 flex flex-col h-full w-full">
-
       <StyledView className="bg-gray-dark flex-1 pt-3 flex flex-col h-full w-full">
-      {venue.permissions.includes("EDIT_CALENDAR") && (
+        {venue.permissions.includes("EDIT_CALENDAR") && (
           <StyledPressable
             onPress={() => setIsModalOpen(true)}
             className="
-                justify-center items-center bg-green-800 hover:bg-green-600 active:bg-green-700 
+                justify-center items-center bg-green-800 hover:bg-green-600 active:bg-green-700  mt-3
                 rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-3 border-[0.6px] border-white border-solid w-[50%]"
           >
             <StyledText className="text-white text-sm font-bold text-center">
@@ -117,7 +125,6 @@ export function SectionScreen() {
               ...markedDates,
             }}
             markingType={venue.hasOvernightStay ? "period" : "dot"}
-            minDate={today.toDateString()}
             theme={{
               backgroundColor: "#313338", // Cor do fundo geral do calendário
               calendarBackground: "#313338", // Cor do fundo do calendário
@@ -155,19 +162,20 @@ export function SectionScreen() {
             </StyledView>
           </StyledView>
           {selectedEvents && (
-            <StyledPressable onPress={() => handleButton(selectedEvents.proposalId)} className="my-5">
+            <StyledView className="my-5">
               {selectedEvents.map((item: DateEventType) => {
-                 const startDate = item?.startDate
-                 ? moment(item.startDate)
-                 : null;
-               const endDate = item?.endDate
-                 ? moment(item.endDate)
-                 : null;
-             
-               const sameDay =
-                 startDate && endDate ? startDate.isSame(endDate, "day") : false;
+                const startDate = item?.startDate
+                  ? moment(item.startDate)
+                  : null;
+                const endDate = item?.endDate ? moment(item.endDate) : null;
+
+                const sameDay =
+                  startDate && endDate
+                    ? startDate.isSame(endDate, "day")
+                    : false;
                 return (
-                  <StyledView
+                  <StyledPressable
+                    onPress={() => handleButton(item.proposalId)}
                     key={item.id}
                     className="flex flex-col items-start justify-start px-5 py-5 bg-[#313338] w-full rounded-md overflow-hidden shadow-lg relative"
                   >
@@ -219,10 +227,10 @@ export function SectionScreen() {
                         </StyledView>
                       </StyledView>
                     </StyledView>
-                  </StyledView>
+                  </StyledPressable>
                 );
               })}
-            </StyledPressable>
+            </StyledView>
           )}
         </StyledView>
       </StyledView>

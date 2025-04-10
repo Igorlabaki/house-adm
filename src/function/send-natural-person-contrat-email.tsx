@@ -13,7 +13,7 @@ export async function sendContractPessoFisicaEmail(
   const { contractInformation,client,owner,proposal,venue,paymentInfo } = values;
 
   try {
-    const nomeArquivo = `Contrato_AR756_${client.completeName}.pdf`;
+    const nomeArquivo = `Contrato_AR756_${client.completeClientName}.pdf`;
     // Gerar o PDF
     const { uri } = await Print.printToFileAsync({
       html: generateNaturalPersonContractHTML(values),
@@ -32,7 +32,7 @@ export async function sendContractPessoFisicaEmail(
     const options = {
       subject: "Contrato AR756",
       recipients: [`${proposal?.email}`],
-      body: `Olá, ${client?.completeName}!
+      body: `Olá, ${client?.completeClientName}!
 
         Esperamos que esteja bem. É com grande satisfação que enviamos o contrato para o seu evento na AR756. No documento em anexo, você encontrará todos os detalhes e condições acordados para o aluguel do nosso espaço.
 

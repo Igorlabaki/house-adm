@@ -341,7 +341,7 @@ export function CretePaymentFormComponent({
                   <ActivityIndicator size="small" color="#faebd7" />
                 ) : (
                   <StyledText className="font-bold text-custom-white">
-                    {proposalId ? "Atualizar" : "Cadastrar"}
+                    {loading ? "Enviando" : "Cadastrar"}
                   </StyledText>
                 )}
               </StyledPressable>
