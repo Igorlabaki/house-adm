@@ -136,15 +136,14 @@ export function QuestionFormComponent({
                 onChangeText={handleChange("response")}
                 onBlur={handleBlur("response")}
                 value={values.response}
-                placeholder={
-                  errors.response ? errors.response : "Digite a resposta"
-                }
-                numberOfLines={10}
-                textAlignVertical="top"
+                multiline={true}
+                numberOfLines={7} // Define a altura inicial
+                textAlignVertical="top" // Alinha o texto no topo
+                placeholder={errors.response ? errors.response : "Digite a resposta"}
                 placeholderTextColor={
                   errors.response ? "rgb(127 29 29)" : "rgb(156 163 175)"
                 }
-                className={`rounded-md px-3 py-3 text-white flex justify-start items-start ${
+                className={`rounded-md px-3 py-1 text-white  ${
                   errors.response
                     ? "bg-red-50 border-[2px] border-red-900 "
                     : "bg-gray-ligth"

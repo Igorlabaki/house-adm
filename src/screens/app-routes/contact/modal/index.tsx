@@ -86,7 +86,7 @@ export function ContactModalComponent({
         )}
         {contact && (
           <StyledPressable
-            className="bg-green-800 px-5  flex flex-row justify-center gap-x-2 rounded-md w-[90%] mx-auto py-3"
+            className="bg-blue-800 px-5  flex flex-row justify-center gap-x-2 rounded-md w-[90%] mx-auto py-3 mt-2"
             onPress={() => {
               const formattedNumber = `+55${contact.whatsapp
                 .replace("-", "")

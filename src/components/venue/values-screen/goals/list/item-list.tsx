@@ -17,15 +17,15 @@ export function GoalItemFlatList({ goal }: GoalItemFlatListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const monthTranslation: { [key: string]: string } = {
-    "01": "Jan",
-    "02": "Fev",
-    "03": "Mar",
-    "04": "Abr",
-    "05": "Mai",
-    "06": "Jun",
-    "07": "Jul",
-    "08": "Ago",
-    "09": "Set",
+    "1": "Jan",
+    "2": "Fev",
+    "3": "Mar",
+    "4": "Abr",
+    "5": "Mai",
+    "6": "Jun",
+    "7": "Jul",
+    "8": "Ago",
+    "9": "Set",
     "10": "Out",
     "11": "Nov",
     "12": "Dez",
@@ -71,11 +71,11 @@ export function GoalItemFlatList({ goal }: GoalItemFlatListProps) {
             </StyledText>
             <StyledText className="text-[13px] text-custom-white">/</StyledText>
             <StyledText className="text-[13px] font-bold text-custom-white text-center">
-              {goal?.maxValue &&
+              {goal?.maxValue ?
                 formatCurrency({
                   amount: Number(goal?.maxValue.toFixed(2)),
                   code: "BRL",
-                })[0]}
+                })[0] : null}
             </StyledText>
           </StyledView>
         </StyledView>

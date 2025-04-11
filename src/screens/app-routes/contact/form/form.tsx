@@ -107,7 +107,7 @@ export function ContactFormComponent({
       }}
     >
       {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-        <StyledView className="w-[90%] mx-auto my-5 flex flex-col">
+        <StyledView className="w-[90%] mx-auto mt-5  flex flex-col">
           <StyledView className="flex flex-col gap-y-3">
             <StyledView className="flex flex-col gap-y-2">
               <StyledText className="text-custom-gray text-[14px] font-semibold">

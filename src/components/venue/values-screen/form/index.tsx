@@ -71,7 +71,7 @@ export function SeasonalFeeFormComponent({
     { display: "Domingo", value: "sunday" },
   ];
 
-  const [weekList, setWeekList] = useState([]);
+  const [weekList, setWeekList] = useState(seasonalFee?.affectedDays ? seasonalFee?.affectedDays.split(",") : []);
 
   const [selected, setSelected] = useState<any>();
 
@@ -86,7 +86,7 @@ export function SeasonalFeeFormComponent({
   };
 
   const confirmDelete = async () => {
-    if (type.includes("DISCOUNT")) {
+    if (type?.includes("DISCOUNT")) {
       const deleteItem = await dispatch(
         deleteDiscountFeesByIdAsync(seasonalFee.id)
       );
@@ -140,11 +140,11 @@ export function SeasonalFeeFormComponent({
         initialValues={{
           type: type,
           venueId: venue.id,
-          fee: String(seasonalFee?.fee) || "0",
-          title: seasonalFee?.title || "",
-          endDay: seasonalFee?.endDay || "",
-          startDay: seasonalFee?.startDay || "",
-          affectedDays: seasonalFee?.affectedDays.split(",") || [],
+          fee: seasonalFee?.fee ? String(seasonalFee?.fee) : "0",
+          title: seasonalFee?.title ? seasonalFee?.title : "",
+          endDay: seasonalFee?.startDay ? seasonalFee?.endDay : "",
+          startDay: seasonalFee?.startDay ? seasonalFee?.startDay : "",
+          affectedDays: seasonalFee?.affectedDays ? seasonalFee?.affectedDays.split(",") : [],
           periodType: seasonalFee?.affectedDays ? "WEEKDAYS" : "SEASON",
         }}
         validate={(values) => {
@@ -163,7 +163,7 @@ export function SeasonalFeeFormComponent({
         }}
         onSubmit={async (values: FormSeasonalFeeRequestParams) => {
           if (!seasonalFee) {
-            if (type.includes("DISCOUNT")) {
+            if (type?.includes("DISCOUNT")) {
               const response = await dispatch(
                 createDiscountFeesAsync({
                   type: values?.type,
@@ -219,7 +219,7 @@ export function SeasonalFeeFormComponent({
               }
             }
           } else {
-            if (type.includes("DISCOUNT")) {
+            if (type?.includes("DISCOUNT")) {
               const response = await dispatch(
                 updateDiscountFeesByIdAsync({
                   venueId: venue?.id,
@@ -247,32 +247,32 @@ export function SeasonalFeeFormComponent({
                 });
               }
             } else {
-            }
-            const response = await dispatch(
-              updateSurchargeFeesByIdAsync({
-                venueId: venue?.id,
-                seasonalFeeId: seasonalFee?.id,
-                data: {
-                  ...values,
-                  fee: Number(values?.fee),
-                  affectedDays: values?.affectedDays?.join(","),
-                },
-              })
-            );
-
-            if (response.meta.requestStatus == "fulfilled") {
-              Toast.show("Taxa atualizada com sucesso." as string, 3000, {
-                backgroundColor: "rgb(75,181,67)",
-                textColor: "white",
-              });
-              setIsModalOpen(false);
-            }
-
-            if (response.meta.requestStatus == "rejected") {
-              Toast.show(response.payload as string, 3000, {
-                backgroundColor: "#FF9494",
-                textColor: "white",
-              });
+              const response = await dispatch(
+                updateSurchargeFeesByIdAsync({
+                  venueId: venue?.id,
+                  seasonalFeeId: seasonalFee?.id,
+                  data: {
+                    ...values,
+                    fee: Number(values?.fee),
+                    affectedDays: values?.affectedDays?.join(","),
+                  },
+                })
+              );
+  
+              if (response.meta.requestStatus == "fulfilled") {
+                Toast.show("Taxa atualizada com sucesso." as string, 3000, {
+                  backgroundColor: "rgb(75,181,67)",
+                  textColor: "white",
+                });
+                setIsModalOpen(false);
+              }
+  
+              if (response.meta.requestStatus == "rejected") {
+                Toast.show(response.payload as string, 3000, {
+                  backgroundColor: "#FF9494",
+                  textColor: "white",
+                });
+              }
             }
           }
         }}
@@ -553,7 +553,7 @@ export function SeasonalFeeFormComponent({
                                 onPress={() => {
                                   setWeekList(
                                     (prev) =>
-                                      prev.includes(item.value)
+                                      prev?.includes(item.value)
                                         ? prev.filter(
                                             (day) => day !== item.value
                                           ) // Remove da lista
@@ -562,7 +562,7 @@ export function SeasonalFeeFormComponent({
                                 }}
                               >
                                 <StyledView className="w-4 h-4 border-[1px] border-gray-500 cursor-pointer brightness-75 flex justify-center items-center">
-                                  {weekList.includes(item.value) && (
+                                  {weekList?.includes(item.value) && (
                                     <Entypo
                                       name="check"
                                       size={12}
@@ -601,7 +601,7 @@ export function SeasonalFeeFormComponent({
         }}
       </Formik>
       <DeleteConfirmationModal
-        entity="adicional"
+        entity="taxa"
         visible={modalVisible}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
