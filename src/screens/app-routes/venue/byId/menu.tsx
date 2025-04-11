@@ -127,7 +127,7 @@ export default function VenueMenu({
               }}
             >
               <StyledText className="text-white font-bold text-start w-[130px]">
-                Precos Especias
+                Metas / Precos
               </StyledText>
               <MaterialIcons name="attach-money" size={24} color="white" />
             </StyledPressable>

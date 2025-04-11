@@ -123,7 +123,7 @@ export const createDocumentAsync = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      console.log(error)
+
       return rejectWithValue(error.data?.message || "Erro ao buscar lista de imagens");
     }
   }

@@ -34,7 +34,7 @@ export function SeasonalFeeFlatList() {
           return <SeasonalFeeItemFlatList seasonalFee={item} key={item.id} />;
         }}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
-        ListEmptyComponent={() => <ListEmpty dataType="adicional por temporada" />}
+        ListEmptyComponent={() => <ListEmpty dataType="desconto por temporada" />}
         className="flex-1"
       />
     </>

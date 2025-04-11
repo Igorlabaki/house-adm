@@ -27,6 +27,7 @@ import { surchargefeesListReducer } from "./surcharge-fee/surcharge-fee";
 import { discountfeesListReducer } from "./discount-fee/discount-fee";
 import { workerListReducer } from "./worker/worker-slice";
 import { attachmentStateReducer } from "./attachment/attachment-slice";
+import { goalStateReducer } from "./goal/goal-slice";
 
 export const store = configureStore({
   reducer: {
@@ -36,6 +37,7 @@ export const store = configureStore({
     textList: textListReducer,
     ownerList: ownerListReducer,
     imageList: imageListReducer,
+    goalState: goalStateReducer,
     venueList: venueListReducer,
     guestState: guestListReducer,
     clauseList: clauseListReducer,

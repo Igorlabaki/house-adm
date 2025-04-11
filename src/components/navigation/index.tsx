@@ -162,7 +162,7 @@ export default function AppNavigator() {
             headerLeft: () => {
               return (
                 <StyledText className="text-white font-semibold text-lg">
-                  Precos especiais
+                  Metas / Precos 
                 </StyledText>
               );
             },

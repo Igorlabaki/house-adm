@@ -32,6 +32,11 @@ import moment, { weekdays } from "moment";
 import { Entypo, Feather } from "@expo/vector-icons";
 import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 import { ActivityIndicator } from "react-native";
+import {
+  createDiscountFeesAsync,
+  deleteDiscountFeesByIdAsync,
+  updateDiscountFeesByIdAsync,
+} from "@store/discount-fee/discount-fee";
 
 interface SeasonalFeeFormProps {
   isModalOpen: boolean;
@@ -81,22 +86,42 @@ export function SeasonalFeeFormComponent({
   };
 
   const confirmDelete = async () => {
-    const deleteItem = await dispatch(
-      deleteSurchargeFeesByIdAsync(seasonalFee.id)
-    );
+    if (type.includes("DISCOUNT")) {
+      const deleteItem = await dispatch(
+        deleteDiscountFeesByIdAsync(seasonalFee.id)
+      );
 
-    if (deleteItem.meta.requestStatus === "fulfilled") {
-      Toast.show("Contrato deletada com sucesso." as string, 3000, {
-        backgroundColor: "rgb(75,181,67)",
-        textColor: "white",
-      });
-    }
+      if (deleteItem.meta.requestStatus === "fulfilled") {
+        Toast.show("Contrato deletada com sucesso." as string, 3000, {
+          backgroundColor: "rgb(75,181,67)",
+          textColor: "white",
+        });
+      }
 
-    if (deleteItem.meta.requestStatus == "rejected") {
-      Toast.show(deleteItem.payload, 3000, {
-        backgroundColor: "#FF9494",
-        textColor: "white",
-      });
+      if (deleteItem.meta.requestStatus == "rejected") {
+        Toast.show(deleteItem.payload, 3000, {
+          backgroundColor: "#FF9494",
+          textColor: "white",
+        });
+      }
+    } else {
+      const deleteItem = await dispatch(
+        deleteSurchargeFeesByIdAsync(seasonalFee.id)
+      );
+
+      if (deleteItem.meta.requestStatus === "fulfilled") {
+        Toast.show("Contrato deletada com sucesso." as string, 3000, {
+          backgroundColor: "rgb(75,181,67)",
+          textColor: "white",
+        });
+      }
+
+      if (deleteItem.meta.requestStatus == "rejected") {
+        Toast.show(deleteItem.payload, 3000, {
+          backgroundColor: "#FF9494",
+          textColor: "white",
+        });
+      }
     }
   };
 
@@ -115,7 +140,7 @@ export function SeasonalFeeFormComponent({
         initialValues={{
           type: type,
           venueId: venue.id,
-          fee: seasonalFee?.fee || "0",
+          fee: String(seasonalFee?.fee) || "0",
           title: seasonalFee?.title || "",
           endDay: seasonalFee?.endDay || "",
           startDay: seasonalFee?.startDay || "",
@@ -138,33 +163,91 @@ export function SeasonalFeeFormComponent({
         }}
         onSubmit={async (values: FormSeasonalFeeRequestParams) => {
           if (!seasonalFee) {
-            const response = await dispatch(
-              createSurchargeFeesAsync({
-                type: values?.type,
-                title: values?.title,
-                endDay: values?.endDay,
-                venueId: values?.venueId,
-                fee: Number(values?.fee),
-                startDay: values?.startDay,
-                affectedDays: values?.affectedDays?.join(","),
-              })
-            );
+            if (type.includes("DISCOUNT")) {
+              const response = await dispatch(
+                createDiscountFeesAsync({
+                  type: values?.type,
+                  title: values?.title,
+                  endDay: values?.endDay,
+                  venueId: values?.venueId,
+                  fee: Number(values?.fee),
+                  startDay: values?.startDay,
+                  affectedDays: values?.affectedDays?.join(","),
+                })
+              );
 
-            if (response.meta.requestStatus == "fulfilled") {
-              Toast.show("Taxa criada com sucesso." as string, 3000, {
-                backgroundColor: "rgb(75,181,67)",
-                textColor: "white",
-              });
-              setIsModalOpen(false);
-            }
+              if (response.meta.requestStatus == "fulfilled") {
+                Toast.show("Taxa criada com sucesso." as string, 3000, {
+                  backgroundColor: "rgb(75,181,67)",
+                  textColor: "white",
+                });
+                setIsModalOpen(false);
+              }
 
-            if (response.meta.requestStatus == "rejected") {
-              Toast.show(response.payload as string, 3000, {
-                backgroundColor: "#FF9494",
-                textColor: "white",
-              });
+              if (response.meta.requestStatus == "rejected") {
+                Toast.show(response.payload as string, 3000, {
+                  backgroundColor: "#FF9494",
+                  textColor: "white",
+                });
+              }
+            } else {
+              const response = await dispatch(
+                createSurchargeFeesAsync({
+                  type: values?.type,
+                  title: values?.title,
+                  endDay: values?.endDay,
+                  venueId: values?.venueId,
+                  fee: Number(values?.fee),
+                  startDay: values?.startDay,
+                  affectedDays: values?.affectedDays?.join(","),
+                })
+              );
+
+              if (response.meta.requestStatus == "fulfilled") {
+                Toast.show("Taxa criada com sucesso." as string, 3000, {
+                  backgroundColor: "rgb(75,181,67)",
+                  textColor: "white",
+                });
+                setIsModalOpen(false);
+              }
+
+              if (response.meta.requestStatus == "rejected") {
+                Toast.show(response.payload as string, 3000, {
+                  backgroundColor: "#FF9494",
+                  textColor: "white",
+                });
+              }
             }
           } else {
+            if (type.includes("DISCOUNT")) {
+              const response = await dispatch(
+                updateDiscountFeesByIdAsync({
+                  venueId: venue?.id,
+                  seasonalFeeId: seasonalFee?.id,
+                  data: {
+                    ...values,
+                    fee: Number(values?.fee),
+                    affectedDays: values?.affectedDays?.join(","),
+                  },
+                })
+              );
+
+              if (response.meta.requestStatus == "fulfilled") {
+                Toast.show("Taxa atualizada com sucesso." as string, 3000, {
+                  backgroundColor: "rgb(75,181,67)",
+                  textColor: "white",
+                });
+                setIsModalOpen(false);
+              }
+
+              if (response.meta.requestStatus == "rejected") {
+                Toast.show(response.payload as string, 3000, {
+                  backgroundColor: "#FF9494",
+                  textColor: "white",
+                });
+              }
+            } else {
+            }
             const response = await dispatch(
               updateSurchargeFeesByIdAsync({
                 venueId: venue?.id,

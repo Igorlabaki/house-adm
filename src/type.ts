@@ -2,6 +2,7 @@ import { User } from "@store/auth/authSlice";
 import { Organization } from "@store/organization/organizationSlice";
 import { Schedule } from "@store/schedule/schedule-slice";
 import { Venue } from "@store/venue/venueSlice";
+
 export interface TextType {
   id?: string;
   area: string;
@@ -11,19 +12,28 @@ export interface TextType {
   position: number;
   title: string | null;
 }
+export interface GoalType {
+  id?: string;
+  minValue: number
+  maxValue: number
+  increasePercent: number
+  venue: Venue
+  venueId: string
+  months: string
+}
 export interface AttachmentType {
   id?: string;
   title: string;
   text: string;
   venueId: string;
-  venue:{
-    name:string
+  venue: {
+    name: string
   };
   updatedAt?: Date;
   created_at?: Date;
-  organizaitonId:string;
+  organizaitonId: string;
 }
-  
+
 export interface ClauseType {
   id?: string;
   text?: string;

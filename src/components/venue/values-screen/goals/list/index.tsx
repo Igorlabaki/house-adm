@@ -1,4 +1,4 @@
-import { SeasonalFeeType } from "type";
+import { GoalType } from "type";
 import { styled } from "nativewind";
 import { ListEmpty } from "@components/list/ListEmpty";
 import { StyledText, StyledView } from "styledComponents";
@@ -6,35 +6,35 @@ import { ActivityIndicator, FlatList } from "react-native";
 import { ItemSeparatorList } from "@components/list/itemSeparatorList";
 import { useSelector } from "react-redux";
 import { RootState } from "@store/index";
-import { SeasonalFeeItemFlatList } from "./item-list";
+import { GoalItemFlatList } from "./item-list";
 
-export const StyledFlatList = styled(FlatList<SeasonalFeeType>);
+export const StyledFlatList = styled(FlatList<GoalType>);
 
-export function SeasonalFeeFlatList() {
-  const { loading, surchargeFees } = useSelector(
-    (state: RootState) => state.surchargefeesState
+export function GoalFlatList() {
+  const { loading, goals } = useSelector(
+    (state: RootState) => state.goalState
   );
 
   if (loading) {
     return (
       <StyledView className="h-full w-full flex justify-center items-center">
         <ActivityIndicator size="large" color="white" />
-        <StyledText className="seasonalfee-white">Loading</StyledText>
+        <StyledText className="goal-white">Loading</StyledText>
       </StyledView>
     );
   }
-
+ 
   return (
     <>      
       <StyledFlatList
         removeClippedSubviews={false}
-        keyExtractor={(item: SeasonalFeeType) => item.id}
-        data={surchargeFees}
-        renderItem={({ item }: { item: SeasonalFeeType }) => {
-          return <SeasonalFeeItemFlatList seasonalFee={item} key={item.id} />;
+        keyExtractor={(item: GoalType) => item.id}
+        data={goals}
+        renderItem={({ item }: { item: GoalType }) => {
+          return <GoalItemFlatList goal={item} key={item.id} />;
         }}
         ItemSeparatorComponent={() => <ItemSeparatorList />}
-        ListEmptyComponent={() => <ListEmpty dataType="adicional por temporada" />}
+        ListEmptyComponent={() => <ListEmpty dataType="meta" />}
         className="flex-1"
       />
     </>

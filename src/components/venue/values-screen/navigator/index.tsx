@@ -1,6 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import SurchargeScreenComponent from '../surcharge';
 import DiscountScreenComponent from '../discount';
+import GoalScreenComponent from '../goals';
 
 const InfoTabNavigator = createMaterialTopTabNavigator();
 
@@ -24,12 +25,16 @@ export  function SeasonalFeeNavigator() {
       }}
     >
       <InfoTabNavigator.Screen
-        name="Adicional"
+        name="Adicionais"
         component={SurchargeScreenComponent}
       />
       <InfoTabNavigator.Screen
         name="Descontos"
         component={DiscountScreenComponent}
+      />
+      <InfoTabNavigator.Screen
+        name="Metas"
+        component={GoalScreenComponent}
       />
     </InfoTabNavigator.Navigator>
   )

@@ -83,7 +83,6 @@ export function SectionScreen() {
 
   const handleDatePress = (day: any) => {
     const selectedDate = day.dateString;
-    console.log(selectedDate);
     setSelectedEvents(
       dataEventList.dateEvents.filter((item: DateEventType) => {
         const start = moment(item.startDate).format("YYYY-MM-DD");
@@ -95,12 +94,12 @@ export function SectionScreen() {
   };
 
   async function handleButton(proposalId: string) {
-    console.log(proposalId);
+
     await dispatch(fetchProposalByIdAsync(proposalId));
     navigation.navigate("ProposaInfoScreen");
   }
   useEffect(() => {
-    console.log(selectedEvents);
+ 
   }, [selectedEvents]);
 
   return (

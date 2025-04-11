@@ -59,6 +59,7 @@ export function EventsAnalysis() {
       </StyledView>
     );
   }
+ 
   return (
     <StyledScrollView className="bg-gray-dark flex-1 pb-5 flex flex-col h-full w-full relative">
       <StyledView className=" flex flex-row justify-center items-center gap-x-4 py-4">
