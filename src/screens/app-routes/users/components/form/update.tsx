@@ -189,15 +189,7 @@ export default function UserOrganizationFormUpdateModalComponent({
             setFieldValue,
             resetForm,
           }) => {
-            useEffect(() => {
-              if (values.role === "ADMIN") {
-                setPermissions([
-                  ...userViewPermissions.map((p) => p.enum),
-                  ...userEditPermissions.map((p) => p.enum),
-                  ...userProposalPermissions.map((p) => p.enum),
-                ]);
-              }
-            }, [values.role]);
+           
             return (
               <StyledView className="max-h-[90vh] w-full mx-auto my-5 flex flex-col gap-y-4 mt-10">
                 <StyledScrollView className="max-h-[100vh] relative">
@@ -367,7 +359,7 @@ export default function UserOrganizationFormUpdateModalComponent({
                       await setFieldValue("permissions", permissions);
                       handleSubmit();
                     }}
-                    className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+                    className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
                     disabled={loading}
                   >
                     {loading ? (

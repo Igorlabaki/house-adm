@@ -107,11 +107,13 @@ export function UpdateUserFormComponent({
 
         const formData = new FormData();
 
-        formData.append("file", {
-          uri: values.avatarUrl,
-          name: `photo.${fileType}`,
-          type: `image/${fileType}`,
-        } as any);
+        if (fileType) {
+          formData.append("file", {
+            uri: values.avatarUrl,
+            name: `photo.${fileType}`,
+            type: `image/${fileType}`,
+          } as any);
+        }
 
         formData.append("email", values.email);
         formData.append("userId", values.userId);
@@ -198,7 +200,7 @@ export function UpdateUserFormComponent({
               </StyledView>
               <StyledView className="flex flex-col gap-y-1">
                 <StyledText className="text-custom-gray text-[14px] font-semibold">
-                  Nome de usuario
+                  Nome do usuario
                 </StyledText>
                 <StyledTextInput
                   onChangeText={handleChange("username")}

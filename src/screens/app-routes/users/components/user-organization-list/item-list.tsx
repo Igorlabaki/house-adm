@@ -9,8 +9,11 @@ import { Organization, selectOrganizationAsync } from "@store/organization/organ
 import { StyledPressable, StyledText, StyledView } from "styledComponents";
 import { selectUserOrganizationAsync } from "@store/userOrganization/user-organization--slice";
 import UserOrganizationFormUpdateModalComponent from "../form/update";
+import { User } from "@store/auth/authSlice";
+import { setUser } from "@store/user/userSlice";
 
 interface UserOrganizationItemListProps {
+  setUser: React.Dispatch<React.SetStateAction<User>>
   userorganization: UserOrganizationType;
   setFormSection: React.Dispatch<React.SetStateAction<"USER" | "VENUE" | "NEW_USER">>
 }
@@ -18,6 +21,7 @@ interface UserOrganizationItemListProps {
 export function UserOrganizationItemListComponent({
   setFormSection,
   userorganization,
+  setUser,
 }: UserOrganizationItemListProps) {
     const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,7 +36,9 @@ export function UserOrganizationItemListComponent({
   return (
     <StyledPressable
       onPress={async () => {
-        await  dispatch(selectUserOrganizationAsync(`${queryParams.toString()}`))
+        const userOrganization = await  dispatch(selectUserOrganizationAsync(`${queryParams.toString()}`))
+        console.log(userOrganization?.payload?.data?.user)
+        setUser(userOrganization?.payload?.data?.user)
         setFormSection("VENUE")
       }}
       className="flex flex-col items-start  justify-center px-5 py-5 bg-[#313338] w-full rounded-md overflow-hidden shadow-lg relative"
@@ -40,7 +46,7 @@ export function UserOrganizationItemListComponent({
       <StyledView className=" flex flex-row gap-y-2 gap-x-3  items-center justify-between  overflow-hidden overflow-y-auto w-full">
         <StyledView className="flex flex-row justify-start items-center gap-x-1">
           {userorganization.user?.avatarUrl ? (
-            <StyledPressable className="h-5 w-5 rounded-full bg-transparent overflow-hidden ">
+            <StyledPressable className="h-8 w-8 rounded-full bg-transparent overflow-hidden ">
               <Image
                 source={{ uri: userorganization.user?.avatarUrl }}
                 style={{ width: "100%", height: "100%" }}

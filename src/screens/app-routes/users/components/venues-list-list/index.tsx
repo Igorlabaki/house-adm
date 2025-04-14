@@ -30,8 +30,8 @@ export const StyledFlatList = styled(FlatList<Venue>);
 export const VenueListFlatList = React.memo(
   ({ userOrganization, setFormSection }: VenueListParams) => {
    
-    const organization: Organization = useSelector(
-      (state: RootState) => state.organizationList.organization
+    const venues : Venue[] = useSelector(
+      (state: RootState) => state.venueList.venues
     );
 
     const isLoading = useSelector(
@@ -49,9 +49,9 @@ export const VenueListFlatList = React.memo(
 
     return (
       <StyledFlatList
-        className="flex-1 w-full h-[15rem]"
+        className="flex-1 w-full"
         keyExtractor={(item: Venue) => item.id}
-        data={organization?.venues}
+        data={venues}
         renderItem={({ item }: { item: Venue }) => (
           <VenueListItemList
             item={item}

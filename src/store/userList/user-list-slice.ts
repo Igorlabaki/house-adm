@@ -92,6 +92,20 @@ export const selectedUser = createAsyncThunk(
 
   })
 
+export const deleteUserAsync = createAsyncThunk(
+  "user/delete",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await api
+        .delete(`/user/delete/${userId}`)
+        .then((response) => response?.data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+    }
+
+  })
+
 export const registerUser = createAsyncThunk(
   "user/createNewUser",
   async (params: RegisterUserRequestParams, { rejectWithValue }) => {
@@ -101,6 +115,7 @@ export const registerUser = createAsyncThunk(
         .then((response) => response?.data);
       return response;
     } catch (error) {
+
       return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
     }
 

@@ -1,8 +1,12 @@
-import { RootState } from "@store/index";
-import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
 import { UserOrganizationFlatList } from "./components/user-organization-list";
-import { fecthOrganizations, Organization, selectOrganizationAsync } from "@store/organization/organizationSlice";
+import {
+  fecthOrganizations,
+  Organization,
+  selectOrganizationAsync,
+} from "@store/organization/organizationSlice";
 import {
   StyledModal,
   StyledPressable,
@@ -15,11 +19,14 @@ import { VenuePermissionFlatList } from "./components/venues-permission-list";
 import { fecthUserPermission } from "@store/user-permission/user-permission-slice";
 import { UserOrganizationType } from "type";
 import { UserFlatList } from "./components/users-list";
-import { fecthUsers } from "@store/userList/user-list-slice";
+import { deleteUserAsync, fecthUsers } from "@store/userList/user-list-slice";
 import { VenueListFlatList } from "./components/venues-list-list";
 import { User } from "@store/auth/authSlice";
-import { Venue } from "@store/venue/venueSlice";
+import { fecthVenues, Venue } from "@store/venue/venueSlice";
 import { UserFormComponent } from "./components/users-list/create-user-form";
+import Toast from "react-native-simple-toast";
+import { Feather } from "@expo/vector-icons";
+import { DeleteConfirmationModal } from "@components/list/deleteConfirmationModal";
 
 export default function UsersScreen() {
   const queryParams = new URLSearchParams();
@@ -28,8 +35,14 @@ export default function UsersScreen() {
     (state: RootState) => state.organizationList.organization
   );
 
+  const [modalVisible, setModalVisible] = useState(false);
+
   const userOrganization: UserOrganizationType = useSelector(
     (state: RootState) => state.userOrganizationList.userOrganization
+  );
+
+  const selectedUser : User = useSelector(
+    (state: RootState) => state.userList.selectedUser
   );
 
   const [formSection, setFormSection] = useState<
@@ -37,12 +50,54 @@ export default function UsersScreen() {
   >("USER");
 
   const [user, setUser] = useState<User>(null);
-
+  const dispatch = useDispatch<AppDispatch>();
   const [createNewUserModal, setCreateNewUserModal] = useState<boolean>(false);
+
+  const handleDelete = () => {
+    setModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    const deleteItem = await dispatch(
+      deleteUserAsync(user.id)
+    );
+
+    if (deleteItem.meta.requestStatus === "fulfilled") {
+      Toast.show("Usuario deletado com sucesso." as string, 3000, {
+        backgroundColor: "rgb(75,181,67)",
+        textColor: "white",
+      });
+      setModalVisible(false)
+      setFormSection("NEW_USER")
+    }
+
+    if (deleteItem.meta.requestStatus == "rejected") {
+      Toast.show("Erro ao deletar usuario.", 3000, {
+        backgroundColor: "#FF9494",
+        textColor: "white",
+      });
+    }
+  };
+
+  const cancelDelete = () => {
+    setModalVisible(false);
+  };
 
   return (
     <StyledView className="bg-gray-dark flex-1 pt-5 flex flex-col h-full w-full">
-
+      {user  && formSection === "VENUE" || user && formSection === "NEW_VENUE"  && (
+        <StyledView className="glex flex-row justify-between items-center">
+          <StyledText className="text-custom-white font-bold text-lg mb-5">
+            {user?.username}
+          </StyledText>
+          <StyledPressable
+            className="mb-6"
+            onPress={async () => handleDelete()}
+          >
+            <Feather name="trash" size={16} color="white" />
+          </StyledPressable>
+        </StyledView>
+      )}
       {formSection === "USER" && (
         <>
           <StyledPressable
@@ -62,10 +117,9 @@ export default function UsersScreen() {
             fectData={fecthUserOrganizationByOrganizationId}
             queryParams={queryParams}
           />
-          <UserOrganizationFlatList setFormSection={setFormSection} />
+          <UserOrganizationFlatList setFormSection={setFormSection} setUser={setUser}/>
         </>
       )}
-
 
       {formSection === "NEW_USER" && (
         <StyledView className="h-[90vh]">
@@ -89,7 +143,7 @@ export default function UsersScreen() {
             fectData={fecthUsers}
             queryParams={queryParams}
           />
-          <UserFlatList setFormSection={setFormSection}/>
+          <UserFlatList setFormSection={setFormSection} setUser={setUser}/>
 
           {createNewUserModal && (
             <StyledModal
@@ -107,7 +161,7 @@ export default function UsersScreen() {
         </StyledView>
       )}
 
-      {formSection === "VENUE" && userOrganization && (
+      {formSection === "VENUE"  && (
         <StyledView className="flex flex-col gap-y-1 h-screen relative">
           <StyledText className="text-custom-gray text-[14px] font-semibold mb-4">
             Selecione a Propriedade:
@@ -126,17 +180,31 @@ export default function UsersScreen() {
         </StyledView>
       )}
 
-      {formSection === "NEW_VENUE" && !userOrganization && (
+      {formSection === "NEW_VENUE" && (
         <StyledView className="flex flex-col gap-y-1 h-screen relative">
-          <StyledText className="text-custom-gray text-[14px] font-semibold mb-4">
+          <StyledText className="text-custom-gray text-[14px] font-semibold">
             Selecione a Propriedade:
           </StyledText>
           <StyledView className="flex-1 max-h-64">
+            <SearchFilterListByQueryComponent
+              queryName="name"
+              queryParams={queryParams}
+              fectData={fecthVenues}
+              entityId={organization?.id}
+              entityName="organizationId"
+            />
             <VenueListFlatList setFormSection={setFormSection} />
           </StyledView>
           <StyledView />
         </StyledView>
       )}
+
+      <DeleteConfirmationModal
+        entity="usuario"
+        visible={modalVisible}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </StyledView>
   );
 }

@@ -9,18 +9,21 @@ import { selectedUser } from "@store/userList/user-list-slice";
 
 interface UserItemListProps {
   item: User;
+  setUser: React.Dispatch<React.SetStateAction<User>>
   setFormSection: React.Dispatch<React.SetStateAction<"USER" | "VENUE" | "NEW_USER" | "NEW_VENUE">>
 }
 
 export function UserItemList({
   item,
+  setUser,
   setFormSection,
 }: UserItemListProps) {
   const dispatch = useDispatch<AppDispatch>();
   const handlePress = async () => {
     const queryParams = new URLSearchParams();
     queryParams.append("userId", item.id)
-    await dispatch(selectedUser(`${queryParams.toString()}`))
+    const user = await dispatch(selectedUser(`${queryParams.toString()}`))
+    setUser(user.payload.data)
     setFormSection("NEW_VENUE") // Navega para a seção de permissões
   };
 

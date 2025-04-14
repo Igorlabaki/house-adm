@@ -1,26 +1,31 @@
 import { useMemo } from "react";
 import { format } from "date-fns";
 import { ProposalType } from "type";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@store/index";
 import { useNavigation } from "@react-navigation/native";
 import { formatCurrency } from "react-native-format-currency";
 import { StyledPressable, StyledText, StyledView } from "styledComponents";
-import { fetchProposalByIdAsync, openModal } from "@store/proposal/proposal-slice";
+import {
+  fetchProposalByIdAsync,
+  openModal,
+} from "@store/proposal/proposal-slice";
 
 interface ItemFlatListProps {
   proposal: ProposalType;
 }
 
 export function ProposalItemFlatList({ proposal }: ItemFlatListProps) {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const dispatch: AppDispatch = useDispatch();
   const formattedDate = useMemo(() => {
     return proposal?.startDate
       ? format(new Date(proposal.startDate), "dd/MM/yyyy")
       : "Data inválida";
   }, [proposal?.startDate]);
-  
+
+  const venue = useSelector((state: RootState) => state.venueList.venue);
+
   const formattedTotal = useMemo(() => {
     return proposal?.totalAmount
       ? formatCurrency({
@@ -34,6 +39,8 @@ export function ProposalItemFlatList({ proposal }: ItemFlatListProps) {
     await dispatch(fetchProposalByIdAsync(proposal.id));
     navigation.navigate("ProposaInfoScreen");
   }
+
+  const authorizedScreens = venue?.permissions?.includes("VIEW_AMOUNTS");
 
   return (
     <>
@@ -52,11 +59,13 @@ export function ProposalItemFlatList({ proposal }: ItemFlatListProps) {
               {formattedDate}
             </StyledText>
           </StyledView>
-          <StyledView className="flex-row items-start text-center">
-            <StyledText className="text-[13px] text-white font-semibold">
-              {formattedTotal}
-            </StyledText>
-          </StyledView>
+          {authorizedScreens && (
+            <StyledView className="flex-row items-start text-center">
+              <StyledText className="text-[13px] text-white font-semibold">
+                {formattedTotal}
+              </StyledText>
+            </StyledView>
+          )}
         </StyledView>
       </StyledPressable>
     </>

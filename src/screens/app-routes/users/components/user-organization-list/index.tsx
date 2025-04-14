@@ -7,14 +7,16 @@ import { StyledText, StyledView } from "styledComponents";
 import { ActivityIndicator, FlatList } from "react-native";
 import { UserOrganizationItemListComponent } from "./item-list";
 import { ItemSeparatorList } from "@components/list/itemSeparatorList";
+import { User } from "@store/auth/authSlice";
 
 export const StyledFlatList = styled(FlatList<UserOrganizationType>);
 
 interface UserPermissionProps{
+  setUser: React.Dispatch<React.SetStateAction<User>>
   setFormSection: React.Dispatch<React.SetStateAction<"USER" | "VENUE">>
 }
 
-export function UserOrganizationFlatList({setFormSection}: UserPermissionProps) {
+export function UserOrganizationFlatList({setFormSection,setUser}: UserPermissionProps) {
 
   const {userOrganizationsByOrganization,loading} = useSelector((state: RootState) => state.userOrganizationList);
 
@@ -45,6 +47,7 @@ export function UserOrganizationFlatList({setFormSection}: UserPermissionProps) 
             key={item.id}
             userorganization={item}
             setFormSection={setFormSection}
+            setUser={setUser}
             />
           );
         }}

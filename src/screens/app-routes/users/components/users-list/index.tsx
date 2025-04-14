@@ -12,6 +12,7 @@ import { UserItemList } from "./user-item-list";
 import React from "react";
 
 interface UserParams {
+  setUser: React.Dispatch<React.SetStateAction<User>>
   userOrganization?: UserOrganizationType;
   setFormSection: React.Dispatch<
     React.SetStateAction<"USER" | "VENUE" | "NEW_USER" | "NEW_VENUE">
@@ -21,7 +22,7 @@ interface UserParams {
 export const StyledFlatList = styled(FlatList<User>);
 
 export const UserFlatList = React.memo(
-  ({ setFormSection}: UserParams) => {
+  ({ setFormSection, setUser}: UserParams) => {
 
     const isLoading = useSelector(
       (state: RootState) => state.userList.loading
@@ -49,6 +50,7 @@ export const UserFlatList = React.memo(
           <UserItemList
             item={item}
             setFormSection={setFormSection}
+            setUser={setUser}
           />
         )}
         ItemSeparatorComponent={() => <ItemSeparatorList />}

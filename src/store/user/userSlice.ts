@@ -66,6 +66,7 @@ const userSlice = createSlice({
 export const updateUserAsync = createAsyncThunk(
   "user/updated",
   async (params: FormData, { rejectWithValue }) => {
+    console.log(params)
     try {
       const response = await api
         .put(`/user/update`, params, {
@@ -76,6 +77,7 @@ export const updateUserAsync = createAsyncThunk(
         .then((response) => response?.data);
       return response;
     } catch (error) {
+      console.log(error)
       return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
     }
 
