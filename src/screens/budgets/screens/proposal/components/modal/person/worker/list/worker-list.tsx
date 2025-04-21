@@ -13,11 +13,12 @@ import { ItemSeparatorList } from "@components/list/itemSeparatorList";
 export const StyledFlatList = styled(FlatList<WorkerType>);
 
 export function WorkerList() {
-
   const loading: boolean = useSelector(
     (state: RootState) => state.proposalList.loading
   );
-  const workerList  : WorkerType[] = useSelector((state: RootState) => state.workerState.workerList);
+  const workerList: WorkerType[] = useSelector(
+    (state: RootState) => state.workerState.workerList
+  );
   const renderItem = useCallback(({ item }: { item: WorkerType }) => {
     return <WorkerItemList worker={item} />;
   }, []);
@@ -43,6 +44,27 @@ export function WorkerList() {
 
   return (
     <StyledView className="w-full flex-1">
+      <StyledView className="flex flex-row justify-between items-center pb-3">
+        <StyledView className="flex flex-row justify-start items-center gap-x-2">
+          <StyledText className="text-custom-white font-bold">
+            Colaboradores :
+          </StyledText>
+          <StyledText className="text-custom-white font-light">
+            {`${workerList?.length}`}
+          </StyledText>
+        </StyledView>
+        <StyledView className="flex flex-row  justify-start items-center gap-x-2">
+          <StyledText className="text-custom-white font-bold">
+            Presentes :
+          </StyledText>
+          <StyledText className="text-custom-white font-light">
+            {`${
+              workerList?.filter((item: WorkerType) => item.attendance === true)
+                .length
+            }`}
+          </StyledText>
+        </StyledView>
+      </StyledView>
       <StyledFlatList
         windowSize={5}
         className="flex-1"

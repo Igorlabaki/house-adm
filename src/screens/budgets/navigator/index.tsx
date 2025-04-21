@@ -16,7 +16,6 @@ export function BudgetNavigator() {
       (state: RootState) => state.venueList.venue
     );
 
-    console.log(venue?.permissions)
   return (
     <BudgetTabNavigator.Navigator
       screenOptions={{

@@ -112,7 +112,7 @@ export function WorkerModal({
                 }
               }}
               className={`${
-                worker?.attendance ? "bg-red-700" : "bg-green-700"
+                worker?.attendance ? "bg-red-700" : "bg-blue-800"
               } flex justify-center items-center py-3 rounded-md`}
             >
               <StyledText className="font-bold text-custom-white">

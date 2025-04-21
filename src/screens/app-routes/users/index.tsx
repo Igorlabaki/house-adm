@@ -82,11 +82,11 @@ export default function UsersScreen() {
   const cancelDelete = () => {
     setModalVisible(false);
   };
-
+ 
   return (
     <StyledView className="bg-gray-dark flex-1 pt-5 flex flex-col h-full w-full">
-      {user  && formSection === "VENUE" || user && formSection === "NEW_VENUE"  && (
-        <StyledView className="glex flex-row justify-between items-center">
+      {user  && formSection === "VENUE" || user && formSection === "NEW_VENUE"  ? (
+        <StyledView className="glex flex-row justify-between items-center"> 
           <StyledText className="text-custom-white font-bold text-lg mb-5">
             {user?.username}
           </StyledText>
@@ -97,7 +97,7 @@ export default function UsersScreen() {
             <Feather name="trash" size={16} color="white" />
           </StyledPressable>
         </StyledView>
-      )}
+      ): null}
       {formSection === "USER" && (
         <>
           <StyledPressable

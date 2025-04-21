@@ -37,7 +37,6 @@ export function UserOrganizationItemListComponent({
     <StyledPressable
       onPress={async () => {
         const userOrganization = await  dispatch(selectUserOrganizationAsync(`${queryParams.toString()}`))
-        console.log(userOrganization?.payload?.data?.user)
         setUser(userOrganization?.payload?.data?.user)
         setFormSection("VENUE")
       }}
