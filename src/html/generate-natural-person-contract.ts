@@ -26,16 +26,22 @@ export function generateNaturalPersonContractHTML(data: GenerateNaturalPersonCon
     const today = new Date();
 
     const toRoman = (num: number): string => {
-        const romanNumerals = [
+        // Define os numerais romanos com seus valores correspondentes
+        // usando tuplas fortemente tipadas para evitar erros de tipagem
+        const romanNumerals: Array<[string, number]> = [
             ["M", 1000], ["CM", 900], ["D", 500], ["CD", 400],
             ["C", 100], ["XC", 90], ["L", 50], ["XL", 40],
             ["X", 10], ["IX", 9], ["V", 5], ["IV", 4], ["I", 1]
         ];
 
+        // Cria uma cópia do número para não modificar o original
+        let numCopy = num;
+        
         return romanNumerals.reduce((result, [letter, value]) => {
-            while (num >= value) {
+            // Enquanto o número for maior ou igual ao valor atual do numeral romano
+            while (numCopy >= value) {
                 result += letter;
-                num -= value;
+                numCopy -= value;
             }
             return result;
         }, "");
@@ -138,7 +144,8 @@ export function generateNaturalPersonContractHTML(data: GenerateNaturalPersonCon
         body {
             font-family: 'Times New Roman', Times, serif;
             line-height: 1.6;
-            margin: 1.5cm;
+            margin-left: 1.5cm;
+            margin-rigth: 1.5cm;
             font-size: 12pt;
             color: #000000;
             text-align: justify;
