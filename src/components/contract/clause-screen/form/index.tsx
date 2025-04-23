@@ -110,6 +110,7 @@ export function ClauseFormComponent({
           const response = await dispatch(
             updateClauseByIdAsync({
               clauseId: clause.id,
+              previousTitle: clause?.title,
               data: {
                 text: values.text,
                 title: values.title,

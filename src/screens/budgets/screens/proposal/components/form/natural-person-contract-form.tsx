@@ -55,7 +55,7 @@ export default function NaturalPersonContractForm() {
           cpf: proposal?.cpf || "",
           paymentInfo: {
             dueDate: "5",
-            numberPayments: "1",
+            numberPayments: "2",
             signalAmount: String(proposal.totalAmount / 2),
           },
           proposalId: proposal?.id,
@@ -608,6 +608,7 @@ export default function NaturalPersonContractForm() {
               <SendModal
                 viaEmail={() => {
                   const { contract, owner, paymentInfo, ...rest } = values;
+                  console.log("signalAmount", )
                   sendContractPessoFisicaEmail({
                     owner: owner,
                     venue: venue,
@@ -617,15 +618,15 @@ export default function NaturalPersonContractForm() {
                     paymentInfo: {
                       dueDate: Number(paymentInfo.dueDate),
                       signalAmount: Number(
-                        transformMoneyToNumber(paymentInfo.signalAmount)
+                        paymentInfo.signalAmount
                       ),
                       numberPayments: Number(paymentInfo.numberPayments),
                       paymentValue:
                         (proposal.totalAmount -
                           Number(
-                            transformMoneyToNumber(paymentInfo.signalAmount)
+                            paymentInfo.signalAmount
                           )) /
-                          Number(paymentInfo.numberPayments) || 1,
+                          (Number(paymentInfo.numberPayments) - 1) || 1,
                     },
                   });
                 }}

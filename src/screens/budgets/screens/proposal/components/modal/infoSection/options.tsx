@@ -237,7 +237,7 @@ export default function OptionsComponent({ onCancel }: OptionsComponentProps) {
               userId: user.id,
               username: user.username,
               proposalId: proposal.id,
-              clientName: proposal.clientCompleteName,
+              clientName: proposal.completeClientName,
               clientEmail: proposal.email,
             })
           }

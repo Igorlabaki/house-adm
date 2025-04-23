@@ -12,9 +12,12 @@ export async function removeAccessTokenSave(){
 
 export async function getAccessTokenSave(){
     const storage = await AsyncStorage.getItem(ACCESS_TOKEN_STORAGE);
-
-
-    const access_token = await storage ? JSON.parse(storage) : {};
-
-    return access_token
+    if (!storage) return null;
+    
+    try {
+        return JSON.parse(storage);
+    } catch (error) {
+        console.error('Erro ao parsear token:', error);
+        return null;
+    }
 }
