@@ -90,9 +90,9 @@ export default function OrganizationMenu({
       animationType="slide"
     >
       <StyledView
-        className={"flex-1 justify-center items-center bg-transparent"}
+        className={"flex-1 justify-center items-center bg-black/40"}
       >
-        <StyledView className={"w-4/5 bg-gray-900 rounded-lg p-6 items-center"}>
+        <StyledView className={"w-4/5 bg-gray-dark rounded-lg p-6 items-center"}>
           <StyledPressable
             className="absolute top-2 right-2"
             onPress={() => setMenuModalIsOpen(false)}

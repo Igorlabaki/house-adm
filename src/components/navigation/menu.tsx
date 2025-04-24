@@ -40,7 +40,7 @@ export default function MenuComponent({
       }}
       animationType="slide"
     >
-      <StyledView className="w-screen h-screen bg-gray-reg ">
+      <StyledView className="w-screen h-screen bg-gray-dark ">
         <StyledPressable  onPress={() => setFormIsOpen(true)} className="absolute top-10 right-5">
           <FontAwesome5 name="edit" size={20} color="white" />
         </StyledPressable>
