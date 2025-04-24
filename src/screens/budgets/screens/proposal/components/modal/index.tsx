@@ -44,8 +44,8 @@ export function ProposalModal({
       }}
       animationType="fade"
     >
-      <StyledScrollView>
-          <StyledView className="flex-1 bg-gray-dark pt-5 relative pb-16">
+      <StyledScrollView >
+          <StyledView className="flex-1 bg-gray-dark pt-5 relative pb-16 ">
         
             {type === "UPDATE" && venue?.hasOvernightStay === true ? (
               <ProposalPerDayForm

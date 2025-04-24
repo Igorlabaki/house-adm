@@ -11,7 +11,7 @@ export function InfoSection() {
   );
 
   return (
-    <StyledView className="flex">
+    <StyledView className="flex ">
       {proposal && (
         <StyledView className={`flex-1 flex-grow flex-col relative `}>
           <InfoEventos />

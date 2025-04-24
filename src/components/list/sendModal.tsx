@@ -37,7 +37,7 @@ export const SendModal = ({
       visible={visible}
       onRequestClose={onCancel}
     >
-      <StyledView className={"flex-1 justify-center items-center bg-black/40"}>
+      <StyledView className={"flex-1 justify-center items-center bg-black/80"}>
         <StyledView
           className={"w-4/5 bg-gray-dark rounded-lg p-6 items-center  relative"}
         >

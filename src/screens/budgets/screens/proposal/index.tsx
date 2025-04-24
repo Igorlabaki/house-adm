@@ -4,7 +4,7 @@ import { ProposalFilter } from "screens/budgets/screens/proposal/components/list
 
 export function PendingScreen() {
   return (
-    <StyledView className="bg-gray-dark flex-1 pt-5 flex flex-col h-full w-full">
+    <StyledView className="bg-gray-dark flex-1 pt-5 flex flex-col h-full w-full ">
       <ProposalFilter />
       <ProposalFlatList />
     </StyledView>
