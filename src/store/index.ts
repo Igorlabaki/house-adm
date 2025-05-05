@@ -1,5 +1,5 @@
 import { userReducer } from "./user/userSlice";
-import { sessionReducer } from "./auth/authSlice";
+import { authReducer } from "./auth/authSlice";
 import { configureStore } from "@reduxjs/toolkit";
 import { textListReducer } from "./text/textSlice";
 import { venueListReducer } from "./venue/venueSlice";
@@ -32,7 +32,7 @@ import { goalStateReducer } from "./goal/goal-slice";
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    session: sessionReducer,
+    session: authReducer,
     userList: userListReducer,
     textList: textListReducer,
     ownerList: ownerListReducer,

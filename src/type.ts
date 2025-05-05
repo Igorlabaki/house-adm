@@ -1,8 +1,31 @@
+
 import { User } from "@store/auth/authSlice";
 import { Organization } from "@store/organization/organizationSlice";
 import { Schedule } from "@store/schedule/schedule-slice";
 import { Venue } from "@store/venue/venueSlice";
 
+
+export interface AuthToken {
+  accessToken: string;
+  expiresAt: number;
+}
+
+export interface Session {
+  id: string;
+  user: User;
+  expiresAt: Date;
+  isValid: boolean;
+  refreshTokenId?: string;
+}
+export interface AuthResponse {
+  accessToken: string;
+  session: Session;
+}
+
+export interface AuthError {
+  message: string;
+  code: string;
+}
 export interface TextType {
   id?: string;
   area: string;

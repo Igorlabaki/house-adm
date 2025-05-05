@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "660930829527",
+    "project_id": "eventhub-notifications-system",
+    "storage_bucket": "eventhub-notifications-system.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660930829527:android:c8aecab2d9ae1ccbfea492",
+        "android_client_info": {
+          "package_name": "com.eventhub.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcZoEt9Yr9WwynaQ2ChYBkjA3J2zMa7aY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

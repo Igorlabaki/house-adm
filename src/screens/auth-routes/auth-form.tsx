@@ -15,12 +15,16 @@ import { AppDispatch, RootState } from "@store/index";
 import { authenticateUser } from "@store/auth/authSlice";
 import { showMessage } from "react-native-flash-message";
 import { ActivityIndicator } from "react-native";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, AntDesign } from "@expo/vector-icons";
+import { useGoogleAuth } from "../../hooks/useGoogleAuth";
+import { AuthenticateDataResponse } from "@store/auth/authSlice";
 
 export default function AuthForm() {
   const dispatch = useDispatch<AppDispatch>();
   const loading = useSelector((state: RootState) => state.session.loading);
   const [showPassword, setShowPassword] = useState(false);
+  const { signIn: googleSignIn } = useGoogleAuth();
+
   return (
     <Formik
       validateOnChange={false}
@@ -43,26 +47,29 @@ export default function AuthForm() {
       }}
       onSubmit={async (values: { email: string; password: string }) => {
         const response = await dispatch(authenticateUser(values));
+        const payload = response.payload as AuthenticateDataResponse | string;
 
-        if (response.meta.requestStatus == "rejected") {
+        if (response.meta.requestStatus === "rejected") {
           showMessage({
             type: "danger",
             floating: true,
             duration: 3000,
             message: "Erro na autenticação",
-            description: response?.payload,
+            description:
+              typeof payload === "string" ? payload : "Erro ao autenticar",
           });
         }
 
-        if (response.meta.requestStatus == "fulfilled") {
+        if (
+          response.meta.requestStatus === "fulfilled" &&
+          typeof payload !== "string"
+        ) {
           showMessage({
             duration: 3000,
             floating: true,
             type: "success",
             position: "bottom",
-            message: `Bem Vindo ${
-              response?.payload.session?.user?.username || ""
-            }!`,
+            message: `Bem Vindo ${payload.session?.user?.username || ""}!`,
           });
         }
       }}
@@ -122,9 +129,19 @@ export default function AuthForm() {
             />
             <StyledView className="absolute bottom-3 right-4">
               {showPassword ? (
-                <Entypo name="eye" size={15} color="white" onPress={() => setShowPassword(false)}/>
+                <Entypo
+                  name="eye"
+                  size={15}
+                  color="white"
+                  onPress={() => setShowPassword(false)}
+                />
               ) : (
-                <Entypo name="eye-with-line" size={15} color="white" onPress={() => setShowPassword(true)}/>
+                <Entypo
+                  name="eye-with-line"
+                  size={15}
+                  color="white"
+                  onPress={() => setShowPassword(true)}
+                />
               )}
             </StyledView>
           </StyledView>
@@ -132,16 +149,40 @@ export default function AuthForm() {
             onPress={() => {
               handleSubmit();
             }}
-            className="bg-gray-ligth flex justify-center items-center py-3 mt-5 rounded-md"
+            className="bg-gray-ligth border-[1px] border-custom-white flex flex-row justify-center items-center py-3 mt-5 rounded-md"
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
-              <StyledText className="font-bold text-custom-white">
-                Login
-              </StyledText>
+              <>
+                <StyledText className="font-bold text-custom-white">
+                  Entrar
+                </StyledText>
+              </>
             )}
+          </StyledPressable>
+
+          <StyledView className="flex flex-row items-center my-1">
+            <StyledView className="flex-1 h-[1px] bg-gray-600" />
+            <StyledText className="mx-4 text-gray-400">ou</StyledText>
+            <StyledView className="flex-1 h-[1px] bg-gray-600" />
+          </StyledView>
+
+          <StyledPressable
+            onPress={() => googleSignIn()}
+            className="bg-[#DB4437] flex flex-row justify-center items-center py-3 rounded-md border-[1px] border-custom-white"
+            disabled={loading}
+          >
+            <AntDesign
+              name="google"
+              size={20}
+              color="white"
+              style={{ marginRight: 10 }}
+            />
+            <StyledText className="font-bold text-white">
+              Entrar com Google
+            </StyledText>
           </StyledPressable>
         </StyledView>
       )}

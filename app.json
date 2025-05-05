@@ -1,11 +1,12 @@
 {
   "expo": {
     "name": "EventHub",
-    "slug": "EventHub",
+    "slug": "event-hub",
     "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "eventhub",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -23,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.igorlabakig.ar756dashboard"
+      "package": "com.eventhub.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

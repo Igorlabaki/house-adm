@@ -5,6 +5,8 @@ import { Organization } from "@store/organization/organizationSlice";
 import { getUserSave, removeUserSave, storageUserSave } from "storage/storage-user";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { getAccessTokenSave, removeAccessTokenSave, storageAccessTokenSave } from "storage/storage-access-token";
+import { authService } from "../../services/auth.service";
+import { StoredToken, RegisterGoogleUserRequestParams } from "../../types/auth.types";
 
 
 export interface AuthenticateDataResponse {
@@ -42,93 +44,98 @@ const initialState = {
   accessToken: null,
 };
 
-export const authenticateUser: any = createAsyncThunk(
+export const authenticateUser = createAsyncThunk(
   "auth/authenticate",
-  async ({ password, email }: { password: string, email: string }, { rejectWithValue }) => {
+  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/auth/authenticate`,
-        {
-          email,
-          password
-        }
-      ).then((response) => response.data);
-      if (response?.session?.user) {
-        await storageUserSave(response?.session?.user);
-      }
-
-      if (response?.accessToken) {
-        await storageAccessTokenSave(response?.accessToken);
-      }
-      return response;
+      return await authService.authenticate(email, password);
     } catch (error: any) {
-      return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
+      return rejectWithValue(error.response?.data?.message || "Erro ao autenticar usuário");
     }
   }
 );
 
-export const loadSession = createAsyncThunk('auth/loadSession', async () => {
-  const accessToken = await getAccessTokenSave();
-  const user = await getUserSave();
-  
-  if (accessToken && user) {
-    return { accessToken, user };
-  } else {
+export const loadSession = createAsyncThunk(
+  'auth/loadSession', 
+  async () => {
+    const tokenData = await getAccessTokenSave();
+    if (tokenData?.accessToken && tokenData.session) {
+      return tokenData;
+    }
     return null;
   }
-});
+);
 
-
-export const loadAccessTokenFromStorage = createAsyncThunk('auth/accessToken', async () => {
-  const accessToken = await getAccessTokenSave();
-  if (accessToken) {
-    return accessToken
+export const googleAuth = createAsyncThunk(
+  "auth/googleAuth",
+  async (params: RegisterGoogleUserRequestParams, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/register/google', params);
+      const { accessToken, session } = response.data;
+      
+      await storageAccessTokenSave(accessToken);
+      
+      return { accessToken, session };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Erro ao autenticar com Google");
+    }
   }
-   
-  return
-});
+);
 
-const sessionSlice = createSlice({
-  name: "session",
+const authSlice = createSlice({
+  name: "auth",
   initialState,
   reducers: {
     logout: (state) => {
-      removeUserSave(); // Remove o usuário do armazenamento
-      removeAccessTokenSave(); // Remove o token de acesso do armazenamento
+      authService.logout();
       state.error = null;
       state.loading = false;
-      state.accessToken = null; // Limpa o token do estado
-      state.session = null; // Limpa a sessão do estado
+      state.accessToken = null;
+      state.session = null;
+      state.user = null;
     },
   },
   extraReducers: (builder) => {
-    // Fecth session 
-    builder.addCase(authenticateUser.pending, (state) => {
-      state.loading = true;
-    }),
-      builder.addCase(authenticateUser.fulfilled, (state, action: PayloadAction<AuthenticateDataResponse>) => {
+    builder
+      .addCase(authenticateUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(authenticateUser.fulfilled, (state, action: PayloadAction<StoredToken>) => {
         state.loading = false;
-        state.accessToken = action.payload?.accessToken;
+        state.accessToken = action.payload.accessToken;
         state.session = action.payload.session;
         state.user = action.payload.session.user;
         state.error = "";
-        (dispatch: AppDispatch) => dispatch(fetchUser());
-      }),
-      builder.addCase(authenticateUser.rejected, (state, action) => {
+      })
+      .addCase(authenticateUser.rejected, (state, action) => {
         state.loading = false;
-        state.accessToken = "";
-        state.error = action.payload;
+        state.accessToken = null;
+        state.error = action.payload as string;
       })
       .addCase(loadSession.fulfilled, (state, action) => {
         if (action.payload) {
           state.accessToken = action.payload.accessToken;
-          state.user = action.payload.user;
+          state.session = action.payload.session;
+          state.user = action.payload.session.user;
           state.error = "";
         }
+      })
+      .addCase(googleAuth.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(googleAuth.fulfilled, (state, action) => {
+        state.loading = false;
+        state.accessToken = action.payload.accessToken;
+        state.session = action.payload.session;
+        state.error = "";
+      })
+      .addCase(googleAuth.rejected, (state, action) => {
+        state.loading = false;
+        state.accessToken = null;
+        state.error = action.payload as string;
       });
-  }
+  },
 });
 
-
-export const { logout } = sessionSlice.actions;
-
-export const sessionReducer = sessionSlice.reducer;
+export const { logout } = authSlice.actions;
+export const authReducer = authSlice.reducer;
