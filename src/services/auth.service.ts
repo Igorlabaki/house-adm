@@ -10,9 +10,9 @@ class AuthService {
 
   async authenticate(email: string, password: string): Promise<StoredToken> {
     try {
-      const fcmToken = await this.notificationService.getPushToken();
+      /* onst fcmToken = await this.notificationService.getPushToken(); */
       const payload: any = { email, password };
-      if (fcmToken) payload.fcmToken = fcmToken;
+     /*  if (fcmToken) payload.fcmToken = fcmToken; */
 
       const response = await api.post('/auth/authenticate', payload);
 

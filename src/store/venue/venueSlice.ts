@@ -306,11 +306,13 @@ export const fecthVenues: any = createAsyncThunk(
   "venue/list",
   async (param: string, { rejectWithValue }) => {
     try {
+      console.log(`/venue/permittedVenueList?${param}`)
       const response = await api
         .get(
           `/venue/permittedVenueList?${param}`
         )
         .then((response) => response.data);
+        console.log(response);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");

@@ -13,7 +13,7 @@ export function VenueListScreen() {
   );
   
   return (
-    <StyledView className="h-full w-full bg-gray-dark py-5">
+    <StyledView className="h-full w-full bg-eventhub-background py-5">
       <StyledView className="flex flex-col justify-center items-center gap-y-4 mt-4">
         <VenueFlatList isLoading={loading} venueList={venues} />
       </StyledView>

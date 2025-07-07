@@ -33,25 +33,23 @@ export function UserPermissionItemList({
     }
     setIsModalOpen(true); // Navega para a seção de permissões
   };
-
+  console.log(item?.userPermission?.role)
   return (
     <StyledPressable
       onPress={() => handlePress()}
-      className={`flex flex-row items-center justify-between px-5 py-5 bg-[#313338] rounded-md overflow-hidden shadow-lg relative w-full 
-        ${
-            item.userPermission
-            ? "bg-green-800"
-            : ""
-        }
-      `}
+      className=" flex flex-row justify-between items-center 
+      px-5 bg-white border-[1px] border-l-[3px] border-l-eventhub-primary border-y-gray-200 border-r-gray-200 shadow-lg rounded-md py-5
+      overflow-hidden  relative w-full"
       key={item?.id}
     >
-      <StyledText className="text-custom-white text-md font-bold">
+      <StyledText className="text-gray-600 text-md font-bold">
         {item?.name}
       </StyledText>
       <StyledView className="flex-row justify-start items-start gap-x-2">
-        <StyledText className="text-[12px] text-custom-white font-semibold">
-          {item?.userPermission?.role}
+        <StyledText className={`${item?.userPermission?.role === "ADMIN" ? "text-green-800 bg-green-100" : "text-blue-800 bg-blue-100"} p-1 rounded-md  text-[12px]  font-semibold`}>
+          {item?.userPermission?.role
+            ? item.userPermission.role.charAt(0).toUpperCase() + item.userPermission.role.slice(1).toLowerCase()
+            : ""}
         </StyledText>
       </StyledView>
       {isModalOpen && item.userPermission && (

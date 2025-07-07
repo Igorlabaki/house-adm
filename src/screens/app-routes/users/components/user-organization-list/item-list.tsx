@@ -40,7 +40,9 @@ export function UserOrganizationItemListComponent({
         setUser(userOrganization?.payload?.data?.user)
         setFormSection("VENUE")
       }}
-      className="flex flex-col items-start  justify-center px-5 py-5 bg-[#313338] w-full rounded-md overflow-hidden shadow-lg relative"
+      className=" flex flex-col items-start justify-center 
+      px-5 bg-white border-[1px] border-l-[3px] border-l-eventhub-primary border-y-gray-200 border-r-gray-200 shadow-lg rounded-md py-5
+      overflow-hidden  relative w-full" 
     >
       <StyledView className=" flex flex-row gap-y-2 gap-x-3  items-center justify-between  overflow-hidden overflow-y-auto w-full">
         <StyledView className="flex flex-row justify-start items-center gap-x-1">
@@ -54,11 +56,11 @@ export function UserOrganizationItemListComponent({
             </StyledPressable>
           ) : (
             <StyledPressable className="mr-2">
-              <FontAwesome5 name="user-circle" size={27} color="white" />
+              <FontAwesome5 name="user-circle" size={27} color="#4b5563" />
             </StyledPressable>
           )}
           <StyledView className="flex-row justify-start items-start gap-x-2">
-            <StyledText className="text-[12px] text-white font-semibold">
+            <StyledText className="text-[12px] text-gray-600  font-semibold">
               {userorganization?.user?.username}
             </StyledText>
           </StyledView>

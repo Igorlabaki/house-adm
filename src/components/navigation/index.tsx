@@ -45,7 +45,7 @@ export default function AppNavigator() {
       <Stack.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: "#1E1F22",
+            backgroundColor: "#4f46e5",
           },
           headerTitleStyle: {
             color: "#fff",
@@ -86,8 +86,8 @@ export default function AppNavigator() {
             title: "",
             headerLeft: () => {
               return (
-                <StyledText className="text-white font-semibold text-lg">
-                  Suas Organizacoes
+                <StyledText className="text-white font-semibold text-lg pl-2">
+                  Organizações
                 </StyledText>
               );
             },
@@ -101,7 +101,7 @@ export default function AppNavigator() {
             title: "",
             headerLeft: () => {
               return (
-                <StyledText className="text-white font-semibold text-lg">
+                <StyledText className="text-white font-semibold text-lg pl-2">
                   Proprietarios
                 </StyledText>
               );
@@ -116,7 +116,7 @@ export default function AppNavigator() {
             title: "",
             headerLeft: () => {
               return (
-                <StyledText className="text-white font-semibold text-lg">
+                <StyledText className="text-white font-semibold text-lg pl-2">
                   Contrato
                 </StyledText>
               );
@@ -131,7 +131,7 @@ export default function AppNavigator() {
             title: "",
             headerLeft: () => {
               return (
-                <StyledText className="text-white font-semibold text-lg">
+                <StyledText className="text-white font-semibold text-lg pl-2">
                   Permissoes
                 </StyledText>
               );
@@ -146,7 +146,7 @@ export default function AppNavigator() {
             title: "",
             headerLeft: () => {
               return (
-                <StyledText className="text-white font-semibold text-lg">
+                <StyledText className="text-white font-semibold text-lg pl-2">
                   Contatos
                 </StyledText>
               );
@@ -161,7 +161,7 @@ export default function AppNavigator() {
             title: "",
             headerLeft: () => {
               return (
-                <StyledText className="text-white font-semibold text-lg">
+                <StyledText className="text-white font-semibold text-lg pl-2">
                   Metas / Precos 
                 </StyledText>
               );
@@ -176,7 +176,7 @@ export default function AppNavigator() {
             title: "",
             headerLeft: () => {
               return (
-                <StyledView className="flex flex-row gap-x-4 justify-center items-center">
+                <StyledView className="flex flex-row gap-x-4 justify-center items-center pl-2">
                   <StyledText className="text-white font-semibold text-lg">
                     {organization?.name}
                   </StyledText>
@@ -198,8 +198,8 @@ export default function AppNavigator() {
             title: "",
             headerLeft: () => {
               return (
-                <StyledView className="flex flex-row gap-x-4 justify-center items-center">
-                  <StyledText className="text-white font-semibold text-lg">
+                <StyledView className="flex flex-row gap-x-4 justify-center items-center pl-2">
+                  <StyledText className="text-white font-semibold text-lg ">
                     {venue?.name}
                   </StyledText>
                   {venue?.permissions?.includes("EDIT_VENUES") && (

@@ -173,7 +173,7 @@ export function CreateImageForm({ setIsModalOpen }: ImageFormProps) {
         handleChange,
         setFieldValue,
       }) => (
-        <StyledScrollView className="w-[90%] mx-auto my-5 flex flex-col">
+        <StyledScrollView className="w-[90%] mx-auto flex flex-col">
           <StyledView className="flex flex-col gap-y-3">
             <StyledView className="relative flex-col gap-y-2 flex justify-center items-center w-full ">
               <StyledView className="h-[200px] flex justify-center items-center w-full border-gray-400 rounded-md border-dotted border-spacing-3 border-[2px] cursor-pointer hover:bg-gray-100 transition duration-300">

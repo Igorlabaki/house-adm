@@ -11,8 +11,7 @@ import { fecthOrganizations } from "@store/organization/organizationSlice";
 import { OrganizationFlatList } from "../../../components/organization/list";
 import OrganizationFormModalComponent from "../../../components/organization/form";
 import { SearchFilterListByQueryComponent } from "@components/list/searchFilterListByQuery";
-import { fecthUserOrganization } from "@store/userOrganization/user-organization--slice";
-import { SearchFilterListByQueriesComponent } from "@components/list/searchFilterListByQueries";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function OrganizationListScreen() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -25,12 +24,12 @@ export default function OrganizationListScreen() {
   const queryParams = new URLSearchParams();
 
   return (
-    <StyledView className="w-full bg-gray-dark  py-5 h-screen">
+    <StyledView className="w-full bg-eventhub-background   py-5 h-screen px-1">
       <StyledView className="flex flex-col justify-center items-start gap-y-4 w-full mt-10">
         <StyledPressable
           onPress={() => setIsModalOpen(true)}
           className="
-          justify-center items-center bg-green-800 active:scale-95
+          justify-center items-center bg-eventhub-primary active:scale-95
           rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-2 w-[50%] border-[0.6px] border-white border-solid"
         >
           <StyledText className="text-white text-sm font-bold text-center">

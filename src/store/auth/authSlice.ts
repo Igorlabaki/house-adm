@@ -6,7 +6,7 @@ import { getUserSave, removeUserSave, storageUserSave } from "storage/storage-us
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { getAccessTokenSave, removeAccessTokenSave, storageAccessTokenSave } from "storage/storage-access-token";
 import { authService } from "../../services/auth.service";
-import { StoredToken, RegisterGoogleUserRequestParams } from "../../types/auth.types";
+import { StoredToken, RegisterGoogleUserRequestParams, RegisterUserRequestParams } from "../../types/auth.types";
 
 
 export interface AuthenticateDataResponse {
@@ -82,6 +82,32 @@ export const googleAuth = createAsyncThunk(
   }
 );
 
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (params: RegisterUserRequestParams, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/register', params);
+      const { accessToken, session } = response.data;
+      await storageAccessTokenSave(accessToken);
+      return { accessToken, session };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Erro ao registrar usuário");
+    }
+  }
+);
+
+export const forgotPassword = createAsyncThunk(
+  "auth/forgotPassword",
+  async (email: string, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/forgot-password', { email });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Erro ao solicitar recuperação de senha");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -132,6 +158,31 @@ const authSlice = createSlice({
       .addCase(googleAuth.rejected, (state, action) => {
         state.loading = false;
         state.accessToken = null;
+        state.error = action.payload as string;
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.accessToken = action.payload.accessToken;
+        state.session = action.payload.session;
+        state.error = "";
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.accessToken = null;
+        state.error = action.payload as string;
+      })
+      .addCase(forgotPassword.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.loading = false;
+        state.error = "";
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload as string;
       });
   },

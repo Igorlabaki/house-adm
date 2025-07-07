@@ -30,10 +30,12 @@ export function VenueItemList({
         await dispatch(selectVenueAsync(`${queryParams.toString()}`));
         navigation.navigate("SelectedVenue");
       }}
-      className="flex flex-col items-start justify-start px-5 py-5 bg-[#313338] rounded-md overflow-hidden shadow-lg relative w-full "
+      className=" flex flex-col items-start justify-center 
+        px-5 bg-white border-[1px] border-l-[3px] border-l-eventhub-primary border-y-gray-200 border-r-gray-200 shadow-lg rounded-md py-5
+        overflow-hidden  relative w-full" 
       key={venue.id}
     >
-      <StyledText className="text-custom-white text-md">
+      <StyledText className="font-bold  text-gray-600 text-md">
         {venue.name}
       </StyledText>
     </StyledPressable>

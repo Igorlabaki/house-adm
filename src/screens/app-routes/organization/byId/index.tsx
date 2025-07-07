@@ -37,12 +37,12 @@ export function SelectedOrganizationScreen() {
   }, [organization?.id, dispatch]);
 
   return (
-    <StyledView className="h-full w-full bg-gray-dark py-5 relative">
+    <StyledView className="h-full w-full bg-eventhub-background py-5 relative px-1">
       <StyledPressable
         onPress={() => setIsModalOpen(true)}
         className="
-          justify-center items-center bg-green-800 hover:bg-green-600 active:bg-green-700 
-          rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-2 border-[0.6px] border-white border-solid w-[50%]"
+          justify-center items-center bg-eventhub-primary active:scale-95
+          rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-2 w-[50%] border-[0.6px] border-white border-solid"
       >
         <StyledText className="text-white text-sm font-bold text-center">
           Nova Locacao

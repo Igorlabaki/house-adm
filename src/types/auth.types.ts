@@ -1,3 +1,7 @@
+import type { RegisterUserRequestParams as ZodRegisterUserRequestParams } from "@schemas/user/register-user-params-schema";
+
+export type RegisterUserRequestParams = ZodRegisterUserRequestParams;
+
 export interface RegisterGoogleUserRequestParams {
   googleToken: string;
   userData: {

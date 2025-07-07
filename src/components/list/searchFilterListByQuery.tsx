@@ -32,7 +32,7 @@ export function SearchFilterListByQueryComponent({
 
   return (
     <StyledView>
-      <StyledView className="w-full py-2 px-2 flex justify-start items-center  rounded-md bg-white flex-row my-3">
+      <StyledView className="w-full py-2 px-2 flex justify-start border-[1px] border-gray-200 shadow-lg items-center  rounded-md bg-white flex-row my-3">
         <EvilIcons name="search" size={24} color="black" />
         <StyledTextInput
           onChangeText={(value) => setQuery(value)}

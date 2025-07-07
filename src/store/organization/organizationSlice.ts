@@ -17,9 +17,7 @@ export interface OrganizationListDataResponse {
 export interface CreateOrganizationDataResponse {
   success: boolean,
   message: string,
-  data: {
-    organization: Organization
-  },
+  data:Organization,
   count: number,
   type: string
 }
@@ -27,9 +25,7 @@ export interface CreateOrganizationDataResponse {
 export interface SelectedOrganizationDataResponse {
   success: boolean,
   message: string,
-  data: {
-    organization: Organization
-  },
+  data: Organization,
   count: number,
   type: string
 }
@@ -42,8 +38,39 @@ interface UpdateOrganizationRequestParams {
 export interface Organization {
   id: string;
   name: string;
+  email: string;
+  whatsappNumber: string;
+  instagramUrl: string;
+  facebookUrl: string;
+  tikTokUrl: string;
+  url: string;
+  logoUrl: string;
   venues: Venue[];
   owners: OwnerType[];
+}
+
+export interface CreateOrganizationDTO {
+  name: string;
+  userId: string;
+  whatsappNumber?: string;
+  tiktokUrl?: string;
+  instagramUrl?: string;
+  email: string;
+  url?: string;
+  facebookUrl?: string;
+  logoFile?: string | File;
+}
+
+export interface UpdateOrganizationDTO {
+  organizationId: string;
+  name: string;
+  whatsappNumber?: string
+  tiktokUrl?: string
+  instagramUrl?: string
+  email: string
+  url?: string
+  facebookUrl?: string
+  logoFile?: string | File;
 }
 
 const initialState = {
@@ -104,7 +131,7 @@ const organizationListSlice = createSlice({
     });
     builder.addCase(createOrganizationAsync.fulfilled, (state, action: PayloadAction<CreateOrganizationDataResponse>) => {
       state.loading = false;
-      state.organizations = [...state.organizations, action.payload.data.organization];
+      state.organizations = [...state.organizations, action.payload.data];
       state.error = "";
     }),
       builder.addCase(createOrganizationAsync.rejected, (state, action) => {
@@ -120,13 +147,13 @@ const organizationListSlice = createSlice({
     builder.addCase(updateOrganizationAsync.fulfilled, (state, action: PayloadAction<CreateOrganizationDataResponse>) => {
       state.loading = false;
       state.organizations = state.organizations.map((item: Organization) => {
-        if (item.id === action.payload.data.organization.id) {
-          return (item = { ...action.payload.data.organization });
+        if (item.id === action.payload.data.id) {
+          return (item = { ...action.payload.data });
         } else {
           return item;
         }
       });
-      state.organization = action.payload.data.organization;
+      state.organization = action.payload.data;
       state.error = "";
     }),
       builder.addCase(updateOrganizationAsync.rejected, (state, action) => {
@@ -141,7 +168,7 @@ const organizationListSlice = createSlice({
     });
     builder.addCase(selectOrganizationAsync.fulfilled, (state, action: PayloadAction<SelectedOrganizationDataResponse>) => {
       state.loading = false;
-      state.organization = action.payload.data.organization;
+      state.organization = action.payload.data;
       state.error = "";
     }),
       builder.addCase(selectOrganizationAsync.rejected, (state, action) => {
@@ -156,7 +183,7 @@ const organizationListSlice = createSlice({
     });
     builder.addCase(createOrganizationVenueAsync.fulfilled, (state, action: PayloadAction<CreateVenueDataResponse>) => {
       state.loading = false;
-      state.organization.venues = [...state.organization.venues, action.payload.data.venue];
+      state.organization.venues = [...state.organization.venues, action.payload.data];
       state.error = "";
     }),
       builder.addCase(createOrganizationVenueAsync.rejected, (state, action) => {
@@ -186,16 +213,34 @@ const organizationListSlice = createSlice({
 
 export const createOrganizationAsync = createAsyncThunk(
   "organization/create",
-  async (params: { name: string, userId: string }, { rejectWithValue }) => {
+  async (params: CreateOrganizationDTO, { rejectWithValue }) => {
     try {
-      const newOrganization = await api
-        .post(`/organization/create`, params)
-        .then((resp) => {
-          return resp.data;
-        })
+      const formData = new FormData();
 
-      return newOrganization;
-    } catch (error) {
+      // Adiciona todos os campos do DTO ao FormData, exceto logoFile
+      Object.entries(params).forEach(([key, value]) => {
+        if (key !== 'logoFile' && value !== undefined) {
+          formData.append(key, String(value));
+        }
+      });
+      console.log(params.logoFile)
+      // Adiciona o arquivo se existir
+      if (params.logoFile) {
+        formData.append('file', {
+          uri: params.logoFile,
+          name: 'logo.jpg',
+          type: 'image/jpeg',
+        } as any);
+      }
+
+      const response = await api.post(`/organization/create`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response.data;
+    } catch (error: any) {
       return rejectWithValue(error.data?.message || "Erro ao buscar organizacao");
     }
   }
@@ -236,18 +281,31 @@ export const selectOrganizationAsync = createAsyncThunk(
 
 export const updateOrganizationAsync = createAsyncThunk(
   "organization/updated",
-  async (params: { organizationId: string; data: { name: string } }, { rejectWithValue }) => {
+  async (params: UpdateOrganizationDTO, { rejectWithValue }) => {
     try {
-      const updatedOrganization = await api
-        .put(
-          `/organization/update`,
-          params
-
-        )
-        .then((resp: { data: any }) => resp.data);
-
-      return updatedOrganization;
-    } catch (error) {
+      const formData = new FormData();
+      // Adiciona todos os campos do DTO ao FormData, exceto logoFile
+      Object.entries(params).forEach(([key, value]) => {
+        if (key !== 'logoFile' && value !== undefined) {
+          formData.append(key, String(value));
+        }
+      });
+      // Adiciona o arquivo se existir
+      if (params.logoFile) {
+        formData.append('file', {
+          uri: typeof params.logoFile === 'string' ? params.logoFile : (params.logoFile as any).uri,
+          name: (params.logoFile as any).name || 'logo.jpg',
+          type: 'image/jpeg',
+        } as any);
+      }
+      console.log(params.organizationId, "organizationId")
+      const response = await api.put(`/organization/update`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error: any) {
       return rejectWithValue(error.data?.message || "Erro ao autenticar usuario");
     }
   }

@@ -84,10 +84,10 @@ export default function UsersScreen() {
   };
  
   return (
-    <StyledView className="bg-gray-dark flex-1 pt-5 flex flex-col h-full w-full">
+    <StyledView className="bg-eventhub-background px-1 flex-1 pt-5 flex flex-col h-full w-full">
       {user  && formSection === "VENUE" || user && formSection === "NEW_VENUE"  ? (
         <StyledView className="glex flex-row justify-between items-center"> 
-          <StyledText className="text-custom-white font-bold text-lg mb-5">
+          <StyledText className="text-gray-600 font-bold text-lg mb-5">
             {user?.username}
           </StyledText>
           <StyledPressable
@@ -103,8 +103,8 @@ export default function UsersScreen() {
           <StyledPressable
             onPress={() => setFormSection("NEW_USER")}
             className="
-                justify-center items-center bg-green-800 active:scale-95
-                rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-2 w-[50%] border-[0.6px] border-white border-solid"
+            justify-center items-center bg-eventhub-primary active:scale-95
+            rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-2 w-[50%] border-[0.6px] border-white border-solid"
           >
             <StyledText className="text-white text-sm font-bold text-center">
               Adicionar novo usuario
@@ -126,8 +126,8 @@ export default function UsersScreen() {
           <StyledPressable
             onPress={() => setCreateNewUserModal(true)}
             className="
-                justify-center items-center bg-green-800 active:scale-95
-                rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-2 w-[50%] border-[0.6px] border-white border-solid"
+            justify-center items-center bg-eventhub-primary active:scale-95
+            rounded-md px-4 flex flex-row  py-2 shadow-lg ml-[0.25px] mb-2 w-[50%] border-[0.6px] border-white border-solid"
           >
             <StyledText className="text-white text-sm font-bold text-center">
               Criar novo usuario
@@ -163,7 +163,7 @@ export default function UsersScreen() {
 
       {formSection === "VENUE"  && (
         <StyledView className="flex flex-col gap-y-1 h-screen relative">
-          <StyledText className="text-custom-gray text-[14px] font-semibold mb-4">
+          <StyledText className="text-gray-600 text-[14px] font-semibold">
             Selecione a Propriedade:
           </StyledText>
           <SearchFilterListByQueryComponent

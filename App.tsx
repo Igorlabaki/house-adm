@@ -7,8 +7,10 @@ import { View } from "react-native";
 export default function App() {
   return (
     <Provider store={store}>
-      <Routes />
-      <FlashMessage position="bottom" floating />
+      <View style={{ flex: 1 }}>
+        <Routes />
+        <FlashMessage position="bottom" floating />
+      </View>
     </Provider>
   );
 }

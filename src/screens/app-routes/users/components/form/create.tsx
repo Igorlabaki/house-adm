@@ -4,7 +4,7 @@ import Toast from "react-native-simple-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { View, Text, ActivityIndicator, Image } from "react-native";
+import { View, Text, ActivityIndicator, Image, Switch } from "react-native";
 import {
   StyledModal,
   StyledPressable,
@@ -104,7 +104,7 @@ export default function UserOrganizationFormCreateModalComponent({
       animationType="slide"
       pointerEvents="box-none"
     >
-      <StyledView className="h-full w-full bg-gray-dark  px-3">
+      <StyledView className="h-full w-full bg-eventhub-background  px-3">
         <Formik
           validateOnChange={false}
           validateOnBlur={false}
@@ -226,122 +226,108 @@ export default function UserOrganizationFormCreateModalComponent({
                       </StyledView>
                     </StyledView>
                   </StyledView>
-                  <StyledText className="text-custom-gray text-[14px] font-semibold mb-4">
-                    Permissoes de Visualizacao :
-                  </StyledText>
-                  {userViewPermissions.map(
-                    (
-                      item: { enum: Permissions; display: string },
-                      index: number
-                    ) => {
-                      return (
-                        <StyledView
-                          className="flex flex-row justify-between items-start w-full"
-                          key={index}
-                        >
-                          <StyledText className="text-custom-gray text-[12px] font-semibold mb-4">
-                            {item.display}
-                          </StyledText>
-                          <StyledView>
-                            <StyledPressable
-                              className={`
-                                w-5 h-5 border-[1px] border-gray-500 cursor-pointer
-                                flex justify-center items-center rounded-full
-                              ${
-                                permissions?.includes(item.enum)
-                                  ? "bg-green-500"
-                                  : "bg-gray-400"
-                              }
-                              `}
-                              onPress={() => togglePermission(item.enum)}
-                            >
-                              {permissions?.includes(item.enum) && (
-                                <Entypo name="check" size={14} color="white" />
-                              )}
-                            </StyledPressable>
-                          </StyledView>
-                        </StyledView>
-                      );
-                    }
-                  )}
-                  <StyledText className="text-custom-gray text-[14px] font-semibold mb-4">
-                    Permissoes de Edicao :
-                  </StyledText>
-                  {userEditPermissions.map(
-                    (
-                      item: { enum: Permissions; display: string },
-                      index: number
-                    ) => {
-                      return (
-                        <StyledView
-                          className="flex flex-row justify-between items-start w-full"
-                          key={index}
-                        >
-                          <StyledText className="text-custom-gray text-[12px] font-semibold mb-4">
-                            {item.display}
-                          </StyledText>
-                          <StyledView>
-                            <StyledPressable
-                              className={`w-5 h-5 border-[1px] border-gray-500 cursor-pointer
-                                flex justify-center items-center rounded-full
-                              ${
-                                permissions?.includes(item.enum)
-                                  ? "bg-green-500"
-                                  : "bg-gray-400"
-                              }`}
-                              onPress={() => togglePermission(item.enum)}
-                            >
-                              {permissions?.includes(item.enum) && (
-                                <Entypo name="check" size={14} color="white" />
-                              )}
-                            </StyledPressable>
-                          </StyledView>
-                        </StyledView>
-                      );
-                    }
-                  )}
-                  <StyledText className="text-custom-gray text-[14px] font-semibold mb-4">
-                    Permissoes de Eventos / Orcamentos :
-                  </StyledText>
-                  {userProposalPermissions.map(
-                    (
-                      item: { enum: Permissions; display: string },
-                      index: number
-                    ) => {
-                      return (
-                        <StyledView
-                          className="flex flex-row justify-between items-start w-full"
-                          key={index}
-                        >
-                          <StyledText className="text-custom-gray text-[12px] font-semibold mb-4">
-                            {item.display}
-                          </StyledText>
-                          <StyledView>
-                            <StyledPressable
-                              className={`w-5 h-5 border-[1px] border-gray-500 cursor-pointer
-                                flex justify-center items-center rounded-full
-                              ${
-                                permissions?.includes(item.enum)
-                                  ? "bg-green-500"
-                                  : "bg-gray-400"
-                              }`}
-                              onPress={() => togglePermission(item.enum)}
-                            >
-                              {permissions?.includes(item.enum) && (
-                                <Entypo name="check" size={14} color="white" />
-                              )}
-                            </StyledPressable>
-                          </StyledView>
-                        </StyledView>
-                      );
-                    }
-                  )}
+                  {/* Permissões de Visualização */}
+                  <StyledView className="bg-[#f8faff] rounded-xl mb-6 shadow-lg border border-gray-200">
+                    <StyledView className="flex-row py-3 px-5 bg-eventhub-primary rounded-t-xl border-b border-[#e5e7eb]">
+                      <StyledText className="flex-1 text-white font-bold text-[15px]">
+                        Permissões de Visualização
+                      </StyledText>
+                      <StyledText className="w-16 text-right text-white font-bold text-[15px]">
+                        Status
+                      </StyledText>
+                    </StyledView>
+                    {userViewPermissions.map((item, index) => (
+                      <StyledView
+                        key={index}
+                        className={`flex-row items-center py-3 px-5 bg-white ${
+                          index !== userViewPermissions.length - 1
+                            ? "border-b border-[#f0f3fa]"
+                            : ""
+                        }`}
+                      >
+                        <StyledText className="flex-1 text-gray-900 text-[15px]">
+                          {item.display}
+                        </StyledText>
+                        <Switch
+                          value={permissions?.includes(item.enum)}
+                          onValueChange={() => togglePermission(item.enum)}
+                          trackColor={{ false: "#d1d5db", true: "#6c47ff" }}
+                          thumbColor={permissions?.includes(item.enum) ? "#fff" : "#f4f3f4"}
+                        />
+                      </StyledView>
+                    ))}
+                  </StyledView>
+
+                  {/* Permissões de Edição */}
+                  <StyledView className="bg-[#f8faff] rounded-xl mb-6 shadow-lg border border-gray-200">
+                    <StyledView className="flex-row py-3 px-5 bg-eventhub-primary rounded-t-xl border-b border-[#e5e7eb]">
+                      <StyledText className="flex-1 text-white font-bold text-[15px]">
+                        Permissões de Edição
+                      </StyledText>
+                      <StyledText className="w-16 text-right text-white font-bold text-[15px]">
+                        Status
+                      </StyledText>
+                    </StyledView>
+                    {userEditPermissions.map((item, index) => (
+                      <StyledView
+                        key={index}
+                        className={`flex-row items-center py-3 px-5 bg-white ${
+                          index !== userEditPermissions.length - 1
+                            ? "border-b border-[#f0f3fa]"
+                            : ""
+                        }`}
+                      >
+                        <StyledText className="flex-1 text-gray-900 text-[15px]">
+                          {item.display}
+                        </StyledText>
+                        <Switch
+                          value={permissions?.includes(item.enum)}
+                          onValueChange={() => togglePermission(item.enum)}
+                          trackColor={{ false: "#d1d5db", true: "#6c47ff" }}
+                          thumbColor={permissions?.includes(item.enum) ? "#fff" : "#f4f3f4"}
+                        />
+                      </StyledView>
+                    ))}
+                  </StyledView>
+
+                  {/* Permissões de Eventos / Orçamentos */}
+                  <StyledView className="bg-[#f8faff] rounded-xl mb-6 shadow-lg border border-gray-200">
+                    <StyledView className="flex-row py-3 px-5 bg-eventhub-primary rounded-t-xl border-b border-[#e5e7eb]">
+                      <StyledText className="flex-1 text-white font-bold text-[15px]">
+                        Permissões de Eventos / Orçamentos
+                      </StyledText>
+                      <StyledText className="w-16 text-right text-white font-bold text-[15px]">
+                        Status
+                      </StyledText>
+                    </StyledView>
+                    {userProposalPermissions.map((item, index) => (
+                      <StyledView
+                        key={index}
+                        className={`flex-row items-center py-3 px-5 bg-white ${
+                          index !== userProposalPermissions.length - 1
+                            ? "border-b border-[#f0f3fa]"
+                            : ""
+                        }`}
+                      >
+                        <StyledText className="flex-1 text-gray-900 text-[15px]">
+                          {item.display}
+                        </StyledText>
+                        <Switch
+                          value={permissions?.includes(item.enum)}
+                          onValueChange={() => togglePermission(item.enum)}
+                          trackColor={{ false: "#d1d5db", true: "#6c47ff" }}
+                          thumbColor={permissions?.includes(item.enum) ? "#fff" : "#f4f3f4"}
+                        />
+                      </StyledView>
+                    ))}
+                  </StyledView>
+
                   <StyledPressable
                     onPress={async () => {
                       await setFieldValue("permissions", permissions);
                       handleSubmit();
                     }}
-                    className="bg-green-800 flex justify-center items-center py-3 mt-5 rounded-md"
+                    className="justify-center items-center bg-eventhub-primary active:scale-95 rounded-md px-4 flex flex-row py-3 shadow-lg mb-2 w-full border-[0.6px] border-white border-solid"
                     disabled={loading}
                   >
                     {loading ? (

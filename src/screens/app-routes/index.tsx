@@ -9,7 +9,7 @@ import FlashMessage from "react-native-flash-message";
 export default function AppRoutes() {
   
   return (
-    <StyledView className="h-screen w-screen bg-gray-dark  px-3 ">
+    <StyledView className="h-screen w-screen bg-eventhub-background">
       <NavigationComponent />
     </StyledView>
   );

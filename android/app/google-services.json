@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:660930829527:android:c8aecab2d9ae1ccbfea492",
+        "mobilesdk_app_id": "1:660930829527:android:ab3f97baada9c872fea492",
         "android_client_info": {
-          "package_name": "com.eventhub.app"
+          "package_name": "com.igorlabakig.ar756dashboard"
         }
       },
       "oauth_client": [],

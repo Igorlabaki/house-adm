@@ -92,15 +92,15 @@ export default function OrganizationMenu({
       <StyledView
         className={"flex-1 justify-center items-center bg-black/40"}
       >
-        <StyledView className={"w-4/5 bg-gray-dark rounded-lg p-6 items-center"}>
+        <StyledView className={"w-4/5 bg-eventhub-background rounded-lg p-6 items-center"}>
           <StyledPressable
             className="absolute top-2 right-2"
             onPress={() => setMenuModalIsOpen(false)}
           >
-            <Ionicons name="close" size={16} color="white" />
+            <Ionicons name="close" size={16} color="#6366f1" />
           </StyledPressable>
           <StyledPressable
-            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+            className="bg-eventhub-primary  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
             onPress={() => setEditOrganizationModalIsOpen(true)}
           >
             <StyledText className="text-white font-bold text-start w-[130px]">
@@ -109,7 +109,7 @@ export default function OrganizationMenu({
             <FontAwesome6 name="edit" size={18} color="white" />
           </StyledPressable>
           <StyledPressable
-            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+            className="bg-eventhub-primary   px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
             onPress={() => {
               navigateToUserScreen();
               setMenuModalIsOpen(false);
@@ -121,7 +121,7 @@ export default function OrganizationMenu({
             <AntDesign name="warning" size={22} color="white" />
           </StyledPressable>
           <StyledPressable
-            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+            className="bg-eventhub-primary   px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
             onPress={() => {
               navigateToOwnerScreen();
               setMenuModalIsOpen(false);
@@ -133,7 +133,7 @@ export default function OrganizationMenu({
             <Feather name="users" size={20} color="white" />
           </StyledPressable>
           <StyledPressable
-            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+            className="bg-eventhub-primary   px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
             onPress={() => {
               navigateToContractScreen();
               setMenuModalIsOpen(false);
@@ -145,7 +145,7 @@ export default function OrganizationMenu({
             <Feather name="file-text" size={20} color="white" />
           </StyledPressable>
           <StyledPressable
-            className="bg-gray-ligth  px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
+            className="bg-eventhub-primary   px-5 flex flex-row justify-between gap-x-3 rounded-md mt-4 w-[90%] mx-auto py-3  items-center"
             onPress={() => handleDelete()}
           >
             <StyledText className="text-white font-bold text-start w-[130px]">

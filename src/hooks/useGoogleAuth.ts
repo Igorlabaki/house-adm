@@ -3,8 +3,17 @@ import * as Google from 'expo-auth-session/providers/google';
 import { useAppDispatch } from '../store/hooks';
 import { googleAuth } from '../store/auth/authSlice';
 import { useEffect } from 'react';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const jwt_decode = require('jwt-decode');
 
 WebBrowser.maybeCompleteAuthSession();
+
+type GoogleIdTokenPayload = {
+  email: string;
+  name: string;
+  sub: string;
+  picture: string;
+};
 
 export const useGoogleAuth = () => {
   const dispatch = useAppDispatch();
@@ -15,14 +24,15 @@ export const useGoogleAuth = () => {
   useEffect(() => {
     if (response?.type === 'success') {
       const { id_token } = response.params;
-      
+      const decoded: GoogleIdTokenPayload = jwt_decode(id_token);
+
       const params = {
         googleToken: id_token,
         userData: {
-          email: response.params.email || '',
-          name: response.params.name || '',
-          googleId: response.params.sub || '',
-          picture: response.params.picture || ''
+          email: decoded.email,
+          name: decoded.name,
+          googleId: decoded.sub,
+          picture: decoded.picture,
         }
       };
 
@@ -33,4 +43,4 @@ export const useGoogleAuth = () => {
   return {
     signIn: promptAsync
   };
-}; 
+};

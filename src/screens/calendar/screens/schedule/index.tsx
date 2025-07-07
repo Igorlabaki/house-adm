@@ -22,11 +22,11 @@ export function ScheduleScreen() {
       dispatch(fecthDateEvents(`${queryParams.toString()}`));
     }
   }, [venue.id]);
-
+  console.log(venue.permissions)
   return (
     <StyledView className="bg-gray-dark flex-1 py-3 flex flex-col h-full w-full">
       <StyledView className="flex flex-row justify-between items-center py-2">
-        {venue.permissions.includes("EDIT_CALENDAR") && (
+        {venue.permissions.includes("EDIT_SCHEDULE") && (
           <StyledPressable
             onPress={() => setIsModalOpen(true)}
             className="

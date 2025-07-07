@@ -31,8 +31,9 @@ export function VenueListItemList({
   return (
     <StyledPressable
       onPress={() => handlePress()}
-      className={`flex flex-row items-center justify-between px-5 py-5 bg-[#313338] rounded-md overflow-hidden shadow-lg relative w-full 
-      `}
+      className=" flex flex-col items-start justify-center 
+      px-5 bg-white border-[1px] border-l-[3px] border-l-eventhub-primary border-y-gray-200 border-r-gray-200 shadow-lg rounded-md py-5
+      overflow-hidden  relative w-full" 
       key={item?.id}
     >
       <StyledText className="text-custom-white text-md font-bold">

@@ -15,15 +15,25 @@ import { AppDispatch, RootState } from "@store/index";
 import { authenticateUser } from "@store/auth/authSlice";
 import { showMessage } from "react-native-flash-message";
 import { ActivityIndicator } from "react-native";
-import { Entypo, AntDesign } from "@expo/vector-icons";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { AuthenticateDataResponse } from "@store/auth/authSlice";
+import ForgotPasswordForm from "./forgot-password-form";
 
-export default function AuthForm() {
+interface LoginFormProps {
+  onSwitchToRegister?: () => void;
+}
+
+export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const dispatch = useDispatch<AppDispatch>();
   const loading = useSelector((state: RootState) => state.session.loading);
   const [showPassword, setShowPassword] = useState(false);
   const { signIn: googleSignIn } = useGoogleAuth();
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+  if (showForgotPassword) {
+    return <ForgotPasswordForm onBack={() => setShowForgotPassword(false)} />;
+  }
 
   return (
     <Formik
@@ -84,9 +94,9 @@ export default function AuthForm() {
         setFieldValue,
         resetForm,
       }) => (
-        <StyledView className="w-full mx-auto my-5 flex flex-col gap-y-4 mt-10">
+        <StyledView className="w-full mx-auto my-5 flex flex-col gap-y-4 mt-5 px-10 ">
           <StyledView className="flex flex-col gap-y-1">
-            <StyledText className="text-custom-gray text-[14px] font-semibold">
+            <StyledText className="text-eventhub-text text-[14px] font-semibold">
               Email
             </StyledText>
             <StyledTextInput
@@ -94,52 +104,60 @@ export default function AuthForm() {
               onBlur={handleBlur("email")}
               value={String(values?.email)}
               placeholder={
-                errors.email ? String(errors.email) : "Digite o email"
+                errors.email ? String(errors.email) : "Digite seu email"
               }
               placeholderTextColor={
                 errors.email ? "rgb(127 29 29)" : "rgb(156 163 175)"
               }
-              className={`rounded-md px-3 py-1 text-white focus:border-[1.5px] focus:border-blue-400  ${
+              className={`rounded-md px-3 py-1 text-gray-800 font-semibold border-[1px] border-gray-200 focus:border-[1.5px] focus:border-eventhub-secondary  ${
                 errors.email
                   ? "bg-red-50  border-[2px] border-red-900 text-gray-ligth"
-                  : "bg-gray-ligth"
+                  : "bg-white"
               }`}
             />
           </StyledView>
           <StyledView className="flex flex-col gap-y-1 relative">
-            <StyledText className="text-custom-gray text-[14px] font-semibold">
-              Senha
-            </StyledText>
+            <StyledView className="flex flex-row justify-between items-center">
+              <StyledText className="text-eventhub-text text-[14px] font-semibold">
+                Senha
+              </StyledText>
+              <StyledText
+                className=" text-[12px] text-eventhub-primaryDark font-medium  z-10"
+                onPress={() => setShowForgotPassword(true)}
+              >
+                Esqueceu sua senha?
+              </StyledText>
+            </StyledView>
             <StyledTextInput
               onChangeText={handleChange("password")}
               onBlur={handleBlur("password")}
               value={String(values?.password)}
               placeholder={
-                errors.password ? String(errors.password) : "Digite o password"
+                errors.password ? String(errors.password) : "Digite sua senha"
               }
               placeholderTextColor={
                 errors.password ? "rgb(127 29 29)" : "rgb(156 163 175)"
               }
               secureTextEntry={showPassword ? false : true}
-              className={`rounded-md px-3 py-1 text-white focus:border-[1.5px] focus:border-blue-400  ${
+              className={`rounded-md px-3 py-1 pr-7 text-gray-800 font-semibold border-[1px] border-gray-200 focus:border-[1.5px] focus:border-eventhub-secondary  ${
                 errors.password
                   ? "bg-red-50  border-[2px] border-red-900 text-gray-ligth"
-                  : "bg-gray-ligth"
+                  : "bg-white"
               }`}
             />
-            <StyledView className="absolute bottom-3 right-4">
+            <StyledView className="absolute top-1/2 right-3 -translate-y-1/2">
               {showPassword ? (
                 <Entypo
                   name="eye"
-                  size={15}
-                  color="white"
+                  size={16}
+                  color="#333"
                   onPress={() => setShowPassword(false)}
                 />
               ) : (
                 <Entypo
                   name="eye-with-line"
-                  size={15}
-                  color="white"
+                  size={16}
+                  color="#333"
                   onPress={() => setShowPassword(true)}
                 />
               )}
@@ -149,7 +167,7 @@ export default function AuthForm() {
             onPress={() => {
               handleSubmit();
             }}
-            className="bg-gray-ligth border-[1px] border-custom-white flex flex-row justify-center items-center py-3 mt-5 rounded-md"
+            className="bg-eventhub-primaryDark  flex justify-center items-center py-3 mt-5 rounded-md"
             disabled={loading}
           >
             {loading ? (
@@ -163,15 +181,17 @@ export default function AuthForm() {
             )}
           </StyledPressable>
 
-          <StyledView className="flex flex-row items-center my-1">
+          <StyledView className="flex flex-row items-center">
             <StyledView className="flex-1 h-[1px] bg-gray-600" />
-            <StyledText className="mx-4 text-gray-400">ou</StyledText>
+            <StyledText className="mx-4 text-eventhub-text font-semibold">
+              ou
+            </StyledText>
             <StyledView className="flex-1 h-[1px] bg-gray-600" />
           </StyledView>
 
           <StyledPressable
             onPress={() => googleSignIn()}
-            className="bg-[#DB4437] flex flex-row justify-center items-center py-3 rounded-md border-[1px] border-custom-white"
+            className="bg-[#EA4335] flex flex-row justify-center items-center py-3 rounded-md shadow-sm"
             disabled={loading}
           >
             <AntDesign
@@ -180,10 +200,21 @@ export default function AuthForm() {
               color="white"
               style={{ marginRight: 10 }}
             />
-            <StyledText className="font-bold text-white">
+            <StyledText className="font-medium text-white">
               Entrar com Google
             </StyledText>
           </StyledPressable>
+          <StyledView className="flex flex-row justify-center items-center gap-x-2">
+            <StyledText className="text-eventhub-text">
+              Não tem conta?
+            </StyledText>
+            <StyledText
+              className="text-eventhub-primaryDark font-semibold"
+              onPress={onSwitchToRegister}
+            >
+              Cadastre-se
+            </StyledText>
+          </StyledView>
         </StyledView>
       )}
     </Formik>

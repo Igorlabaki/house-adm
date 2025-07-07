@@ -33,11 +33,11 @@ export default function OrganizationItemList({
       }}
       className="
         flex flex-col items-start justify-center 
-        px-5 bg-[#313338] rounded-md py-5
-        overflow-hidden shadow-lg relative w-full"
+        px-5 bg-white border-[1px] border-l-[3px] border-l-eventhub-primary border-y-gray-200 border-r-gray-200 shadow-lg rounded-md py-5
+        overflow-hidden  relative w-full" 
       key={organization?.id}
     >
-      <StyledText className="text-custom-white text-md">
+      <StyledText className="font-bold  text-gray-600 text-md">
         {organization?.name}
       </StyledText>
     </StyledPressable>
